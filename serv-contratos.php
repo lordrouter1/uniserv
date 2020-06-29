@@ -29,83 +29,35 @@ if(isset($_POST['cmd'])){
     elseif($cmd == "edt"){
         $query = 'update tbl_contratos set 
             cliente = '.$_POST['cliente'].',
-            servico = '.$_POST['servico'].',
             dataInicial = "'.$_POST['dataInicial'].'",
             dataFinal = "'.$_POST['dataFinal'].'",
             primeiroVencimento = "'.$_POST['primeiroVencimento'].'",
             diaVencimento = '.$_POST['diaVencimento'].',
             duracao = '.$_POST['duracao'].',
-            status = '.$_POST['status'].',
-            valor = '.$_POST['valor'].'
+            status = '.$_POST['status'].'
             where id = '.$_POST['id'].'
         ';
         echo "<script>location.href='?s'</script>";
         $con->query($query);
+        
+        $con->query('delete from tbl_contratosServicos where contrato = '.$_POST['id']);
+        $servico = json_decode($_POST['servicos']);
+        for($i = 0; $i < sizeof($servico); $i++){
+            $con->query('insert into tbl_contratosServicos(servicos,valor,contrato) values('.$servico[$i]->servico.','.$servico[$i]->valor.','.$_POST['id'].');');
+        }
+        
         redirect($con->error);
             
     }
 }
 elseif(isset($_GET['del'])){
     $con->query('delete from tbl_contratos where id ='.$_GET['del']);
+    $con->query('delete from tbl_contratosServicos where contrato = '.$_GET['del']);
     redirect($con->error);
 }
 
 ?>
-<script>
-    async function imprimir(){
-        const divPrint = document.getElementById('tablePrint');
-        newWin = window.open('');
-        newWin.document.write('<link href="./main.css" rel="stylesheet">');
-        newWin.document.write('<link href="./assets/css/print.css" rel="stylesheet">');
-        newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Clientes Cadastrados</h5>');
-        newWin.document.write(divPrint.outerHTML);
-        //await new Promise(r => setTimeout(r, 150));
-        //newWin.print();
-        //newWin.close();
-    }
-    
-    function carregaServicos(self){
-        $(".c-"+$(self).val()).removeClass('d-none');
-    }
-    
-    function calcDuracao(){
-        inicio = new Date($('#dataInicial').val());
-        fim = new Date($('#dataFinal').val());
-        diferenca = fim.getTime() - inicio.getTime();
-        $('#duracao').val(parseInt(diferenca / 2592000000));
-    }
-
-    function inserirServico(){
-        $('#tblServicos').append(`
-            <tr servico="`+$('#servico').val()+`" valor="`+$('#valor').val()+`" class="border-bottom">
-                <td>`+$('#servico option:selected').text()+`</td>
-                <td style="width:14%" class="btn-danger text-center" onclick="removerServico(this)"><i class="fas fa-trash-alt"></i></td>
-            </tr>
-        `);
-        $('#servico').val(0);
-        $('#valor').val(0);
-    }
-
-    function removerServico(self){
-        $($(self).parent()).remove();
-    }
-
-    function enviar(){
-        let servicos = $('#tblServicos tr');
-        let lstServer = [];
-
-        for(let i = 0; i < servicos.length; i++){
-            temp = servicos[i];
-            lstServer.push({'servico':$(temp).attr('servico'),'valor':$(temp).attr('valor')});
-        }
-
-        $('#servicos').val(JSON.stringify(lstServer));
-
-        $('#frmEnviar').submit();
-
-        //$('#needs-validation').click();
-    }
-</script>
+<script src="assets/scripts/serv-contratos.js"></script>
 
 <!-- cabeçalho da página -->
 <div class="app-page-title">
@@ -169,6 +121,7 @@ elseif(isset($_GET['del'])){
                 <div class="card-body">
 
                     <h5 class="card-title">Contratos cadastrados</h5>
+                    <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
@@ -191,13 +144,28 @@ elseif(isset($_GET['del'])){
                                 $resp = $con->query('select * from tbl_contratos order by status');
                             
                                 while($row = $resp->fetch_assoc()){
+                                    $valor = $con->query('select sum(valor) as total from tbl_contratosServicos where contrato = '.$row['id'])->fetch_assoc()['total'];
                                     $nome = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['cliente'])->fetch_assoc()['razaoSocial_nome'];
+
+                                    $falta = intval((date("U",strtotime($row['dataFinal'])) - date("U")) / 86400);
+                                    $mesAlerta = "";
+                                    
+                                    if($falta < 0){
+                                        $mesAlerta = 'danger';
+                                    }elseif($falta >= 0 && $falta < 60){
+                                        $mesAlerta = 'warning';
+                                    }else{
+                                        $mesAlerta = 'success';
+                                    }
+
                                     $status = '';
                                     $corStatus = '';
                                     switch($row['status']){
                                         case 1:
                                             $status = 'Assinar';
                                             $corStatus = 'primary';
+
+                                            var_dump();
                                         break;
                                         case 2:
                                             $status = 'Em vigência';
@@ -213,9 +181,9 @@ elseif(isset($_GET['del'])){
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
                                             <td>'.$nome.'</td>
                                             <td>'.date('d / m / Y',strtotime($row['dataInicial'])).'</td>
-                                            <td>'.date('d / m / Y',strtotime($row['dataFinal'])).'</td>
+                                            <td><div class="badge badge-'.$mesAlerta.'">'.date('d / m / Y',strtotime($row['dataFinal'])).'</div></td>
                                             <td>'.$row['duracao'].'</td>
-                                            <td>R$ '.$row['valor'].'</td>
+                                            <td>R$ '.$valor.'</td>
                                             <td><div class="badge badge-'.$corStatus.'">'.$status.'</div></td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
@@ -302,7 +270,7 @@ elseif(isset($_GET['del'])){
 
                                 <div class="col">
                                     <label for="primeiroVencimento">Primeiro vencimento<span class="ml-2 text-danger">*</span></label>
-                                    <input type="date" class="form-control mb-3" name="primeiroVencimento" id="primeiroVencimento" value="<?php echo @$contratos['primeiroVencimento'];?>" required>
+                                    <input type="date" class="form-control mb-3" name="primeiroVencimento" id="primeiroVencimento" value="<?php echo @$contratos['primeiroVencimento'];?>" onchange="primeiroPagamento(this)" required>
                                 </div>         
                                 
                             </div>
@@ -339,13 +307,12 @@ elseif(isset($_GET['del'])){
                             
                                 <div class="col">
                                     <label for="servico">Serviço<span class="ml-2 text-danger">*</span></label>
-                                    <select class="form-control mb-3" id="servico">
-                                        <option <?php echo isset($_GET['edt'])? '':'selected';?> disabled>Selecione o serviço</option>
+                                    <select class="form-control mb-3" id="servico" onchange="valorServico()">
+                                        <option selected disabled>Selecione o serviço</option>
                                         <?php
                                             $resp = $con->query('select * from tbl_servicos');
                                             while($row = $resp->fetch_assoc()){
-                                                $selected = $contratos['servico'] == $row['id']? 'selected':'';
-                                                echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['nome'].'</option>';
+                                                echo '<option value="'.$row['id'].'" valor="'.$row['valor'].'">'.$row['nome'].'</option>';
                                             }
 
                                         ?>
@@ -369,7 +336,21 @@ elseif(isset($_GET['del'])){
                         <div class="col border-left">
                             <div class="row">
                                 <table id="tblServicos" class="table">
-                                    
+                                    <?php
+                                        if(isset($contratos['id'])){
+                                            $resp = $con->query('select * from tbl_contratosServicos where contrato = '.$contratos['id']);
+
+                                            while($row = $resp->fetch_assoc()){
+                                                $nome = $con->query('select nome from tbl_servicos where id = '.$row['servicos'])->fetch_assoc()['nome'];
+                                                echo '
+                                                    <tr servico="'.$row['servicos'].'" valor="'.$row['valor'].'" codigo="'.$row['id'].'" class="border-bottom">
+                                                        <td>'.$nome.'</td>
+                                                        <td style="width:14%" class="btn-danger text-center" onclick="removerServico(this)"><i class="fas fa-trash-alt"></i></td>
+                                                    </tr>
+                                                ';
+                                            }
+                                        }
+                                    ?>
                                 </table>
                             </div>
                         </div>

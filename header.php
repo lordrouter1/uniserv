@@ -21,6 +21,8 @@
 
     <link href="./main.css" rel="stylesheet">
     <link rel="stylesheet" href="./comp.css">
+    <link rel="stylesheet" href="assets/fafaicons/css/all.min.css">
+
 </head>
 <body>
     <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">    

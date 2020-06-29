@@ -164,7 +164,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="">
+                            <a href="serv-ordemServico.php">
                                 <i class="metismenu-icon">
                                 </i>Ordens de Serviços
                             </a>
@@ -207,7 +207,7 @@
                 </li>
 
                 <li>
-                    <a href="">
+                    <a href="agenda.php">
                         <i class="metismenu-icon fas fa-calendar-alt"></i>
                         Agenda
                     </a>

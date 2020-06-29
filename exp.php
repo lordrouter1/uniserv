@@ -48,6 +48,13 @@ if(isset($_GET['tbl'])){
                 fwrite($f, implode(";",$row)."\n");
             }
             break;
+        case 'ordemServico':
+            header('Content-Disposition: attachment; filename="servicos.csv";');
+            $resp = $con->query('select * from tbl_ordemServico');
+            foreach($resp->fetch_all() as $row){
+                fwrite($f, implode(";",$row)."\n");
+            }
+            break;
     }
 
     return;

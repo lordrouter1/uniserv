@@ -83,6 +83,14 @@ elseif(isset($_GET['del'])){
         $("#estado").val(resp['uf']);
         $("#cidade").val(resp['localidade']);
     }
+    $(document).ready(function(){
+        $("#campoPesquisa").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#tablePrint tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
 </script>
 
 <!-- cabeçalho da página -->
@@ -147,6 +155,7 @@ elseif(isset($_GET['del'])){
                 <div class="card-body">
 
                     <h5 class="card-title">Clientes cadastrados</h5>
+                    <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
