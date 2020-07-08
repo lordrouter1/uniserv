@@ -1,5 +1,4 @@
 <?php include('header.php'); ?>
-<?php include('menu.php'); ?>
 
 <?php
 if(isset($_POST['cmd'])){
@@ -335,23 +334,25 @@ elseif(isset($_GET['del'])){
 
                         <div class="col border-left">
                             <div class="row">
-                                <table id="tblServicos" class="table">
-                                    <?php
-                                        if(isset($contratos['id'])){
-                                            $resp = $con->query('select * from tbl_contratosServicos where contrato = '.$contratos['id']);
+                                <div class="col">
+                                    <table id="tblServicos" class="table">
+                                        <?php
+                                            if(isset($contratos['id'])){
+                                                $resp = $con->query('select * from tbl_contratosServicos where contrato = '.$contratos['id']);
 
-                                            while($row = $resp->fetch_assoc()){
-                                                $nome = $con->query('select nome from tbl_servicos where id = '.$row['servicos'])->fetch_assoc()['nome'];
-                                                echo '
-                                                    <tr servico="'.$row['servicos'].'" valor="'.$row['valor'].'" codigo="'.$row['id'].'" class="border-bottom">
-                                                        <td>'.$nome.'</td>
-                                                        <td style="width:14%" class="btn-danger text-center" onclick="removerServico(this)"><i class="fas fa-trash-alt"></i></td>
-                                                    </tr>
-                                                ';
+                                                while($row = $resp->fetch_assoc()){
+                                                    $nome = $con->query('select nome from tbl_servicos where id = '.$row['servicos'])->fetch_assoc()['nome'];
+                                                    echo '
+                                                        <tr servico="'.$row['servicos'].'" valor="'.$row['valor'].'" codigo="'.$row['id'].'" class="border-bottom">
+                                                            <td>'.$nome.'</td>
+                                                            <td style="width:14%" class="btn-danger text-center" onclick="removerServico(this)"><i class="fas fa-trash-alt"></i></td>
+                                                        </tr>
+                                                    ';
+                                                }
                                             }
-                                        }
-                                    ?>
-                                </table>
+                                        ?>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 

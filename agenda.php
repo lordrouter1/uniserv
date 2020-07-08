@@ -1,59 +1,34 @@
 <?php include('header.php'); ?>
-<?php include('menu.php'); ?>
 
 <?php
 if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $query = 'insert into tbl_contratos(cliente,dataInicial,dataFinal,primeiroVencimento,diaVencimento,duracao,status) values(
-            '.$_POST['cliente'].',
-            "'.$_POST['dataInicial'].'",
-            "'.$_POST['dataFinal'].'",
-            "'.$_POST['primeiroVencimento'].'",
-            '.$_POST['diaVencimento'].',
-            '.$_POST['duracao'].',
-            1
-        )';
+        $query = 'insert into tbl_agenda(responsavel,data,hora,compromisso) values(
+            '.$_POST['responsavel'].',
+            "'.$_POST['data'].'",
+            "'.$_POST['hora'].'",
+            "'.$_POST['compromisso'].'"
+        );';
         $con->query($query);
-
-        $contratoID = $con->insert_id;
-
-        $servico = json_decode($_POST['servicos']);
-        for($i = 0; $i < sizeof($servico); $i++){
-            $con->query('insert into tbl_contratosServicos(servicos,valor,contrato) values('.$servico[$i]->servico.','.$servico[$i]->valor.','.$contratoID.');');
-        }
-
-        redirect($con->error);
+        echo '<script>location.href="?novo&data='.$_GET['data'].'&s"</script>';
     }
     elseif($cmd == "edt"){
-        $query = 'update tbl_contratos set 
-            cliente = '.$_POST['cliente'].',
-            dataInicial = "'.$_POST['dataInicial'].'",
-            dataFinal = "'.$_POST['dataFinal'].'",
-            primeiroVencimento = "'.$_POST['primeiroVencimento'].'",
-            diaVencimento = '.$_POST['diaVencimento'].',
-            duracao = '.$_POST['duracao'].',
-            status = '.$_POST['status'].'
+        $query = 'update tbl_agenda set
+            responsavel = '.$_POST['responsavel'].',
+            data = "'.$_POST['data'].'",
+            hora = "'.$_POST['hora'].'",
+            compromisso = "'.$_POST['compromisso'].'"
             where id = '.$_POST['id'].'
         ';
-        echo "<script>location.href='?s'</script>";
         $con->query($query);
-        
-        $con->query('delete from tbl_contratosServicos where contrato = '.$_POST['id']);
-        $servico = json_decode($_POST['servicos']);
-        for($i = 0; $i < sizeof($servico); $i++){
-            $con->query('insert into tbl_contratosServicos(servicos,valor,contrato) values('.$servico[$i]->servico.','.$servico[$i]->valor.','.$_POST['id'].');');
-        }
-        
-        redirect($con->error);
-            
+        echo '<script>location.href="?novo&data='.$_GET['data'].'&s"</script>';            
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_contratos where id ='.$_GET['del']);
-    $con->query('delete from tbl_contratosServicos where contrato = '.$_GET['del']);
-    redirect($con->error);
+    $con->query('delete from tbl_agenda where id ='.$_GET['del']);
+    echo '<script>location.href="?novo&data='.$_GET['data'].'&s"</script>';
 }
 
 ?>
@@ -196,8 +171,10 @@ elseif(isset($_GET['del'])){
                                                             echo '<td></td>';
                                                         }
                                                         else{
+                                                            $resp = $con->query('select id from tbl_agenda where data = "'.date('Y-m',$mes)."-".$cont.'"');
+                                                            $bg = $resp->num_rows > 0? 'bg-success text-white':'';
                                                             $selecionar = isset($_GET['hoje']) && $cont == intval(date('d'))? 'bg-info text-light':'';
-                                                            echo '<td class="data '.$selecionar.'" dia="'.$cont.'" mes="'.$nMes.'" ano="'.$nAno.'" onclick="selectData(this)">'.$cont++.'</td>';
+                                                            echo '<td class="data '.$selecionar.' '.$bg.'" dia="'.$cont.'" mes="'.$nMes.'" ano="'.$nAno.'" onclick="selectData(this)">'.$cont++.'</td>';
                                                         }
                                                     }
                                                 echo "<tr>";
@@ -231,146 +208,87 @@ elseif(isset($_GET['del'])){
     <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo Contrato</h5>
-                <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
+                <h5 class="modal-title">Agenda</h5>
             </div>
             <div class="modal-body">
                 <form method="post" id="frmEnviar">
                     <div class="row">
-                        <div class="col-9">
+                        <div class="col-4">
                             <?php
                                 if(isset($_GET['edt'])){
-                                    $resp = $con->query('select * from tbl_contratos where id = '.$_GET['edt']);
-                                    $contratos = $resp->fetch_assoc();
+                                    $resp = $con->query('select * from tbl_agenda where id = '.$_GET['edt']);
+                                    $agenda = $resp->fetch_assoc();
                                 }
                             ?>
 
                             <input type="hidden" value="<?php echo isset($_GET['edt'])?'edt':'add';?>" name="cmd">
                             <input type="hidden" value="<?php echo $_GET['edt'];?>" name="id" id="id">
-                            <input type="hidden" value="" name="servicos" id="servicos">
 
-
-                            <h5 class="mt-2">Contrato</h5>
-                            <div class="divider"></div>
 
                             <div class="row">
-
                                 <div class="col">
-                                    <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
-                                    <select class="form-control mb-3" name="cliente" id="cliente" required onchange="carregaServicos(this)">
-                                        <option <?php echo isset($_GET['edt'])? '':'selected';?> disabled>Selecione o cliente</option>
+                                    <label for="responsavel">Responsavel<span class="ml-2 text-danger">*</span></label>
+                                    <select name="responsavel" id="responsavel" class="form-control" required>
                                         <?php
-                                            $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
+                                            $resp = $con->query('select id,razaoSocial_nome from tbl_clientes where tipoFuncionario = "on" or tipoTecnico = "on"');
+                                            $cont = 0;
                                             while($row = $resp->fetch_assoc()){
-                                                $selected = $contratos['cliente'] == $row['id']? 'selected':'';
-                                                var_dump($contratos['cliente'], $row['id'],$contratos['cliente'] == $row['id']);
-                                                echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['razaoSocial_nome'].'</option>';
+                                                $select = (($cont++ == 0 && !isset($_GET['edt'])) || $row['id'] == $agenda['responsavel'])? 'selected':'';
+                                                echo '<option value="'.$row['id'].'" '.$select.'>'.$row['razaoSocial_nome'].'</option>';
                                             }
                                         ?>
                                     </select>
                                 </div>
-                                    
                             </div>
 
-                            <div class="row">
-
+                            <div class="row mt-3">
                                 <div class="col">
-                                    <label for="dataInicial">Data inicial<span class="ml-2 text-danger">*</span></label>
-                                    <input type="date" class="form-control mb-3" name="dataInicial" id="dataInicial" value="<?php echo @$contratos['dataInicial'];?>" required>
+                                    <label for="data">Data<span class="ml-2 text-danger">*</span></label>
+                                    <input type="date" class="form-control" name="data" id="data" value="<?php echo isset($agenda)?$agenda['data']:$_GET['data'];?>" required>
                                 </div>
-
                                 <div class="col">
-                                    <label for="dataFinal">Data final<span class="ml-2 text-danger">*</span></label>
-                                    <input type="date" class="form-control mb-3" name="dataFinal" id="dataFinal" value="<?php echo @$contratos['dataFinal'];?>" required onchange="calcDuracao()">
+                                    <label for="hora">Hora<span class="ml-2 text-danger">*</span></label>
+                                    <input type="time" class="form-control" name="hora" id="hora" value="<?php echo $agenda['hora'];?>" required>
                                 </div>
-
-                                <div class="col">
-                                    <label for="primeiroVencimento">Primeiro vencimento<span class="ml-2 text-danger">*</span></label>
-                                    <input type="date" class="form-control mb-3" name="primeiroVencimento" id="primeiroVencimento" value="<?php echo @$contratos['primeiroVencimento'];?>" onchange="primeiroPagamento(this)" required>
-                                </div>         
-                                
                             </div>
 
-                            <div class="row">
-
+                            <div class="row mt-3">
                                 <div class="col">
-                                    <label for="diaVencimento">Dia do vencimento<span class="ml-2 text-danger">*</span></label>
-                                    <input type="number" min="0" max="30" class="form-control mb-3" name="diaVencimento" id="diaVencimento" value="<?php echo @$contratos['diaVencimento'];?>" required>
+                                    <label for="compromisso">Compromisso<span class="ml-2 text-danger">*</span></label>
+                                    <textarea name="compromisso" id="compromisso" rows="10" class="form-control" style="resize:none;" required><?php echo $agenda['compromisso'];?></textarea>
                                 </div>
-
-                                <div class="col">
-                                    <label for="duracao">Duração (meses)</label>
-                                    <input type="number" min="1" class="form-control mb-3" name="duracao" id="duracao" value="<?php echo @$contratos['duracao'];?>" required>
-                                </div>
-
-                                <?php if(isset($_GET['edt'])):?>
-                                <div class="col-4">
-                                    <label for="status">Status</label>
-                                    <select name="status" id="status" class="form-control">
-                                        <option value="1" <?php echo !isset($_GET['edt']) || $contratos['status'] == 1? 'selected':'';?>>Assinar</option>
-                                        <option value="2" <?php echo $contratos['status'] == 2? 'selected':'';?>>Em vigência</option>
-                                        <option value="3" <?php echo $contratos['status'] == 3? 'selected':'';?>>Encerrado</option>
-                                    </select>
-                                </div>
-                                <?php endif;?>
-
                             </div>
 
-                            <h5 class="mt-3">Serviços</h5>
-                            <div class="divider"></div>
-
-                            <div class="row">
                             
-                                <div class="col">
-                                    <label for="servico">Serviço<span class="ml-2 text-danger">*</span></label>
-                                    <select class="form-control mb-3" id="servico" onchange="valorServico()">
-                                        <option selected disabled>Selecione o serviço</option>
-                                        <?php
-                                            $resp = $con->query('select * from tbl_servicos');
-                                            while($row = $resp->fetch_assoc()){
-                                                echo '<option value="'.$row['id'].'" valor="'.$row['valor'].'">'.$row['nome'].'</option>';
-                                            }
-
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="col-3">
-                                    <label for="valor">Valor<span class="ml-2 text-danger">*</span></label>
-                                    <input type="number" min="0" step="0.01" class="form-control mb-3" id="valor" value="<?php echo @$contratos['valor'];?>" required>
-                                </div>
-
-                                <div class="col-2">
-                                    <div class="btn btn-success mt-4 w-100" onclick="inserirServico()">Inserir</div>
-                                </div>
-
+                            <div class="float-right mt-3">
+                                <a href="?novo&data=<?php echo $_GET['data'];?>"><div class="btn btn-danger">Limpar</div></a>
+                                <input id="needs-validation" class="btn btn-success" type="submit" value="salvar">
                             </div>
 
-                            <input id="needs-validation" class="d-none" type="submit" value="enviar">
                         </div>
 
                         <div class="col border-left">
-                            <div class="row">
-                                <table id="tblServicos" class="table">
-                                    <?php
-                                        if(isset($contratos['id'])){
-                                            $resp = $con->query('select * from tbl_contratosServicos where contrato = '.$contratos['id']);
-
-                                            while($row = $resp->fetch_assoc()){
-                                                $nome = $con->query('select nome from tbl_servicos where id = '.$row['servicos'])->fetch_assoc()['nome'];
-                                                echo '
-                                                    <tr servico="'.$row['servicos'].'" valor="'.$row['valor'].'" codigo="'.$row['id'].'" class="border-bottom">
-                                                        <td>'.$nome.'</td>
-                                                        <td style="width:14%" class="btn-danger text-center" onclick="removerServico(this)"><i class="fas fa-trash-alt"></i></td>
-                                                    </tr>
-                                                ';
-                                            }
-                                        }
-                                    ?>
-                                </table>
+                            <div id="tblListDia">
+                                
+                                <?php
+                                    $resp = $con->query('select * from tbl_agenda where data = "'.$_GET['data'].'" order by hora');
+                                    while($row = $resp->fetch_assoc()){
+                                        $responsavel = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['responsavel'])->fetch_assoc()['razaoSocial_nome'];
+                                        echo '
+                                            <div class="row border-bottom pb-2 pt-2" style="display: flex !important;width: 100%">
+                                                <div class="col-1 m-auto text-center"><a href="?edt='.$row['id'].'&data='.$_GET['data'].'" class="btn icon-gradient bg-happy-itmeo"><i class="fas fa-chevron-left"></i></a></div>
+                                                <div class="col-1 m-auto">'.substr($row['hora'],0,5).'</div>
+                                                <div class="col-4 m-auto">'.$responsavel.'</div>
+                                                <div class="col">
+                                                    <p>'.$row['compromisso'].'</p>
+                                                </div>
+                                                <div class="col-1 m-auto"><a href="?del='.$row['id'].'&data='.$_GET['data'].'"><i class="fas fa-trash-alt icon-gradient bg-danger"></i></a></div>
+                                            </div>
+                                        ';
+                                    }
+                                ?>
                             </div>
+                                    
                         </div>
 
                     </div>       
@@ -379,8 +297,8 @@ elseif(isset($_GET['del'])){
             </div>
             <div class="modal-footer">
                 <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
-                <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="enviar()"><?php echo isset($_GET['edt'])? 'Atualizar':'Salvar';?></button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='?hoje'">Fechar</button>
+                <!--<button type="button" class="btn btn-primary" onclick="enviar()"><?php echo isset($_GET['edt'])? 'Atualizar':'Salvar';?></button>-->
             </div>
         </div>
     </div>
@@ -396,10 +314,12 @@ elseif(isset($_GET['del'])){
     </div>
     <?php
         if(isset($_GET['s']))
-            echo "<script>loadToast(true);</script>";
+            echo "<script>$('#toast-success').fadeIn('slow').delay(1000).fadeOut('slow');</script>";
         else if(isset($_GET['e']))
-            echo "<script>loadToast(false);</script>";
+            echo "<script>$('#toast-error').fadeIn('slow').delay(1000).fadeOut('slow');</script>";
     ?>
 </div>
 
-<?php if(isset($_GET['edt'])) echo "<script>$('#btn-modal').click()</script>"; ?>
+<?php 
+    if(isset($_GET['edt']) || isset($_GET['novo'])) echo "<script>$('#mdl-cliente').modal()</script>"; 
+?>

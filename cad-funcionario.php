@@ -1,5 +1,4 @@
 <?php include('header.php'); ?>
-<?php include('menu.php'); ?>
 
 <?php
 if(isset($_POST['cmd'])){
