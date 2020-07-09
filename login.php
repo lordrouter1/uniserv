@@ -6,6 +6,7 @@
         $resp = $con->query('select id from tbl_usuario where usuario = "'.$_POST['usuario'].'" and senha = "'.md5($_POST['senha']).'"');
         if($resp->num_rows == 1){
             $_SESSION['usuario'] = $_POST['usuario'];
+            $_SESSION['nome'] = $_POST['nome'];
             $_SESSION['senha'] = md5($_POST['senha']);
             $_SESSION['id'] = $resp->fetch_assoc()['id'];
             echo "<script>location.href='index.php'</script>";

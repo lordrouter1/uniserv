@@ -5,29 +5,35 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico) values(
-            '".$_POST['tipoPessoa']."',
-            '".$_POST['razaoSocial_nome']."',
-            '".$_POST['cnpj_cpf']."',
-            '".$_POST['nomeResponsavel']."',
-            '".$_POST['logradouro']."',
-            '".$_POST['numero']."',
-            '".$_POST['complemento']."',
-            '".$_POST['bairro']."',
-            '".$_POST['cidade']."',
-            '".$_POST['cep']."',
-            '".$_POST['email']."',
-            '".$_POST['telefoneEmpresa']."',
-            '".$_POST['telefoneWhatsapp']."',
-            '".$_POST['cpfResponsavel']."',
-            '".$_POST['observacao']."',
-            '".$_POST['estado']."',
-            '".$_POST['tipo_cliente']."',
-            '".$_POST['tipo_fornecedor']."',
-            '".$_POST['tipo_funcionario']."',
-            '".$_POST['tipo_tecnico']."'
-        )");
-        redirect($con->error);
+        $existe = $con->query('select id from tbl_clientes where cnpj_cpf = "'.$_POST['cnpj_cpf'].'"');
+        if($existe->num_rows == 0){
+            $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico) values(
+                '".$_POST['tipoPessoa']."',
+                '".$_POST['razaoSocial_nome']."',
+                '".$_POST['cnpj_cpf']."',
+                '".$_POST['nomeResponsavel']."',
+                '".$_POST['logradouro']."',
+                '".$_POST['numero']."',
+                '".$_POST['complemento']."',
+                '".$_POST['bairro']."',
+                '".$_POST['cidade']."',
+                '".$_POST['cep']."',
+                '".$_POST['email']."',
+                '".$_POST['telefoneEmpresa']."',
+                '".$_POST['telefoneWhatsapp']."',
+                '".$_POST['cpfResponsavel']."',
+                '".$_POST['observacao']."',
+                '".$_POST['estado']."',
+                '".$_POST['tipo_cliente']."',
+                '".$_POST['tipo_fornecedor']."',
+                '".$_POST['tipo_funcionario']."',
+                '".$_POST['tipo_tecnico']."'
+            )");
+            redirect($con->error);
+        }
+        else{
+            echo "<script>alert('Erro! CNPJ/CPF já cadastrado, usuário não cadastrado');</script>";
+        }
     }
     elseif($cmd == "edt"){
         $con->query("update tbl_clientes set
