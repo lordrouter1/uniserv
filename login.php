@@ -3,12 +3,15 @@
     
     if($_POST['cmd'] == "acessar"){
         $con = new mysqli("localhost","uniserve","Ag147258@","data_uniserve");
-        $resp = $con->query('select id from tbl_usuario where usuario = "'.$_POST['usuario'].'" and senha = "'.md5($_POST['senha']).'"');
+        $resp = $con->query('select * from tbl_usuario where usuario = "'.$_POST['usuario'].'" and senha = "'.md5($_POST['senha']).'"');
         if($resp->num_rows == 1){
+            $usr = $resp->fetch_assoc();
             $_SESSION['usuario'] = $_POST['usuario'];
-            $_SESSION['nome'] = $_POST['nome'];
+            $_SESSION['nome'] = $usr['nome'];
             $_SESSION['senha'] = md5($_POST['senha']);
-            $_SESSION['id'] = $resp->fetch_assoc()['id'];
+            $_SESSION['id'] = $usr['id'];
+            $_SESSION['perm'] = $usr['permissao'];
+            $_SESSION['cargo'] = $usr['cargo'];
             echo "<script>location.href='index.php'</script>";
         }
         else{
@@ -17,8 +20,11 @@
     }
     elseif($_GET['exit']){
         $_SESSION['usuario'] = null;
+        $_SESSION['nome'] = null;
         $_SESSION['senha'] = null;
-        $_SESSION['id'] == null;
+        $_SESSION['id'] = null;
+        $_SESSION['perm'] = null;
+        $_SESSION['cargo'] = null;
     }
 ?>
 <html>

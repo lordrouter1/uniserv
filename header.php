@@ -85,16 +85,19 @@
                                     <div class="btn-group">
                                         <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
                                             <div class="widget-heading">
-                                                Alina Mclourd
+                                                <?php echo ucfirst($_SESSION['nome']);?>
                                             </div>
                                             <div class="widget-subheading">
-                                                VP People Manager
+                                                <?php echo ucfirst($_SESSION['cargo']);?>
                                             </div>
                                             <i class="fa fa-angle-down ml-2 opacity-8"></i>
                                         </a>
                                         <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
 
-                                            <a href="perfil.php" class="dropdown-item">Perfil</a>
+                                            <a href="perfil.php" tabindex="0" class="dropdown-item">Perfil</a>
+                                            <?php if($_SESSION['perm'] == '1'):?>
+                                                <a href="contas.php" tabindex="0" class="dropdown-item">Contas</a>
+                                            <?php endif;?>
 
                                             <!--<button type="button" tabindex="0" class="dropdown-item">Configurações</button>-->
 
