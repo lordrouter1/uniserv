@@ -85,10 +85,10 @@
                                     <div class="btn-group">
                                         <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
                                             <div class="widget-heading">
-                                                <?php echo ucfirst($_SESSION['nome']);?>
+                                                <?php echo ucfirst($_SESSION['nome'] | $_COOKIE['nome']);?>
                                             </div>
                                             <div class="widget-subheading">
-                                                <?php echo ucfirst($_SESSION['cargo']);?>
+                                                <?php echo ucfirst($_SESSION['cargo'] | $_COOKIE['cargo']);?>
                                             </div>
                                             <i class="fa fa-angle-down ml-2 opacity-8"></i>
                                         </a>

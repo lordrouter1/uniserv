@@ -12,6 +12,8 @@
             $_SESSION['id'] = $usr['id'];
             $_SESSION['perm'] = $usr['permissao'];
             $_SESSION['cargo'] = $usr['cargo'];
+            $_COOKIE['nome'] = $usr['nome'];
+            $_COOKIE['cargo'] = $usr['cargo'];
             echo "<script>location.href='index.php'</script>";
         }
         else{
@@ -25,6 +27,8 @@
         $_SESSION['id'] = null;
         $_SESSION['perm'] = null;
         $_SESSION['cargo'] = null;
+        $_COOKIE['nome'] = null;
+        $_COOKIE['cargo'] = null;
     }
 ?>
 <html>
