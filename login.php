@@ -2,7 +2,7 @@
     session_start();
     
     if($_POST['cmd'] == "acessar"){
-        $con = new mysqli("localhost","uniserve","Ag147258@","data_uniserve");
+        $con = new mysqli("localhost",'indexerpcom_catavento','HD,[98i3(3oC',"indexerpcom_catavento");
         $resp = $con->query('select * from tbl_usuario where usuario = "'.$_POST['usuario'].'" and senha = "'.md5($_POST['senha']).'"');
         if($resp->num_rows == 1){
             $usr = $resp->fetch_assoc();

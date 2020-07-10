@@ -10,7 +10,7 @@ if($_SESSION['usuario'] != null && $_SESSION['senha'] != null && $_SESSION['id']
     }
 }
 else{
-    echo '<script>location.href="login.php?e"</script>';
+    echo '<script>location.href="login.php?e=2"</script>';
 }
 
 function redirect($resp){
