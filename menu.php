@@ -91,7 +91,19 @@
                     </a>
                     <ul>
                         <li>
-                            <a <?php echo $menu['estoque_produtos']?'href=""':'disabled';?>>
+                            <a <?php echo $menu['estoque_unidades']?'href="est-unidades.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Unidades de medidas
+                            </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['estoque_classificacaoFiscal']?'href="est-classificacaoFiscal.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Unidades de medidas
+                            </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['estoque_produtos']?'href="est-produtos.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Produtos
                             </a>
@@ -193,6 +205,24 @@
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
                     <ul>
+                        <li>
+                            <a <?php echo $menu['fiscal_cfop']?'href="fisc-cfop.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>CFOP
+                            </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['fiscal_ncm_cest']?'href="fisc-ncm_cest.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>NCM/CEST
+                            </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['fiscal_classificacao_fiscal']?'href="fisc-classificacaoFiscal.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Classificação fiscal
+                            </a>
+                        </li>
                         <li>
                             <a <?php echo $menu['fiscal_nfe']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">

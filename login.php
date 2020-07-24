@@ -1,8 +1,9 @@
 <?php
     session_start();
+
+    require_once('con.php');
     
     if($_POST['cmd'] == "acessar"){
-        $con = new mysqli("localhost",'indexerpcom_catavento','HD,[98i3(3oC',"indexerpcom_catavento");
         $resp = $con->query('select * from tbl_usuario where usuario = "'.$_POST['usuario'].'" and senha = "'.md5($_POST['senha']).'"');
         if($resp->num_rows == 1){
             $usr = $resp->fetch_assoc();
@@ -12,8 +13,8 @@
             $_SESSION['id'] = $usr['id'];
             $_SESSION['perm'] = $usr['permissao'];
             $_SESSION['cargo'] = $usr['cargo'];
-            $_COOKIE['nome'] = $usr['nome'];
-            $_COOKIE['cargo'] = $usr['cargo'];
+            setcookie('nome',$usr['nome']);
+            setcookie('cargo',$usr['cargo']);
             echo "<script>location.href='index.php'</script>";
         }
         else{
@@ -27,8 +28,8 @@
         $_SESSION['id'] = null;
         $_SESSION['perm'] = null;
         $_SESSION['cargo'] = null;
-        $_COOKIE['nome'] = null;
-        $_COOKIE['cargo'] = null;
+        setcookie('nome', time() - 3600);
+        setcookie('cargo', time() - 3600);
     }
 ?>
 <html>

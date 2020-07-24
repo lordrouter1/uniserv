@@ -79,7 +79,7 @@ elseif(isset($_GET['del'])){
         <div class="page-title-actions">
 
             <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
-                <i class="fas fa-user-plus"></i>
+            <i class="fas fa-plus"></i>
             </button>
 
             <div class="d-inline-block dropdown">

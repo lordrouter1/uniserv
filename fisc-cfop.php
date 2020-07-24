@@ -1,30 +1,31 @@
 <?php include('header.php'); ?>
 
 <?php
+
 if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $con->query("insert into tbl_servicos(nome,descricao,valor) values(
-            '".$_POST['nome']."',
-            '".$_POST['descricao']."',
-            '".$_POST['valor']."'
-        )");
+        $query = 'insert into tbl_cfop(cfop,descricao) values(
+            "'.$_POST['codigo'].'",
+            "'.$_POST['descricao'].'"
+        )';
+        $con->query($query);
         redirect($con->error);
     }
     elseif($cmd == "edt"){
-        $con->query("update tbl_servicos set
-            nome = '".$_POST['nome']."',
-            descricao = '".$_POST['descricao']."',
-            valor = '".$_POST['valor']."'
-            where id  = ".$_POST['id']
-        );
+        $query = 'update tbl_cfop set
+            cfop = "'.$_POST['codigo'].'",
+            descricao = "'.$_POST['descricao'].'"
+            where id = '.$_POST['id'].'
+        ';
+        $con->query($query);
         redirect($con->error);
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_servicos where id ='.$_GET['del']);
-    redirect($con->error);
+    $con->query('delete from tbl_cfop where id = '.$_GET['del']);
+    #redirect($con->error);
 }
 
 ?>
@@ -34,20 +35,10 @@ elseif(isset($_GET['del'])){
         newWin = window.open('');
         newWin.document.write('<link href="./main.css" rel="stylesheet">');
         newWin.document.write('<link href="./assets/css/print.css" rel="stylesheet">');
-        newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Serviços Cadastrados</h5>');
+        newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Unidades Cadastradas</h5>');
         newWin.document.write(divPrint.outerHTML);
-        //await new Promise(r => setTimeout(r, 150));
-        //newWin.print();
-        //newWin.close();
     }
-    function getCidade(self){
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("GET", "https://viacep.com.br/ws/"+$(self).val().replace('-','')+"/json/", false ); // false for synchronous request
-        xmlHttp.send(null);
-        const resp = JSON.parse(xmlHttp.responseText);
-        $("#estado").val(resp['uf']);
-        $("#cidade").val(resp['localidade']);
-    }
+
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
             var value = $(this).val().toLowerCase();
@@ -66,12 +57,12 @@ elseif(isset($_GET['del'])){
         <div class="page-title-heading">
 
             <div class="page-title-icon">
-                <i class="fas fa-cogs icon-gradient bg-happy-itmeo"></i>
+                <i class="fas fa-dollar-sign icon-gradient bg-happy-itmeo"></i>
             </div>
             <div>
-                <span>Cadastro de Serviços</span>
+                <span>Cadastro de CFOP</span>
                 <div class="page-title-subheading">
-                    Campo para adição, remoção e edição de serviços
+                    Campo para adição, remoção e edição de CFOP
                 </div>
             </div>
 
@@ -96,7 +87,7 @@ elseif(isset($_GET['del'])){
                             <a class="nav-link text-dark" onclick="imprimir()">
                                 Imprimir
                             </a>
-                            <a class="nav-link text-dark" target="_blank" href="exp.php?tbl=servicos">
+                            <a class="nav-link text-dark" target="_blank" href="exp.php?tbl=cfop">
                                 Exportar
                             </a>
                         
@@ -119,33 +110,31 @@ elseif(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
 
-                    <h5 class="card-title">Serviços cadastrados</h5>
+                    <h5 class="card-title">Ordens de serviços</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
-                                <th style="width:30%">Nome</th>
+                                <th style="width:12%">Código</th>
                                 <th>Descrição</th>
-                                <th style="width:10%">Valor</th>
-                                <th style="width:8%" class="noPrint"></th>
-                                <th style="width:8%" class="noPrint"></th>
+                                <th class="noPrint" style="width:6%"></th>
+                                <th class="noPrint" style="width:6%"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_servicos');
-                            
+                                $resp = $con->query('select * from tbl_cfop');
+
                                 while($row = $resp->fetch_assoc()){
                                     echo '
                                         <tr>
-                                            <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td>'.$row['nome'].'</td>
+                                            <td>'.$row['id'].'</td>
+                                            <td>'.number_format($row['cfop'],0,'','.').'</td>
                                             <td>'.$row['descricao'].'</td>
-                                            <td>R$ '.$row['valor'].'</td>
-                                            <td class="noPrint"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
+                                            <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
+                                            <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
                                     ';
                                 }
@@ -170,7 +159,7 @@ elseif(isset($_GET['del'])){
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo serviço</h5>
+                <h5 class="modal-title">Adicionar novo cliente</h5>
                 <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -180,30 +169,27 @@ elseif(isset($_GET['del'])){
 
                     <?php
                         if(isset($_GET['edt'])){
-                            $resp = $con->query('select * from tbl_servicos where id = '.$_GET['edt']);
-                            $row = $resp->fetch_assoc();
+                            $resp = $con->query('select * from tbl_cfop where id = '.$_GET['edt']);
+                            $un = $resp->fetch_assoc();
                         }
                     ?>
 
                     <input type="hidden" value="<?php echo isset($_GET['edt'])?'edt':'add';?>" name="cmd">
-                    <input type="hidden" value="<?php echo $_GET['edt'];?>" name="id" id="id"> 
+                    <input type="hidden" value="<?php echo $_GET['edt'];?>" name="id" id="id">
 
                     <div class="row">
                         <div class="col">
-                            <label for="nome">Nome<span class="ml-2 text-danger">*</span></label>
-                            <input type="text" value="<?php echo $row['nome'];?>" class="form-control mb-3" name="nome" id="nome" required>
-                        </div>
-
-                        <div class="col">
-                            <label for="nome">Valor<span class="ml-2 text-danger">*</span></label>
-                            <input class="form-control mb-3" name="valor" id="valor" value="<?php echo $row['valor'];?>">
+                            <label for="codigo">Código<span class="ml-2 text-danger">*</span></label>
+                            <input type="text" value="<?php echo $un['cfop']; ?>" class="form-control mb-3" name="codigo" id="codigo" maxlength="4" required>
                         </div>
                     </div>
 
+                    
+
                     <div class="row">
                         <div class="col">
-                            <label for="nome">Descrição</label>
-                            <textarea class="form-control mb-3" name="descricao" id="descricao" maxlength="400" style="resize:none;"><?php echo $row['descricao'];?></textarea>
+                            <label for="descricao">Descrição<span class="ml-2 text-danger">*</span></label>
+                            <textarea class="form-control mb-3" name="descricao" id="descricao" maxlength="200" style="resize:none" required><?php echo $un['descricao'];?></textarea>
                         </div>
                     </div>
 

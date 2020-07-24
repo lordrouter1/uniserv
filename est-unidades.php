@@ -6,23 +6,25 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $query = 'insert into tbl_ordemServico(cliente,descricao,solicitacao,prevEntrega,status) values(
-            '.$_POST['cliente'].',
-            "'.$_POST['descricao'].'",
-            "'.$_POST['solicitacao'].'",
-            "'.$_POST['previsao'].'",
-            '.$_POST['status'].'
+        $query = 'insert into tbl_unidades(nome,status,grupoNome,simbolo,base,convBase) values(
+            "'.$_POST['nome'].'",
+            "'.$_POST['status'].'",
+            "'.$_POST['grupoUnidadeNome'].'",
+            "'.$_POST['simbolo'].'",
+            "'.$_POST['unBase'].'",
+            "'.$_POST['convUnBase'].'"
         )';
         $con->query($query);
         redirect($con->error);
     }
     elseif($cmd == "edt"){
-        $query = 'update tbl_ordemServico set
-            cliente = '.$_POST['cliente'].',
-            descricao = "'.$_POST['descricao'].'",
-            solicitacao = "'.$_POST['solicitacao'].'",
-            prevEntrega = "'.$_POST['previsao'].'",
-            status = '.$_POST['status'].'
+        $query = 'update tbl_unidades set
+            nome = "'.$_POST['nome'].'",
+            status = "'.$_POST['status'].'",
+            grupoNome = "'.$_POST['grupoUnidadeNome'].'",
+            simbolo = "'.$_POST['simbolo'].'",
+            base = "'.$_POST['unBase'].'",
+            convBase = "'.$_POST['convUnBase'].'"
             where id = '.$_POST['id'].'
         ';
         $con->query($query);
@@ -30,7 +32,7 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_ordemServico where id = '.$_GET['del']);
+    $con->query('delete from tbl_unidades where id = '.$_GET['del']);
     #redirect($con->error);
 }
 
@@ -41,12 +43,15 @@ elseif(isset($_GET['del'])){
         newWin = window.open('');
         newWin.document.write('<link href="./main.css" rel="stylesheet">');
         newWin.document.write('<link href="./assets/css/print.css" rel="stylesheet">');
-        newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Clientes Cadastrados</h5>');
+        newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Unidades Cadastradas</h5>');
         newWin.document.write(divPrint.outerHTML);
-        //await new Promise(r => setTimeout(r, 150));
-        //newWin.print();
-        //newWin.close();
     }
+
+    function selecionaGrupo(self){
+        $('#grupoUnidadeNome').val($(self).val());
+        $('#unBase').val(0);
+    }
+
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
             var value = $(this).val().toLowerCase();
@@ -65,12 +70,12 @@ elseif(isset($_GET['del'])){
         <div class="page-title-heading">
 
             <div class="page-title-icon">
-                <i class="fas fa-newspaper icon-gradient bg-happy-itmeo"></i>
+                <i class="fas fa-balance-scale-left icon-gradient bg-happy-itmeo"></i>
             </div>
             <div>
-                <span>Cadastro de ordens de serviços</span>
+                <span>Cadastro de unidades de medidas</span>
                 <div class="page-title-subheading">
-                    Campo para adição, remoção e edição de ordens de serviços
+                    Campo para adição, remoção e edição de unidades de medidas
                 </div>
             </div>
 
@@ -95,7 +100,7 @@ elseif(isset($_GET['del'])){
                             <a class="nav-link text-dark" onclick="imprimir()">
                                 Imprimir
                             </a>
-                            <a class="nav-link text-dark" target="_blank" href="exp.php?tbl=ordemServico">
+                            <a class="nav-link text-dark" target="_blank" href="exp.php?tbl=unidades">
                                 Exportar
                             </a>
                         
@@ -126,49 +131,31 @@ elseif(isset($_GET['del'])){
                             <tr>
                                 <th style="width:2%">ID</th>
                                 <th style="width:26%">Nome</th>
-                                <th>Descrição</th>
-                                <th style="width:14%">Data de solicitação</th>
-                                <th style="width:14%">Previsão de entrega</th>
-                                <th style="width:6%">status</th>
+                                <th style="width:14%">Símbolo</th>
+                                <th style="width:6%">Base</th>
+                                <th>Conversão</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_ordemServico');
+                                $resp = $con->query('select * from tbl_unidades order by grupoNome, base desc');
                             
+                                $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
-                                    $nome = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['cliente'])->fetch_assoc()['razaoSocial_nome'];
-                                    $status = '';
-                                    $corStatus = '';
-                                    switch($row['status']){
-                                        case 1:
-                                            $status = 'Aguardando';
-                                            $corStatus = 'focus';
-                                        break;
-                                        case 2:
-                                            $status = 'Em andamento';
-                                            $corStatus = 'info';
-                                        break;
-                                        case 3:
-                                            $status = 'Aguardando aprovação';
-                                            $corStatus = 'warning';
-                                        break;
-                                        case 4:
-                                            $status = 'Finalizado';
-                                            $corStatus = 'success';
-                                        break;
+                                    if($grupoNome != $row['grupoNome']){
+                                        $grupoNome = $row['grupoNome'];
+                                        echo '<tr><th colspan="7" class="bg-light text-dark text-center">'.ucfirst($grupoNome).'</th></tr>';
                                     }
-                                    
+                                    $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
                                     echo '
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td>'.$nome.'</td>
-                                            <td>'.$row['descricao'].'</td>
-                                            <td>'.date('d / m / Y', strtotime($row['solicitacao'])).'</td>
-                                            <td>'.date('d / m / Y', strtotime($row['prevEntrega'])).'</td>
-                                            <td><div class="badge badge-'.$corStatus.' p-2">'.$status.'</div></td>
+                                            <td>'.$row['nome'].'</td>
+                                            <td>'.$row['simbolo'].'</td>
+                                            <td>'.($row['base'] == 1?'Sim':'Não').'</td>
+                                            <td>1 '.$row['nome'].' = '.$row['convBase'].' '.$nomeBase.'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
@@ -205,8 +192,8 @@ elseif(isset($_GET['del'])){
 
                     <?php
                         if(isset($_GET['edt'])){
-                            $resp = $con->query('select * from tbl_ordemServico where id = '.$_GET['edt']);
-                            $ordemServico = $resp->fetch_assoc();
+                            $resp = $con->query('select * from tbl_unidades where id = '.$_GET['edt']);
+                            $un = $resp->fetch_assoc();
                         }
                     ?>
 
@@ -215,44 +202,57 @@ elseif(isset($_GET['del'])){
 
                     <div class="row">
                         <div class="col">
-                            <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control mb-3" name="cliente" id="cliente" required>
-                                <option <?php echo isset($_GET['edt'])? '':'selected';?> disabled>Selecione o cliente</option>
+                            <label for="nome">Nome da unidade<span class="ml-2 text-danger">*</span></label>
+                            <input type="text" value="<?php echo $un['nome']; ?>" class="form-control mb-3" name="nome" id="nome" maxlength="60" required>
+                        </div>
+                        <div class="col-2">
+                            <label for="status">Status</label>
+                            <select name="status" id="status" class="form-control">
+                                <option value="1" <?php echo $un['status'] == 1?'selected':'';?>>Ativo</option>
+                                <option value="0" <?php echo $un['status'] == 0?'selected':'';?>>Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="divider mb-3"></div>
+
+                    <label>Grupo da unidade</label>
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" placeholder="Nome do grupo" value="<?php echo $un['grupoNome'];?>" class="form-control mb-3" name="grupoUnidadeNome" id="grupoUnidadeNome" maxlength="60">
+                        </div>
+                        <div class="col-5">
+                            <select class="form-control mb-3" id="grupoUnidade" onchange="selecionaGrupo(this)">
+                                <option selected></option>
                                 <?php
-                                    $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
+                                    $resp = $con->query('select grupoNome from tbl_unidades group by grupoNome order by grupoNome');
+                                    
                                     while($row = $resp->fetch_assoc()){
-                                        $selected = $ordemServico['cliente'] == $row['id']? 'selected':'';
-                                        echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['razaoSocial_nome'].'</option>';
+
+                                        echo '<option value="'.$row['grupoNome'].'">'.$row['grupoNome'].'</option>';
                                     }
                                 ?>
                             </select>
                         </div>
-                        <div class="col-3">
-                            <label for="status">Status</label>
-                            <select class="form-control mb-3" name="status" id="status">
-                                <option value="1" <?php echo $ordemServico['status'] == '2' || !isset($_GET['edt'])? 'selected':'';?>>Aguardando</option>
-                                <option value="2" <?php echo $ordemServico['status'] == '2'? 'selected':'';?>>Em andamento</option>
-                                <option value="3" <?php echo $ordemServico['status'] == '3'? 'selected':'';?>>Aguardando aprovação</option>
-                                <option value="4" <?php echo $ordemServico['status'] == '4'? 'selected':'';?>>Finalizado</option>
+                    </div>
+
+                    <div class="divider mb-3"></div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="simbolo">Símbolo<span class="ml-2 text-danger">*</span></label>
+                            <input type="text" class="form-control mb-3" name="simbolo" id="simbolo" value="<?php echo $un['simbolo'];?>" maxlength="4" required>
+                        </div>
+                        <div class="col">
+                            <label for="unBase">Unidade base</label>
+                            <select class="form-control mb-3" name="unBase" id="unBase">
+                                <option value="1" <?php echo $un['base'] == 1?'Selected':'';?>>Sim</option>
+                                <option value="0" <?php echo $un['base'] == 0?'Selected':'';?>>Não</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col">
-                            <label for="solicitacao">Data de Solicitação</label>
-                            <input type="date" value="<?php echo $ordemServico['solicitacao'];?>" class="form-control mb-3" name="solicitacao" id="solicitacao">
-                        </div>
-                        <div class="col">
-                            <label for="previsao">Previsão de entrega</label>
-                            <input type="date" value="<?php echo $ordemServico['prevEntrega'];?>" class="form-control mb-3" name="previsao" id="previsao">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
-                            <label for="descricao">Descrição</label>
-                            <textarea class="form-control mb-3" name="descricao" id="descricao" style="resize:none;"><?php echo $ordemServico['descricao'];?></textarea>
+                            <label for="convUnBase">Conversão para unid. base<span class="ml-2 text-danger">*</span></label>
+                            <input type="number" class="form-control mb-3" name="convUnBase" id="convUnBase" value="<?php echo isset($_GET['edt'])?$un['convBase']:'';?>" required>
                         </div>
                     </div>
 
