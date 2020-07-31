@@ -218,6 +218,12 @@
                             </a>
                         </li>
                         <li>
+                            <a <?php echo $menu['fiscal_contasReceber']?'href="fisc-contasReceber.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Contas a receber
+                            </a>
+                        </li>
+                        <li>
                             <a <?php echo $menu['fiscal_classificacao_fiscal']?'href="fisc-classificacaoFiscal.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Classificação fiscal
