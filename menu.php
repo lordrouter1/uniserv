@@ -97,12 +97,6 @@
                             </a>
                         </li>
                         <li>
-                            <a <?php echo $menu['estoque_classificacaoFiscal']?'href="est-classificacaoFiscal.php"':'disabled';?>>
-                                <i class="metismenu-icon">
-                                </i>Unidades de medidas
-                            </a>
-                        </li>
-                        <li>
                             <a <?php echo $menu['estoque_produtos']?'href="est-produtos.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Produtos
@@ -153,6 +147,22 @@
                             <a <?php echo $menu['producao_liberacao']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Liberação de Produção
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a <?php echo $menu['financeiro']?'':'disabled';?>>
+                        <i class="metismenu-icon fas fa-money-bill-alt"></i>
+                        Financeiro
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                    </a>
+                    <ul>
+                        <li>
+                            <a <?php echo $menu['financeiro_contasReceber']?'href="fisc-contasReceber.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Contas a receber
                             </a>
                         </li>
                     </ul>
@@ -215,12 +225,6 @@
                             <a <?php echo $menu['fiscal_ncm_cest']?'href="fisc-ncm_cest.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>NCM/CEST
-                            </a>
-                        </li>
-                        <li>
-                            <a <?php echo $menu['fiscal_contasReceber']?'href="fisc-contasReceber.php"':'disabled';?>>
-                                <i class="metismenu-icon">
-                                </i>Contas a receber
                             </a>
                         </li>
                         <li>

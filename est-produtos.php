@@ -6,27 +6,97 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $query = 'insert into tbl_unidades(nome,status,grupoNome,simbolo,base,convBase) values(
-            "'.$_POST['nome'].'",
-            "'.$_POST['status'].'",
-            "'.$_POST['grupoUnidadeNome'].'",
-            "'.$_POST['simbolo'].'",
-            "'.$_POST['unBase'].'",
-            "'.$_POST['convUnBase'].'"
-        )';
-        $con->query($query);
-        redirect($con->error);
+        $target_dir = 'upload/';
+        $target_file = $target_dir . date('dmY') .basename($_FILES['imagem']['name']);
+        $uploadOk = 1;
+
+        $check = getimagesize($_FILES["imagem"]["tmp_name"]);
+        if($check !== false) {
+            $uploadOk = 1;
+        } else {
+            $uploadOk = 0;
+        }
+
+        if($uploadOk === 1){
+            if(move_uploaded_file($_FILES["imagem"]["tmp_name"],$target_file)){
+                $query = 'INSERT INTO `tbl_produtos`(`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`) VALUES (
+                    "'.$_POST['referencia'].'",
+                    "'.$_POST['nome'].'",
+                    "'.$_POST['un_estoque'].'",
+                    "'.$_POST['grupo'].'",
+                    "'.$_POST['subgrupo'].'",
+                    "'.$_POST['tipoDeProduto'].'",
+                    "'.$_POST['fornecedor'].'",
+                    "'.isset($_POST['usoConsumo']).'",
+                    "'.isset($_POST['comercializavel']).'",
+                    "'.$_POST['descontoMinimo'].'",
+                    "'.$_POST['descontoMaximo'].'",
+                    "'.$_POST['classificacao_fiscal'].'",
+                    "'.$_POST['codigoBarras'].'",
+                    "'.$_POST['descricao'].'",
+                    "'.$target_file.'"           
+                )';
+                $con->query($query);
+                redirect($con->error);
+            }
+        }
     }
     elseif($cmd == "edt"){
-        $query = 'update tbl_unidades set
-            nome = "'.$_POST['nome'].'",
-            status = "'.$_POST['status'].'",
-            grupoNome = "'.$_POST['grupoUnidadeNome'].'",
-            simbolo = "'.$_POST['simbolo'].'",
-            base = "'.$_POST['unBase'].'",
-            convBase = "'.$_POST['convUnBase'].'"
-            where id = '.$_POST['id'].'
-        ';
+        if(isset($_FILES['imagem'])){
+            $target_dir = 'upload/';
+            $target_file = $target_dir . date('dmY') .basename($_FILES['imagem']['name']);
+            $uploadOk = 1;
+
+            $check = getimagesize($_FILES["imagem"]["tmp_name"]);
+            if($check !== false) {
+                $uploadOk = 1;
+            } else {
+                $uploadOk = 0;
+            }
+
+            if($uploadOk === 1){
+                if(move_uploaded_file($_FILES["imagem"]["tmp_name"],$target_file)){
+                    unlink($_POST['imagemAntiga']);
+                    $query = 'UPDATE `tbl_produtos` SET 
+                        `referencia`= "'.$_POST['referencia'].'",
+                        `nome`= "'.$_POST['nome'].'",
+                        `unidadeEstoque`= "'.$_POST['un_estoque'].'",
+                        `grupo`= "'.$_POST['grupo'].'",
+                        `subgrupo`= "'.$_POST['subgrupo'].'",
+                        `tipoProduto`= "'.$_POST['tipoDeProduto'].'",
+                        `fornecedor`= "'.$_POST['fornecedor'].'",
+                        `usoConsumo`= "'.isset($_POST['usoConsumo']).'",
+                        `comercializavel`= "'.isset($_POST['comercializavel']).'",
+                        `descontoMinimo`= "'.$_POST['descontoMinimo'].'",
+                        `descontoMaximo`= "'.$_POST['descontoMaximo'].'",
+                        `classificacaoFiscal`= "'.$_POST['classificacao_fiscal'].'",
+                        `codBarras`= "'.$_POST['codigoBarras'].'",
+                        `descricao`= "'.$_POST['descricao'].'",
+                        `imagem`= "'.$target_file.'" 
+                        WHERE `id` = "'.$_POST['id'].'"
+                    ';
+                }
+            }
+        }
+        else{
+            $query = 'UPDATE `tbl_produtos` SET 
+                `referencia`= "'.$_POST['referencia'].'",
+                `nome`= "'.$_POST['nome'].'",
+                `unidadeEstoque`= "'.$_POST['un_estoque'].'",
+                `grupo`= "'.$_POST['grupo'].'",
+                `subgrupo`= "'.$_POST['subgrupo'].'",
+                `tipoProduto`= "'.$_POST['tipoDeProduto'].'",
+                `fornecedor`= "'.$_POST['fornecedor'].'",
+                `usoConsumo`= "'.isset($_POST['usoConsumo']).'",
+                `comercializavel`= "'.isset($_POST['comercializavel']).'",
+                `descontoMinimo`= "'.$_POST['descontoMinimo'].'",
+                `descontoMaximo`= "'.$_POST['descontoMaximo'].'",
+                `classificacaoFiscal`= "'.$_POST['classificacao_fiscal'].'",
+                `codBarras`= "'.$_POST['codigoBarras'].'",
+                `descricao`= "'.$_POST['descricao'].'"
+                WHERE `id` = "'.$_POST['id'].'"
+            ';
+        }
         $con->query($query);
         redirect($con->error);
     }
@@ -50,6 +120,11 @@ elseif(isset($_GET['del'])){
     function selecionaGrupo(self){
         $('#grupoUnidadeNome').val($(self).val());
         $('#unBase').val(0);
+    }
+
+    function gerarCodBarras(){
+        const codBarras = ('0000000000000' + $('#referencia').val()).slice(-13);
+        $('#codigoBarras').val(codBarras);
     }
 
     $(document).ready(function(){
@@ -130,10 +205,11 @@ elseif(isset($_GET['del'])){
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
-                                <th style="width:26%">Nome</th>
-                                <th style="width:14%">Classificação fiscal</th>
-                                <th style="width:6%">Grupo</th>
-                                <th style="width:6%">Estoque</th>
+                                <th></th>
+                                <th style="width:20%">Nome</th>
+                                <th style="width:8%">referencia</th>
+                                <th style="width:14%">Grupo</th>
+                                <th style="width:14%">Subgrupo</th>
                                 <th>Descricao</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
@@ -141,17 +217,18 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_unidades order by grupoNome, base desc');
+                                $resp = $con->query('select * from tbl_produtos');
                             
                                 while($row = $resp->fetch_assoc()){
                                     echo '
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td><img src="'.$row['imagem'].'" width="60"></td>
+                                            <td>'.$row['nome'].'</td>
+                                            <td>'.$row['referencia'].'</td>
+                                            <td>'.$row['grupo'].'</td>
+                                            <td>'.$row['subgrupo'].'</td>
+                                            <td>'.$row['descricao'].'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
@@ -184,12 +261,16 @@ elseif(isset($_GET['del'])){
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post">
+                <form method="post" autocomplete="off" enctype="multipart/form-data">
 
                     <?php
                         if(isset($_GET['edt'])){
-                            $resp = $con->query('select * from tbl_unidades where id = '.$_GET['edt']);
-                            $un = $resp->fetch_assoc();
+                            $resp = $con->query('select * from tbl_produtos where id = '.$_GET['edt']);
+                            $prod = $resp->fetch_assoc();
+                        }
+                        else{
+                            $resp = $con->query('select id from tbl_produtos order by id desc limit 1');
+                            $lastid = $resp->fetch_assoc()['id']+1;
                         }
                     ?>
 
@@ -198,12 +279,16 @@ elseif(isset($_GET['del'])){
 
                     <div class="row">
                         <div class="col-1">
-                            <label for="codigo">codigo<span class="ml-2 text-danger">*</span></label>
-                            <input type="text" value="" class="form-control mb-3" name="codigo" id="codigo" maxlength="" readonly>
+                            <label for="codigo">codigo</label>
+                            <input type="text" value="<?= isset($_GET['edt'])?$_GET['edt']:$lastid;?>" class="form-control mb-3" name="codigo" id="codigo" maxlength="" readonly>
+                        </div>
+                        <div class="col-2">
+                            <label for="referencia">Referência</label>
+                            <input type="text" value="<?= isset($_GET['edt'])?$prod['referencia']:$lastid;?>" class="form-control mb-3" name="referencia" id="referencia" maxlength="20">
                         </div>
                         <div class="col">
                             <label for="nome">Nome<span class="ml-2 text-danger">*</span></label>
-                            <input type="text" value="" class="form-control mb-3" name="nome" id="nome" maxlength="" required>
+                            <input type="text" value="<?=$prod['nome'];?>" class="form-control mb-3" name="nome" id="nome" maxlength="200" required>
                         </div>
                         <div class="col-2">
                             <label for="un_estoque">Únidade de estoque<span class="ml-2 text-danger">*</span></label>
@@ -212,43 +297,38 @@ elseif(isset($_GET['del'])){
                                 <?php
                                     $resp = $con->query('select simbolo,nome,id from tbl_unidades order by grupoNome');
                                     while($row = $resp->fetch_assoc()){
-                                        echo '<option value="'.$row['id'].'">'.$row['simbolo'].' - '.$row['nome'].'</option>';
+                                        echo '<option value="'.$row['id'].'" '.($prod['unidadeEstoque'] == $row['id']?'selected':'').'>'.$row['simbolo'].' - '.$row['nome'].'</option>';
                                     }
                                 ?>
                             </select>
                         </div>
-                        <div class="col-3">
-                            <label for="classificacao_fiscal">Classificação fiscal<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control mb-3" name="classificacao_fiscal" id="classificacao_fiscal" required>
-                                <option selected disabled>Selecione</option>
-                                <?php
-                                    $resp = $con->query('select id,nome from tbl_classificacaoFiscal');
-                                    while($row = $resp->fetch_assoc()){
-                                        echo '<option value="'.$row['id'].'">'.$row['nome'].'</option>';
-                                    }
-                                ?>
-                            </select>
-                        </div>
+                        
                     </div>
 
                     <div class="row">
                                               
                         <div class="col">
                             <label for="grupo">Grupo<span class="ml-2 text-danger">*</span></label>
-                            <input type="text" value="" list="listaGrupo" class="form-control mb-3" name="grupo" id="grupo" autocomplete="false" required>
+                            <input type="text" value="<?=$prod['grupo'];?>" list="listaGrupo" class="form-control mb-3" name="grupo" id="grupo" autocomplete="false" maxlength="80" required>
                             <datalist id="listaGrupo">
+                                <?
+                                    $resp = $con->query('select grupo from tbl_produtos group by grupo;');
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['grupo'].'">';
+                                    }
+                                ?>
                             </datalist>
                         </div>
                         <div class="col">
-                            <label for="grupo2">Grupo 2</label>
-                            <input type="text" value="" class="form-control mb-3" list="listaGrupo2" name="grupo2" id="grupo2" autocomplete="false">
-                            <datalist id="listaGrupo2">
-                            </datalist>
-                        </div>
-                        <div class="col">
-                            <label for="tipo_produto">Tipo do produto</label>
-                            <input type="text" value="" class="form-control mb-3" list="listaTipoProduto" name="tipo_produto" id="tipo_produto" autocomplete="false">
-                            <datalist id="listaTipoProduto">
+                            <label for="subgrupo">Subgrupo</label>
+                            <input type="text" value="<?=$prod['subgrupo'];?>" class="form-control mb-3" list="listaSubgrupo" name="subgrupo" id="subgrupo" maxlength="80" autocomplete="false">
+                            <datalist id="listaSubgrupo">
+                                <?
+                                    $resp = $con->query('select subgrupo from tbl_produtos group by subgrupo;');
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['subgrupo'].'">';
+                                    }
+                                ?>
                             </datalist>
                         </div>
                         <div class="col">
@@ -258,31 +338,98 @@ elseif(isset($_GET['del'])){
                                 <?php
                                     $resp = $con->query('select id,razaoSocial_nome from tbl_clientes where tipoFornecedor = "on"');
                                     while($row = $resp->fetch_assoc()){
-                                        echo '<option value="'.$row['id'].'">'.$row['razaoSocial_nome'].'</option>';
+                                        echo '<option value="'.$row['id'].'" '.($prod['fornecedor'] == $row['id']?'selected':'').'>'.$row['razaoSocial_nome'].'</option>';
                                     }
                                 ?>
                             </select>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col">
-                            <label for="descricao">Descricao<span class="ml-2 text-danger">*</span></label>
-                            <!--<input type="text" value="" class="form-control mb-3" name="descricao" id="descricao" maxlength="" required>-->
-                            <textarea class="form-control mb-3" style="resize:none;" rows="5">
-                            </textarea>
+                    <div class="row mb-3">
+                        <div class="col-2 d-flex">
+                            <div class="form-check mt-auto mb-auto">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" value="" name="usoConsumo" <?=$prod['usoConsumo']?'checked':'';?>>Uso e consumo
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-2 d-flex">
+                            <div class="form-check mt-auto mb-auto">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" value="" name="comercializavel" <?=$prod['comercializavel']?'checked':'';?>>Comercializável
+                                </label>
+                            </div>
                         </div>
                         <div class="col">
-                            <label for="descricao_curta">Descricao curta</label>
-                            <!--<input type="text" value="" class="form-control mb-3" name="descricao_curta" id="descricao_curta" maxlength="">-->
-                            <textarea class="form-control mb-3" style="resize:none;" rows="5">
-                            </textarea>
+                            <label for="tipodeProduto">Tipo de produto<span class="ml-2 text-danger">*</span></label>
+                            <select name="tipoDeProduto" id="tipoDeProduto" class="form-control">
+                                <option value="0" <?=$prod['tipoProduto']==0?'selected':'';?>>Acabado</option>
+                                <option value="1" <?=$prod['tipoProduto']==1?'selected':'';?>>Semi acabado</option>
+                                <option value="2" <?=$prod['tipoProduto']==2?'selected':'';?>>Matéria prima</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="descontoMinimo">Desconto mínimo</label>
+                            <input type="number" value="<?=$prod['descontoMinimo'];?>" step="0.01" min="0" class="form-control" name="descontoMinimo">
+                        </div>
+                        <div class="col">
+                            <label for="descontoMaximo">Desconto máximo</label>
+                            <input type="number" value="<?=$prod['descontoMaximo'];?>" step="0.01" min="0" class="form-control" name="descontoMaximo">
+                        </div>
+                        <div class="col-3">
+                            <label for="classificacao_fiscal">Classificação fiscal<span class="ml-2 text-danger">*</span></label>
+                            <select class="form-control mb-3" name="classificacao_fiscal" id="classificacao_fiscal" required>
+                                <option selected disabled>Selecione</option>
+                                <?php
+                                    $resp = $con->query('select id,nome from tbl_classificacaoFiscal');
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['id'].'" '.($prod['classificacaoFiscal'] == $row['id']?'selected':'').'>'.$row['nome'].'</option>';
+                                    }
+                                ?>
+                            </select>
                         </div>
                     </div>
 
                     <div class="divider"></div>
 
-                    <div id="accordion" class="border">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a href="#codBarras" data-toggle="tab" class="nav-link">Código de barras</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#outros" data-toggle="tab" class="nav-link">Outros</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-contents">
+                        <div class="tab-pane active fade" id="codBarras">
+                            <div class="row">
+                                <div class="col-3">
+                                    <label for="codigoBarras">Código de Barras</label>
+                                    <div class="input-group d-flex">
+                                        <input type="text" value="<?=str_pad($prod['codBarras'],13,'0',STR_PAD_LEFT);?>" class="form-control" maxlength="14" name="codigoBarras" id="codigoBarras">
+                                        <span class="btn btn-link mt-auto mb-auto" onclick="gerarCodBarras()">Gerar</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="outros">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="descricao">Descricao<span class="ml-2 text-danger">*</span></label>
+                                    <!--<input type="text" value="" class="form-control mb-3" name="descricao" id="descricao" maxlength="" required>-->
+                                    <textarea class="form-control mb-3" style="resize:none;" rows="5" name="descricao"><?=$prod['descricao'];?></textarea>
+                                </div>
+                                <div class="col">
+                                    <label for="imagem">Imagem</label>
+                                    <input type="file" class="form-control p-0" name="imagem" accept="image/*">
+                                    <input type="hidden" name="imagemAntiga" value="<?=$prod['imagem'];?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--<div id="accordion" class="border">
 
                         <div class="card mb-1">
                             <a href="#campoPermissoes" class="card-link" data-toggle="collapse">
@@ -427,7 +574,7 @@ elseif(isset($_GET['del'])){
                             </div>
                         </div>
 
-                    </div>
+                    </div>-->
 
                     <input id="needs-validation" class="d-none" type="submit" value="enviar">
 

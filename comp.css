@@ -43,6 +43,10 @@
     width: 16%;
 }
 
+.fade:not(.show){
+    display: none;
+}
+
 @media only screen and (max-width: 600px){
     .card-body table{
         display: block;
