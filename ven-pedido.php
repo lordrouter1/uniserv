@@ -13,8 +13,8 @@ if(isset($_POST['cmd'])){
             "'.$_POST['previsao'].'",
             '.$_POST['status'].'
         )';
-        $con->query($query);
-        redirect($con->error);
+        #$con->query($query);
+        #redirect($con->error);
     }
     elseif($cmd == "edt"){
         $query = 'update tbl_ordemServico set
@@ -25,13 +25,13 @@ if(isset($_POST['cmd'])){
             status = '.$_POST['status'].'
             where id = '.$_POST['id'].'
         ';
-        $con->query($query);
-        redirect($con->error);
+        #$con->query($query);
+        #redirect($con->error);
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_ordemServico where id = '.$_GET['del']);
-    redirect($con->error);
+    #$con->query('delete from tbl_vendaPedido where id = '.$_GET['del']);
+    #redirect($con->error);
 }
 
 ?>
@@ -65,21 +65,23 @@ elseif(isset($_GET['del'])){
         <div class="page-title-heading">
 
             <div class="page-title-icon">
-                <i class="fas fa-newspaper icon-gradient bg-happy-itmeo"></i>
+                <i class="fas fa-shopping-basket icon-gradient bg-happy-itmeo"></i>
             </div>
             <div>
-                <span>Cadastro de ordens de serviços</span>
+                <span>Pedidos de vendas</span>
                 <div class="page-title-subheading">
-                    Campo para adição, remoção e edição de ordens de serviços
+                    Campo para adição, remoção e edição de pedidos de vendas
                 </div>
             </div>
 
         </div>
         <div class="page-title-actions">
 
-            <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
-            <i class="fas fa-plus"></i>
-            </button>
+            <a href="ven-pedidoVenda.php">
+                <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </a>
 
             <div class="d-inline-block dropdown">
                 <button class="btn-shadow dropdown-toggle btn btn-info" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

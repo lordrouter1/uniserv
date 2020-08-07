@@ -322,7 +322,7 @@ elseif(isset($_GET['del'])){
                                 </div>
                                 <div class="col">
                                     <label for="cidade">Cidade<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required readonly>
+                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required>
                                 </div>
                             </div>
 

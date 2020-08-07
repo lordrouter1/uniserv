@@ -153,6 +153,22 @@
                 </li>
 
                 <li>
+                    <a <?php echo $menu['venda']?'':'disabled';?>>
+                        <i class="metismenu-icon fas fa-shopping-basket"></i>
+                        Venda
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                    </a>
+                    <ul>
+                        <li>
+                            <a <?php echo $menu['venda_pedido']?'href="ven-pedido.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Pedido de venda
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
                     <a <?php echo $menu['financeiro']?'':'disabled';?>>
                         <i class="metismenu-icon fas fa-money-bill-alt"></i>
                         Financeiro

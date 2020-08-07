@@ -33,7 +33,7 @@ if(isset($_POST['cmd'])){
                     "'.$_POST['descontoMaximo'].'",
                     "'.$_POST['classificacao_fiscal'].'",
                     "'.$_POST['codigoBarras'].'",
-                    "'.$_POST['descricao'].'",
+                    "'.addslashes($_POST['descricao']).'",
                     "'.$target_file.'"           
                 )';
                 $con->query($query);
@@ -42,7 +42,7 @@ if(isset($_POST['cmd'])){
         }
     }
     elseif($cmd == "edt"){
-        if(isset($_FILES['imagem'])){
+        if($_FILES['imagem']['name'] != ''){
             $target_dir = 'upload/';
             $target_file = $target_dir . date('dmY') .basename($_FILES['imagem']['name']);
             $uploadOk = 1;
@@ -71,7 +71,7 @@ if(isset($_POST['cmd'])){
                         `descontoMaximo`= "'.$_POST['descontoMaximo'].'",
                         `classificacaoFiscal`= "'.$_POST['classificacao_fiscal'].'",
                         `codBarras`= "'.$_POST['codigoBarras'].'",
-                        `descricao`= "'.$_POST['descricao'].'",
+                        `descricao`= "'.addslashes($_POST['descricao']).'",
                         `imagem`= "'.$target_file.'" 
                         WHERE `id` = "'.$_POST['id'].'"
                     ';
@@ -93,7 +93,7 @@ if(isset($_POST['cmd'])){
                 `descontoMaximo`= "'.$_POST['descontoMaximo'].'",
                 `classificacaoFiscal`= "'.$_POST['classificacao_fiscal'].'",
                 `codBarras`= "'.$_POST['codigoBarras'].'",
-                `descricao`= "'.$_POST['descricao'].'"
+                `descricao`= "'.addslashes($_POST['descricao']).'"
                 WHERE `id` = "'.$_POST['id'].'"
             ';
         }
@@ -102,8 +102,8 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_unidades where id = '.$_GET['del']);
-    #redirect($con->error);
+    $con->query('delete from tbl_produtos where id = '.$_GET['del']);
+    redirect($con->error);
 }
 
 ?>

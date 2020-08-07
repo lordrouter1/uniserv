@@ -88,7 +88,7 @@
                                                 <?php echo ucfirst($_COOKIE['nome']);?>
                                             </div>
                                             <div class="widget-subheading">
-                                                <?php echo ucfirst($_COOKIE['cargo']);?>
+                                                <?php echo ucfirst(utf8_encode($_COOKIE['cargo']));?>
                                             </div>
                                             <i class="fa fa-angle-down ml-2 opacity-8"></i>
                                         </a>
