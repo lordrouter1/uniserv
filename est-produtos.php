@@ -452,7 +452,7 @@ elseif(isset($_GET['del'])){
                             <label for="descontoMaximo">Desconto máximo</label>
                             <input type="number" value="<?=$prod['descontoMaximo'];?>" step="0.01" min="0" class="form-control" name="descontoMaximo">
                         </div>
-                        <div class="col-3">
+                        <div class="col">
                             <label for="classificacao_fiscal">Classificação fiscal<span class="ml-2 text-danger">*</span></label>
                             <select class="form-control mb-3" name="classificacao_fiscal" id="classificacao_fiscal" required>
                                 <option selected disabled>Selecione</option>
@@ -505,6 +505,7 @@ elseif(isset($_GET['del'])){
                     </ul>
 
                     <div class="tab-contents">
+                        
                         <div class="tab-pane active fade" id="codBarras">
                             <div class="row">
                                 <div class="col-4">
@@ -516,31 +517,34 @@ elseif(isset($_GET['del'])){
                                         </div>
                                         <span class="btn btn-link mt-auto mb-auto" onclick="gerarCodBarras()">Gerar</span>
                                     </div>
+                                    
                                     <div class="mt-2 bg-light" id="campCodigoBarras">
                                         <table class="table" id="codigosBarras">
                                             <?
                                                 $resp = $con->query('select * from tbl_codigoBarras where produto = '.$_GET['edt']);
-                                                while($row = $resp->fetch_assoc()){
-                                                    echo '
-                                                        <tr>
-                                                            <td class="border-bottom">
-                                                                '.$row['codigo'].'
-                                                                <input type="hidden" name="codigos[]" value="'.$row['codigo'].'">
-                                                            </td>
-                                                            <td class="text-right">
-                                                                <span class="btn btn-danger" onclick="deletarLinha(this)">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    ';
-                                                }
+                                                if($resp->num_row > 0)
+                                                    while($row = $resp->fetch_assoc()){
+                                                        echo '
+                                                            <tr>
+                                                                <td class="border-bottom">
+                                                                    '.$row['codigo'].'
+                                                                    <input type="hidden" name="codigos[]" value="'.$row['codigo'].'">
+                                                                </td>
+                                                                <td class="text-right">
+                                                                    <span class="btn btn-danger" onclick="deletarLinha(this)">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        ';
+                                                    }
                                             ?>
                                         </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="tab-pane fade" id="outros">
                             <div class="row">
                                 <div class="col">
