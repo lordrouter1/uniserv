@@ -1,35 +1,13 @@
+<?
+    if(isset($_GET['d'])){
+        setcookie('carrinho','',time()-3600);
+    }
+?>
+
 <?php include('header.php'); ?>
 
 <?php
-
-if(isset($_POST['cmd'])){
-    $cmd = $_POST['cmd'];
-
-    if($cmd == "add"){
-        $query = 'insert into tbl_ordemServico(cliente,descricao,solicitacao,prevEntrega,status) values(
-            '.$_POST['cliente'].',
-            "'.$_POST['descricao'].'",
-            "'.$_POST['solicitacao'].'",
-            "'.$_POST['previsao'].'",
-            '.$_POST['status'].'
-        )';
-        #$con->query($query);
-        #redirect($con->error);
-    }
-    elseif($cmd == "edt"){
-        $query = 'update tbl_ordemServico set
-            cliente = '.$_POST['cliente'].',
-            descricao = "'.$_POST['descricao'].'",
-            solicitacao = "'.$_POST['solicitacao'].'",
-            prevEntrega = "'.$_POST['previsao'].'",
-            status = '.$_POST['status'].'
-            where id = '.$_POST['id'].'
-        ';
-        #$con->query($query);
-        #redirect($con->error);
-    }
-}
-elseif(isset($_GET['del'])){
+if(isset($_GET['del'])){
     #$con->query('delete from tbl_vendaPedido where id = '.$_GET['del']);
     #redirect($con->error);
 }
@@ -127,39 +105,36 @@ elseif(isset($_GET['del'])){
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
-                                <th style="width:26%">Nome</th>
-                                <th>Descrição</th>
-                                <th style="width:14%">Data de solicitação</th>
-                                <th style="width:14%">Previsão de entrega</th>
-                                <th style="width:6%">status</th>
+                                <th>Cliente</th>
+                                <th style="width:8%">Data</th>
+                                <th style="width:8%">Desconto</th>
+                                <th style="width:8%">Acréscimo</th>
+                                <th style="width:8%">Total</th>
+                                <th style="width:8%">Pagamento</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_ordemServico');
+                                $resp = $con->query('select * from tbl_pedido');
                             
                                 while($row = $resp->fetch_assoc()){
                                     $nome = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['cliente'])->fetch_assoc()['razaoSocial_nome'];
-                                    $status = '';
-                                    $corStatus = '';
-                                    switch($row['status']){
+                                    
+                                    $pagamento = '';
+                                    switch($row['pagamento']){
+                                        case 0:
+                                            $pagamento = 'Dinheiro';
+                                        break;
                                         case 1:
-                                            $status = 'Aguardando';
-                                            $corStatus = 'focus';
+                                            $pagamento = 'Cartão de crédito';
                                         break;
                                         case 2:
-                                            $status = 'Em andamento';
-                                            $corStatus = 'info';
+                                            $pagamento = 'Cartão de Débito';
                                         break;
                                         case 3:
-                                            $status = 'Aguardando aprovação';
-                                            $corStatus = 'warning';
-                                        break;
-                                        case 4:
-                                            $status = 'Finalizado';
-                                            $corStatus = 'success';
+                                            $pagamento = 'Cheque';
                                         break;
                                     }
                                     
@@ -167,11 +142,12 @@ elseif(isset($_GET['del'])){
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
                                             <td>'.$nome.'</td>
-                                            <td>'.$row['descricao'].'</td>
-                                            <td>'.date('d / m / Y', strtotime($row['solicitacao'])).'</td>
-                                            <td>'.date('d / m / Y', strtotime($row['prevEntrega'])).'</td>
-                                            <td><div class="badge badge-'.$corStatus.' p-2">'.$status.'</div></td>
-                                            <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
+                                            <td>'.date('d / m / Y', strtotime($row['data'])).'</td>
+                                            <td>'.number_format($row['desconto'],2,',','').'</td>
+                                            <td>'.number_format($row['acrescimo'],2,',','').'</td>
+                                            <td>'.number_format($row['total'],2,',','').'</td>
+                                            <td>'.$pagamento.'</td>
+                                            <td class="noPrint text-center"><a target="_blank" href="ven-pedidoImprimir.php?print='.$row['id'].'" class="btn"><i class="fas fa-print icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
                                     ';

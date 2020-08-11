@@ -127,4 +127,7 @@
     #tbl_configuracao .w-25{
         width: 100% !important;
     }
+    .onlyPhone{
+        display: none;
+    }
 }
