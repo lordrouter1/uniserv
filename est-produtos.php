@@ -19,7 +19,7 @@ if(isset($_POST['cmd'])){
 
         if($uploadOk === 1){
             if(move_uploaded_file($_FILES["imagem"]["tmp_name"],$target_file)){
-                $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`) VALUES (
+                $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`) VALUES (
                     "'.$_POST['valor'].'",
                     "'.$_POST['referencia'].'",
                     "'.$_POST['nome'].'",
@@ -35,12 +35,48 @@ if(isset($_POST['cmd'])){
                     "'.$_POST['classificacao_fiscal'].'",
                     "'.$_POST['codigoBarras'].'",
                     "'.addslashes($_POST['descricao']).'",
-                    "'.$target_file.'"           
+                    "'.$target_file.'",
+                    "'.(isset($_POST['promocao'])?1:0).'",
+                    "'.$_POST['custo'].'",
+                    "'.$_POST['comissao'].'",
+                    "'.($_POST['valPromocao'] | 0 ).'",
+                    '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').'           
                 )';
-                $con->query($query);
-                redirect($con->error);
             }
         }
+        else{
+            $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`) VALUES (
+                "'.$_POST['valor'].'",
+                "'.$_POST['referencia'].'",
+                "'.$_POST['nome'].'",
+                "'.$_POST['un_estoque'].'",
+                "'.$_POST['grupo'].'",
+                "'.$_POST['subgrupo'].'",
+                "'.$_POST['tipoDeProduto'].'",
+                "'.$_POST['fornecedor'].'",
+                "'.isset($_POST['usoConsumo']).'",
+                "'.isset($_POST['comercializavel']).'",
+                "'.$_POST['descontoMinimo'].'",
+                "'.$_POST['descontoMaximo'].'",
+                "'.$_POST['classificacao_fiscal'].'",
+                "'.$_POST['codigoBarras'].'",
+                "'.addslashes($_POST['descricao']).'",
+                "'.(isset($_POST['promocao'])?1:0).'",
+                "'.$_POST['custo'].'",
+                "'.$_POST['comissao'].'",
+                "'.($_POST['valPromocao'] | 0 ).'",
+                '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').'           
+            )';
+        }
+
+        $con->query($query);
+        $prodId = $con->insert_id;
+
+        foreach($_POST['codigos'] as $codigo){
+            $con->query('insert into tbl_codigoBarras(produto,codigo) values("'.$prodId.'","'.$codigo.'")');
+        }
+        
+        redirect($con->error);
     }
     elseif($cmd == "edt"){
         if($_FILES['imagem']['name'] != ''){
@@ -74,7 +110,12 @@ if(isset($_POST['cmd'])){
                         `codBarras`= "'.$_POST['codigoBarras'].'",
                         `descricao`= "'.addslashes($_POST['descricao']).'",
                         `imagem`= "'.$target_file.'",
-                        `valor` = "'.$_POST['valor'].'"
+                        `valor` = "'.$_POST['valor'].'",
+                        `promocao`= "'.(isset($_POST['promocao'])?1:0).'",
+                        `custo`= "'.$_POST['custo'].'",
+                        `comissao`= "'.$_POST['comissao'].'",
+                        `valPromocao`= "'.$_POST['valPromocao'].'",
+                        `dataPromocao`= "'.$_POST['dataPromocao'].'"
                         WHERE `id` = "'.$_POST['id'].'"
                     ';
                 }
@@ -96,11 +137,23 @@ if(isset($_POST['cmd'])){
                 `classificacaoFiscal`= "'.$_POST['classificacao_fiscal'].'",
                 `codBarras`= "'.$_POST['codigoBarras'].'",
                 `descricao`= "'.addslashes($_POST['descricao']).'",
-                `valor` = "'.$_POST['valor'].'"
+                `valor` = "'.$_POST['valor'].'",
+                `promocao`= "'.(isset($_POST['promocao'])?1:0).'",
+                `custo`= "'.$_POST['custo'].'",
+                `comissao`= "'.$_POST['comissao'].'",
+                `valPromocao`= "'.$_POST['valPromocao'].'",
+                `dataPromocao`= "'.$_POST['dataPromocao'].'"
                 WHERE `id` = "'.$_POST['id'].'"
             ';
         }
         $con->query($query);
+
+        $con->query('delete from tbl_codigoBarras where produto = '.$_POST['id']);
+        $prodId = $_POST['id'];
+        foreach($_POST['codigos'] as $codigo){
+            $con->query('insert into tbl_codigoBarras(produto,codigo) values("'.$prodId.'","'.$codigo.'")');
+        }
+
         redirect($con->error);
     }
 }
@@ -128,6 +181,19 @@ elseif(isset($_GET['del'])){
     function gerarCodBarras(){
         const codBarras = ('0000000000000' + $('#referencia').val()).slice(-13);
         $('#codigoBarras').val(codBarras);
+    }
+
+    function addCodBarras(){
+        const codigo = $('#codigoBarras').val();
+        $('#codigosBarras').prepend('<tr><td class="border-bottom">'+codigo+'<input type="hidden" name="codigos[]" value="'+codigo+'"></td><td class="text-right"><span class="btn btn-danger" onclick="deletarLinha(this)"><i class="fas fa-trash"></i></span></td></tr>');
+    }
+
+    function deletarLinha(self){
+        $($(self).parent().parent()).remove();
+    }
+
+    function atvPromocao(){
+        $('.promocao').toggle();
     }
 
     $(document).ready(function(){
@@ -363,6 +429,13 @@ elseif(isset($_GET['del'])){
                                 </label>
                             </div>
                         </div>
+                        <div class="col-2 d-flex">
+                            <div class="form-check mt-auto mb-auto">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" value="" name="promocao" onchange="atvPromocao()" <?=$prod['promocao']?'checked':'';?>>Promoção
+                                </label>
+                            </div>
+                        </div>
                         <div class="col">
                             <label for="tipodeProduto">Tipo de produto<span class="ml-2 text-danger">*</span></label>
                             <select name="tipoDeProduto" id="tipoDeProduto" class="form-control">
@@ -371,13 +444,9 @@ elseif(isset($_GET['del'])){
                                 <option value="2" <?=$prod['tipoProduto']==2?'selected':'';?>>Matéria prima</option>
                             </select>
                         </div>
-                        <div class="col">
+                        <div class="col" style="display:none">
                             <label for="descontoMinimo">Desconto mínimo</label>
-                            <input type="number" value="<?=$prod['descontoMinimo'];?>" step="0.01" min="0" class="form-control" name="descontoMinimo">
-                        </div>
-                        <div class="col">
-                            <label for="valor">Valor</label>
-                            <input type="number" value="<?=$prod['valor'];?>" step="0.01" min="0" class="form-control" name="valor">
+                            <input type="number" value="0" step="0.01" min="0" class="form-control" name="descontoMinimo">
                         </div>
                         <div class="col">
                             <label for="descontoMaximo">Desconto máximo</label>
@@ -397,6 +466,33 @@ elseif(isset($_GET['del'])){
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col">
+                            <label for="valor">Preço venda</label>
+                            <input type="number" value="<?=$prod['valor'];?>" step="0.01" min="0" class="form-control" name="valor">
+                        </div>
+                        <div class="col">
+                            <label for="custo">Preço de custo</label>
+                            <input type="number" value="<?=$prod['custo'];?>" step="0.01" min="0" class="form-control" name="custo">
+                        </div>
+                        <div class="col">
+                            <label for="comissao">Comissão (%)</label>
+                            <input type="number" value="<?=$prod['comissao'];?>" step="0.01" min="0" class="form-control" name="comissao">
+                        </div>
+                        <div class="col">
+                            <div class="promocao" <?=$prod['promocao']?'':'style="display:none"'?>>
+                                <label for="valPromocao">Promoção (R$)</label>
+                                <input type="number" value="<?=$prod['valPromocao'];?>" step="0.01" min="0" class="form-control" name="valPromocao">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="promocao" <?=$prod['promocao']?'':'style="display:none"'?>>
+                                <label for="dataPromocao">Data limite promoção</label>
+                                <input type="date" value="<?=$prod['dataPromocao'];?>" class="form-control" name="dataPromocao">
+                            </div>
+                        </div>                    
+                    </div>
+
                     <div class="divider"></div>
 
                     <ul class="nav nav-tabs">
@@ -411,11 +507,36 @@ elseif(isset($_GET['del'])){
                     <div class="tab-contents">
                         <div class="tab-pane active fade" id="codBarras">
                             <div class="row">
-                                <div class="col-3">
+                                <div class="col-4">
                                     <label for="codigoBarras">Código de Barras</label>
                                     <div class="input-group d-flex">
                                         <input type="text" value="<?=str_pad($prod['codBarras'],13,'0',STR_PAD_LEFT);?>" class="form-control" maxlength="14" name="codigoBarras" id="codigoBarras">
+                                        <div class="input-group-append">
+                                            <span class="btn btn-primary" onclick="addCodBarras()">Adicionar</span>
+                                        </div>
                                         <span class="btn btn-link mt-auto mb-auto" onclick="gerarCodBarras()">Gerar</span>
+                                    </div>
+                                    <div class="mt-2 bg-light" id="campCodigoBarras">
+                                        <table class="table" id="codigosBarras">
+                                            <?
+                                                $resp = $con->query('select * from tbl_codigoBarras where produto = '.$_GET['edt']);
+                                                while($row = $resp->fetch_assoc()){
+                                                    echo '
+                                                        <tr>
+                                                            <td class="border-bottom">
+                                                                '.$row['codigo'].'
+                                                                <input type="hidden" name="codigos[]" value="'.$row['codigo'].'">
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <span class="btn btn-danger" onclick="deletarLinha(this)">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ';
+                                                }
+                                            ?>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -435,153 +556,6 @@ elseif(isset($_GET['del'])){
                             </div>
                         </div>
                     </div>
-
-                    <!--<div id="accordion" class="border">
-
-                        <div class="card mb-1">
-                            <a href="#campoPermissoes" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Permissões
-                                </div>
-                            </a>
-                            <div id="campoPermissoes" class="collapse show" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoProducaoOutros" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Produção e outros
-                                </div>
-                            </a>
-                            <div id="campoProducaoOutros" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoEspecificacoesTecnicas" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Especificações técnicas
-                                </div>
-                            </a>
-                            <div id="campoEspecificacoesTecnicas" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoParametrosEstoqueLocal" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Parâmetros de estoque por local
-                                </div>
-                            </a>
-                            <div id="campoParametrosEstoqueLocal" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoParametrosCusto" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Parâmetros de custo
-                                </div>
-                            </a>
-                            <div id="campoParametrosCusto" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoCodigoBarras" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Código de barras
-                                </div>
-                            </a>
-                            <div id="campoCodigoBarras" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoTabelaPreco" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Tabela de preço
-                                </div>
-                            </a>
-                            <div id="campoTabelaPreco" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoDatas" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Datas
-                                </div>
-                            </a>
-                            <div id="campoDatas" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teste
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoMarketPlace" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Integração Market Place
-                                </div>
-                            </a>
-                            <div id="campoMarketPlace" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-1">
-                            <a href="#campoCaracteristicasProdutos" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Características dos produtos
-                                </div>
-                            </a>
-                            <div id="campoCaracteristicasProdutos" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <a href="#campoChecagem" class="card-link" data-toggle="collapse">
-                                <div class="card-header bg-light text-dark">
-                                    <i class="fas fa-bars mr-3"></i>Tipos de checagem - Equipamentos na OS
-                                </div>
-                            </a>
-                            <div id="campoChecagem" class="collapse" data-parent="#accordion">
-                                <div class="card-body">
-                                    teset
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>-->
 
                     <input id="needs-validation" class="d-none" type="submit" value="enviar">
 

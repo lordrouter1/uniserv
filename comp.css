@@ -56,6 +56,12 @@
     padding: 3px;
 }
 
+#campCodigoBarras{
+    height: 20rem;
+    max-height:20rem;
+    overflow-y: scroll;
+}
+
 /* calular */
 @media only screen and (max-width: 600px){
     .card-body table{
