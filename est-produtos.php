@@ -19,7 +19,8 @@ if(isset($_POST['cmd'])){
 
         if($uploadOk === 1){
             if(move_uploaded_file($_FILES["imagem"]["tmp_name"],$target_file)){
-                $query = 'INSERT INTO `tbl_produtos`(`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`) VALUES (
+                $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`) VALUES (
+                    "'.$_POST['valor'].'",
                     "'.$_POST['referencia'].'",
                     "'.$_POST['nome'].'",
                     "'.$_POST['un_estoque'].'",
@@ -72,7 +73,8 @@ if(isset($_POST['cmd'])){
                         `classificacaoFiscal`= "'.$_POST['classificacao_fiscal'].'",
                         `codBarras`= "'.$_POST['codigoBarras'].'",
                         `descricao`= "'.addslashes($_POST['descricao']).'",
-                        `imagem`= "'.$target_file.'" 
+                        `imagem`= "'.$target_file.'",
+                        `valor` = "'.$_POST['valor'].'"
                         WHERE `id` = "'.$_POST['id'].'"
                     ';
                 }
@@ -93,7 +95,8 @@ if(isset($_POST['cmd'])){
                 `descontoMaximo`= "'.$_POST['descontoMaximo'].'",
                 `classificacaoFiscal`= "'.$_POST['classificacao_fiscal'].'",
                 `codBarras`= "'.$_POST['codigoBarras'].'",
-                `descricao`= "'.addslashes($_POST['descricao']).'"
+                `descricao`= "'.addslashes($_POST['descricao']).'",
+                `valor` = "'.$_POST['valor'].'"
                 WHERE `id` = "'.$_POST['id'].'"
             ';
         }
@@ -371,6 +374,10 @@ elseif(isset($_GET['del'])){
                         <div class="col">
                             <label for="descontoMinimo">Desconto mínimo</label>
                             <input type="number" value="<?=$prod['descontoMinimo'];?>" step="0.01" min="0" class="form-control" name="descontoMinimo">
+                        </div>
+                        <div class="col">
+                            <label for="valor">Valor</label>
+                            <input type="number" value="<?=$prod['valor'];?>" step="0.01" min="0" class="form-control" name="valor">
                         </div>
                         <div class="col">
                             <label for="descontoMaximo">Desconto máximo</label>
