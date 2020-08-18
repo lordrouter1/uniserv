@@ -53,6 +53,20 @@ $attr = (array) $arq;
 
     function salvarProduto(rId){
         let campos = $('.'+rId+' .cadastroProd');
+        
+        let req = $('.'+rId+' .cadastroProd[required]');
+        let flag = false;
+        for(item of req){
+            if($(item).val() == ""){
+                $(item).css('border-color','red');
+                flag = true;
+            }
+            else{
+                $(item).css('border-color','#ced4da');
+            }
+        }
+        if(flag)return;
+        
         data = Object();
         for(let i = 0; i < campos.length; i++){
             data[$(campos[i]).attr('id')] = $(campos[i]).is(':checked')? '1':$(campos[i]).val();
@@ -216,7 +230,7 @@ $attr = (array) $arq;
                                                         </div>
                                                         <div class="col">
                                                             <label for="unEstoque">Únidade de estoque</label>
-                                                            <select class="form-control cadastroProd" name="unEstoque" id="unEstoque" required>
+                                                            <select class="form-control cadastroProd" name="unEstoque" id="unEstoque">
                                                                 <?
                                                                     $resp = $con->query('select nome,simbolo,id from tbl_unidades where status = 1');
                                                                     while($row = $resp->fetch_assoc()){
@@ -243,7 +257,7 @@ $attr = (array) $arq;
                                                     <div class="row mb-3">
                                                         <div class="col">
                                                             <label for="valor">Preço de venda</label>
-                                                            <input class="form-control cadastroProd" type="number" step="0.01" name="valor" id="valor" value="<?=$prod->xProd?>" required>
+                                                            <input class="form-control cadastroProd" type="number" step="0.01" name="valor" id="valor" value="" required>
                                                         </div>
                                                         <div class="col">
                                                             <label for="grupo">Grupo<span class="ml-2 text-danger">*</span></label>
@@ -302,13 +316,13 @@ $attr = (array) $arq;
                                                         </div>
 
                                                         <div class="row mb-3">
-                                                            <div class="col">
+                                                            <div class="col-2">
                                                                 <label for="ncm">NCM</label>
                                                                 <input class="form-control cadastroProd" type="text" name="ncm" id="ncm" value="<?=$prod->NCM?>" required>
                                                             </div>
                                                             <div class="col">
                                                                 <label for="cfop">CFOP</label>
-                                                                <input class="form-control cadastroProd" list="listaCfop" type="text" name="cfop" id="cfop" onselect="if($(this).val().search(' - ') > -1)$(this)[0].setSelectionRange(0,0);" required>
+                                                                <input class="form-control cadastroProd" list="listaCfop" type="text" name="cfop" id="cfop" value="" onselect="if($(this).val().search(' - ') > -1)$(this)[0].setSelectionRange(0,0);" required>
                                                                 <datalist id="listaCfop">
                                                                     <?php
                                                                         $resp = $con->query('select cfop,descricao from tbl_cfop');
@@ -318,18 +332,18 @@ $attr = (array) $arq;
                                                                     ?>
                                                                 </datalist>
                                                             </div>
+                                                            <div class="col-2">
+                                                                <label for="cst">CST/CSOSN</label>
+                                                                <input class="form-control cadastroProd" type="text" name="cst" id="cst" value="<?=$imposto->CST?>" required>
+                                                            </div>
                                                         </div>
 
                                                         <div class="row mb-3">
-                                                            <div class="col">
+                                                            <div class="col-2">
                                                                 <label for="cest">CEST</label>
                                                                 <input class="form-control cadastroProd" type="text" name="cest" id="cest" value="<?=$prod->CEST?>" required>
                                                             </div>
-                                                            <div class="col">
-                                                                <label for="cst">CST</label>
-                                                                <input class="form-control cadastroProd" type="text" name="cst" id="cst" value="<?=$imposto->CST?>" required>
-                                                            </div>
-                                                            <div class="col">
+                                                            <div class="col-2">
                                                                 <label for="cest">Origem</label>
                                                                 <input class="form-control cadastroProd" type="text" name="cest" id="origem" value="<?=$imposto->orig?>" required>
                                                             </div>
@@ -405,6 +419,9 @@ $attr = (array) $arq;
                     ?>
                 </tbody>
             </table>
+            <script>
+                $('input[required][value=""], select[required][value=""]').css('background-color','#c1c7d6');
+            </script>
         </div>
     </div>
 

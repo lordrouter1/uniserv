@@ -371,6 +371,10 @@ elseif(isset($_GET['del'])){
                                 ?>
                             </select>
                         </div>
+                        <div class="col-2">
+                            <label for="">Estoque</label>
+                            <input type="text" value="<?=$prod['estoque'];?>" class="form-control" readonly>
+                        </div>
                         
                     </div>
 
