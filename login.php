@@ -18,7 +18,8 @@
             echo "<script>location.href='index.php'</script>";
         }
         else{
-            echo "<script>location.href='?e'</script>";
+            var_dump('erro!',$con->connect_error);
+            #echo "<script>location.href='?e'</script>";
         }
     }
     elseif($_GET['exit']){

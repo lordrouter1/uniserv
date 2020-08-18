@@ -90,6 +90,9 @@ $pedidosCarrinho = 0;
             $('#total').val((subtotal-desconto)+valor);
         })
     });
+    function finalizar(){
+        location.href="?finalizar="+$('#selecionarCliente').val();
+    }
 </script>
 
 <!-- cabeçalho da página -->
@@ -113,7 +116,7 @@ $pedidosCarrinho = 0;
         
         <div class="page-title-actions">
 
-            <a href="?finalizar">
+            <a onclick="finalizar()">
                 <button class="btn-shadow mr-3 btn btn-info" id="btn-modal" type="button">
                     Finalizar
                 </button>
@@ -169,6 +172,21 @@ $pedidosCarrinho = 0;
             
             <div class="card main-card mb-3">
                 <div class="card-body">
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <select class="form-control compraClienteCelular" id="selecionarCliente">
+                                <option <?php echo isset($_GET['edt'])? '':'selected';?> disabled>Selecione o cliente</option>
+                                <?php
+                                    $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
+                                    while($row = $resp->fetch_assoc()){
+                                        $selected = $ordemServico['cliente'] == $row['id']? 'selected':'';
+                                        echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['razaoSocial_nome'].'</option>';
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="row mb-3">
                         <div class="col">
@@ -247,7 +265,7 @@ $pedidosCarrinho = 0;
                             else{
                                 while($row = $resp->fetch_assoc()){
                                     echo '
-                                        <div class="row mb-3 pb-2 border-bottom">
+                                        <div class="row mb-3 pb-2 border-bottom onlyPhone">
                                             <div class="col d-flex">
                                                 <img class="m-auto" src="'.$row['imagem'].'" height="40">
                                             </div>
@@ -256,6 +274,30 @@ $pedidosCarrinho = 0;
                                             </div>
                                             <div class="col onlyPhone">
                                                 <p class="card-text vendas">'.$row['descricao'].'</p>
+                                            </div>
+                                            <div class="col d-flex">
+                                                <form method="post">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <input type="submit" class="btn btn-dark" value="Adicionar">
+                                                        </div>
+                                                        <input type="number" class="form-control" name="qtd" value="1">
+                                                        <input type="hidden" value="'.$row['id'].'" name="id">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="row onlyDesktop">
+                                            <div class="col d-flex">
+                                                <img class="m-auto" src="'.$row['imagem'].'" height="40">
+                                            </div>
+                                            <div class="col">
+                                                <h4 class="card-title">'.$row['nome'].'</h4>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3 pb-2 border-bottom onlyDesktop">
+                                            <div class="col d-flex">
+                                                <strong class="m-auto">R$ '.number_format($row['valor'],2,',','.').'</strong>
                                             </div>
                                             <div class="col d-flex">
                                                 <form method="post">
@@ -309,22 +351,6 @@ $pedidosCarrinho = 0;
                             $totalProd += $prodUnVal * $carrinho[$key];
                         }
                     ?>
-
-                    <div class="row mb-3">
-                        <div class="col">
-                            <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control" name="cliente" id="cliente" required>
-                                <option <?php echo isset($_GET['edt'])? '':'selected';?> disabled>Selecione o cliente</option>
-                                <?php
-                                    $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
-                                    while($row = $resp->fetch_assoc()){
-                                        $selected = $ordemServico['cliente'] == $row['id']? 'selected':'';
-                                        echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['razaoSocial_nome'].'</option>';
-                                    }
-                                ?>
-                            </select>
-                        </div>
-                    </div>
 
                     <div class="row mb-3">
                         <div class="col-4">
@@ -396,6 +422,7 @@ $pedidosCarrinho = 0;
                     </div>
 
                     <input id="needs-validation" class="d-none" type="submit" value="enviar">
+                    <input type="hidden" name="cliente" id="cliente" value="<?=$_GET['finalizar']?>">
 
                 </form>
 

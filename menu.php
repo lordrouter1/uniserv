@@ -103,6 +103,12 @@
                             </a>
                         </li>
                         <li>
+                            <a <?php echo $menu['estoque_importar_xml']?'href="est-impXml.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Importar XML
+                            </a>
+                        </li>
+                        <li>
                             <a <?php echo $menu['estoque_equipamentos']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Equipamentos
