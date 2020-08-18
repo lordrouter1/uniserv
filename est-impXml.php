@@ -123,7 +123,8 @@
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
                                     $fornecedor = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['fornecedor'])->fetch_assoc();
-                                    $simbolo = $con->query('select simbolo from tbl_unidades A inner join tbl_produtos B on A.id = B.unidadeEstoque where B.id = '.$row['idProduto'])->fetch_assoc();
+                                    $simbolo = $con->query('select simbolo from tbl_unidades A inner join tbl_produtos B on A.id = B.unidadeEstoque where B.id = '.$row['idProduto']);
+                                    $simbolo = $simbolo->num_rows == 0?'':$simbolo->fetch_assoc()['simbolo'];
                                     if($grupoNome != $row['nNota']){
                                         $grupoNome = $row['nNota'];
                                         echo '<tr><th colspan="8" class="bg-light text-dark text-center">'.$fornecedor['razaoSocial_nome'].' - NFe '.number_format($grupoNome,0,',','.').'</th></tr>';
@@ -134,7 +135,7 @@
                                             <td>'.$row['referencia'].'</td>
                                             <td>'.date('d / m / Y',strtotime($row['importacaoNota'])).'</td>
                                             <td>'.$row['quantia'].'</td>
-                                            <td>'.$simbolo['simbolo'].'</td>
+                                            <td>'.$simbolo.'</td>
                                             <td>'.$row['cfop_entrada'].'</td>
                                             <td>'.$row['cfop_saida'].'</td>
                                             <td class="noPrint text-center"><a target="_blank" href="est-produtos.php?edt='.$row['idProduto'].'" class="btn"><i class="fas fa-angle-double-right icon-gradient bg-happy-itmeo"></i></a></td>

@@ -57,14 +57,27 @@ $attr = (array) $arq;
         for(let i = 0; i < campos.length; i++){
             data[$(campos[i]).attr('id')] = $(campos[i]).is(':checked')? '1':$(campos[i]).val();
         }
-        $.post('core/ajax/cadProduto.php',data,function(resp){
-            if(resp){
-                /*$('#'+rId).toggle();
-                $('td[linha="'+rId+'"] button').toggle();
-                $('td[linha="'+rId+'"] span').toggle();*/
-                location.reload();
-            }
-        });
+        if(rId.split('-').length == 1){
+            $.post('core/ajax/cadProduto.php',data,function(resp){
+                if(resp){
+                    location.reload();
+                }
+            });
+        }
+        else{
+            $.post('core/ajax/cadProdutoAdd.php',data,function(resp){
+                if(resp){
+                    location.reload();
+                }
+            });
+        }
+    }
+
+    function setValComp(self){
+        $('#valVenda').attr('placeholder',$('option[prodId="'+$(self).val().split(' - ')[0]+'"]').attr('valor'));
+        
+        if($(self).val().search(' - ') > -1)
+            $(self)[0].setSelectionRange(0,0);
     }
 </script>
 
@@ -336,21 +349,50 @@ $attr = (array) $arq;
                                             </div>
                                             <?endif;?>
                                             <div class="tab-pane <?=$cadastrar?'fade':'active';?>" id="add">
-                                                <form autocomplete="off" class="<?=$rId?>">
+                                                <form autocomplete="off" class="<?=$rId?>-2">
+                                                    
                                                     <div class="row">
-                                                        <div class="col">
+                                                        <div class="col-4">
                                                             <label for="produto">Produto</label>
-                                                            <input class="form-control cadastroProd" list="listaProdutos" type="text" name="produto" id="produto" >
+                                                            
+                                                            <?
+                                                                $response = $con->query('select id,nome,valor from tbl_produtos where referencia = "'.$prod->cProd.'" or nome = "'.$prod->xProd.'"')->fetch_assoc();
+                                                            ?>
+                                                            <input class="form-control cadastroProd" list="listaProdutos" value="<?=$response['id'].' - '.$response['nome']?>" type="text" name="produto" id="produto" onselect="setValComp(this)">
                                                             <datalist id="listaProdutos">
                                                                 <?php
-                                                                    $resp = $con->query('select referencia,nome from tbl_produtos');
+                                                                    $resp = $con->query('select id,nome,valor from tbl_produtos');
                                                                     while($row = $resp->fetch_assoc()){
-                                                                        echo '<option value="'.implode(' | ',$row).'">';
+                                                                        echo '<option value="'.$row['id'].' - '.$row['nome'].'" prodId="'.$row['id'].'" valor="'.$row['valor'].'">';
                                                                     }
                                                                 ?>
                                                             </datalist>
                                                         </div>
+                                                        <div class="col-2">
+                                                            <label for="estoque">Quantia</label>
+                                                            <input class="form-control cadastroProd" name="estoque" id="estoque" type="text" value="<?=$prod->qCom?>" readonly>
+                                                        </div>
+                                                        <div class="col-2">
+                                                            <label for="compra">Valor compra</label>
+                                                            <input class="form-control cadastroProd" name="compra" id="compra" type="text" value="<?=$prod->vUnCom?>" readonly>
+                                                        </div>
+                                                        <div class="col-2">
+                                                            <label for="cest">Valor venda</label>
+                                                            <input class="form-control cadastroProd" step="0.01" type="number" placeholder="<?=$response['valor']?>" name="valVenda" id="valVenda">
+                                                        </div>
+                                                        <div class="col d-flex">
+                                                            
+                                                            <input type="hidden" name="fornecedor" id="fornecedor" value="<?=$idCliente;?>" class="cadastroProd">
+                                                            <input type="hidden" name="notaId" id="notaId" value="<?=$nota->nNF?>" class="cadastroProd">
+                                                            <input type="hidden" name="notaSerie" id="notaSerie" value="<?=$nota->serie?>" class="cadastroProd">
+                                                            <input type="hidden" name="dataNota" id="dataNota" value="<?=$nota->dhEmi?>" class="cadastroProd">
+                                                            <input type="hidden" name="chaveNFe" id="chaveNFe" value="<?=$attr['@attributes']['Id']?>" class="cadastroProd">
+                                                            <input type="hidden" name="referencia" id="referencia" value="<?=$prod->cProd?>" class="cadastroProd">
+
+                                                            <div class="btn btn-success ml-auto mt-auto" onclick="salvarProduto('<?=$rId?>'+'-2')">Adicionar</div>
+                                                        </div>
                                                     </div>
+
                                                 </form>
                                             </div>
                                         </div>
