@@ -175,12 +175,12 @@ $pedidosCarrinho = 0;
 
                     <div class="row mb-3">
                         <div class="col">
-                            <select class="form-control compraClienteCelular" id="selecionarCliente">
-                                <option <?php echo isset($_GET['edt'])? '':'selected';?> disabled>Selecione o cliente</option>
+                            <select class="form-control compraClienteCelular" id="selecionarCliente" onchange="document.cookie='cliente='+$(this).val()">
+                                <option selected disabled>Selecione o cliente</option>
                                 <?php
                                     $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
                                     while($row = $resp->fetch_assoc()){
-                                        $selected = $ordemServico['cliente'] == $row['id']? 'selected':'';
+                                        $selected = $_COOKIE['cliente'] == $row['id']? 'selected':'';
                                         echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['razaoSocial_nome'].'</option>';
                                     }
                                 ?>
