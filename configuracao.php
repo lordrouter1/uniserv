@@ -137,7 +137,7 @@ $usuario = $resp->fetch_assoc();
                                 <td>
                                     <select name="crt" class="form-control w-25">
                                         <option value="0" <?php echo $usuario['crt'] == 0?'selected':'';?>>Simples nacional</option>
-                                        <option value="2" <?php echo $usuario['crt'] == 1?'selected':'';?>>Regime normal</option>
+                                        <option value="2" <?php echo $usuario['crt'] == 2?'selected':'';?>>Regime normal</option>
                                     </select>
                                 </td>
                             </tr>

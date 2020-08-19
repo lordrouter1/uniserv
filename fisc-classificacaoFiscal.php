@@ -307,7 +307,9 @@ elseif(isset($_GET['del'])){
                             <label for="cst">Código ST</label>
                             <select class="form-control mb-3" name="cst" id="cst" required>
                                 <?php
-                                    $resp = $con->query('select * from tbl_cst');
+                                    $conf = $con->query('select crt from tbl_configuracao')->fetch_assoc();
+                                    $crt = $conf['crt'] == 0? 1: 0;
+                                    $resp = $con->query('select * from tbl_cst where simples = '.$crt);
                                     while($row = $resp->fetch_assoc()){
                                         echo '<option value="'.$row['id'].'" '.($row['id'] == $un['cst']? 'selected':'').'>'.$row['codigo'].' - '.$row['descricao'].'</option>';
                                     }

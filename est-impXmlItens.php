@@ -93,6 +93,10 @@ $attr = (array) $arq;
         if($(self).val().search(' - ') > -1)
             $(self)[0].setSelectionRange(0,0);
     }
+
+    function removerPontos(self){
+        $(self).val($(self).val().replace(/[\.-\s]/g,''));
+    }
 </script>
 
 <!-- conteúdo -->
@@ -232,6 +236,11 @@ $attr = (array) $arq;
                                                             <label for="unEstoque">Únidade de estoque</label>
                                                             <select class="form-control cadastroProd" name="unEstoque" id="unEstoque">
                                                                 <?
+                                                                    $sResp = $con->query('select id from tbl_unidades where simbolo = "'.$prod->uCom.'";');
+                                                                    if($sResp->num_rows == 0){
+                                                                        $con->query('insert into tbl_unidades(nome,status,simbolo) values("'.$prod->uCom.'",1,"'.$prod->uCom.'");');
+                                                                    }
+
                                                                     $resp = $con->query('select nome,simbolo,id from tbl_unidades where status = 1');
                                                                     while($row = $resp->fetch_assoc()){
                                                                         echo '<option value="'.$row['id'].'" '.(strtolower($row['simbolo']) == strtolower($prod->uCom)?'selected':'').'>'.$row['simbolo'].' - '.$row['nome'].'</option>';
@@ -318,7 +327,7 @@ $attr = (array) $arq;
                                                         <div class="row mb-3">
                                                             <div class="col-2">
                                                                 <label for="ncm">NCM</label>
-                                                                <input class="form-control cadastroProd" type="text" name="ncm" id="ncm" value="<?=$prod->NCM?>" required>
+                                                                <input class="form-control cadastroProd" type="text" name="ncm" id="ncm" onblur="removerPontos(this)" value="<?=$prod->NCM?>" required>
                                                             </div>
                                                             <div class="col">
                                                                 <label for="cfop">CFOP</label>
@@ -334,14 +343,24 @@ $attr = (array) $arq;
                                                             </div>
                                                             <div class="col-2">
                                                                 <label for="cst">CST/CSOSN</label>
-                                                                <input class="form-control cadastroProd" type="text" name="cst" id="cst" value="<?=$imposto->CST?>" required>
+                                                                <!--<input class="form-control cadastroProd" type="text" name="cst" id="cst" onblur="removerPontos(this)" value="" required>-->
+                                                                <select class="form-control mb-3" name="cst" id="cst" value="" required>
+                                                                    <?php
+                                                                        $conf = $con->query('select crt from tbl_configuracao')->fetch_assoc();
+                                                                        $crt = $conf['crt'] == 0? 1: 0;
+                                                                        $resp = $con->query('select * from tbl_cst where simples = '.$crt);
+                                                                        while($row = $resp->fetch_assoc()){
+                                                                            echo '<option value="'.$row['id'].'">'.$row['codigo'].'</option>';
+                                                                        }
+                                                                    ?>
+                                                                </select>
                                                             </div>
                                                         </div>
 
                                                         <div class="row mb-3">
                                                             <div class="col-2">
                                                                 <label for="cest">CEST</label>
-                                                                <input class="form-control cadastroProd" type="text" name="cest" id="cest" value="<?=$prod->CEST?>" required>
+                                                                <input class="form-control cadastroProd" type="text" name="cest" id="cest" onblur="removerPontos(this)" value="<?=$prod->CEST?>" required>
                                                             </div>
                                                             <div class="col-2">
                                                                 <label for="cest">Origem</label>
@@ -372,7 +391,7 @@ $attr = (array) $arq;
                                                             <?
                                                                 $response = $con->query('select id,nome,valor from tbl_produtos where referencia = "'.$prod->cProd.'" or nome = "'.$prod->xProd.'"')->fetch_assoc();
                                                             ?>
-                                                            <input class="form-control cadastroProd" list="listaProdutos" value="<?=$response['id'].' - '.$response['nome']?>" type="text" name="produto" id="produto" onselect="setValComp(this)">
+                                                            <input class="form-control cadastroProd" list="listaProdutos" value="<?=(isset($response['id'])?$response['id'].' - '.$response['nome']:'')?>" type="text" name="produto" id="produto" required onselect="setValComp(this)">
                                                             <datalist id="listaProdutos">
                                                                 <?php
                                                                     $resp = $con->query('select id,nome,valor from tbl_produtos');
@@ -384,15 +403,15 @@ $attr = (array) $arq;
                                                         </div>
                                                         <div class="col-2">
                                                             <label for="estoque">Quantia</label>
-                                                            <input class="form-control cadastroProd" name="estoque" id="estoque" type="text" value="<?=$prod->qCom?>" readonly>
+                                                            <input class="form-control cadastroProd" name="estoque" id="estoque" type="text" value="<?=number_format(floatval($prod->qCom),4,',','.')?>" readonly>
                                                         </div>
                                                         <div class="col-2">
                                                             <label for="compra">Valor compra</label>
-                                                            <input class="form-control cadastroProd" name="compra" id="compra" type="text" value="<?=$prod->vUnCom?>" readonly>
+                                                            <input class="form-control cadastroProd" name="compra" id="compra" type="text" value="<?=number_format(floatval($prod->vUnCom),2,',','.')?>" readonly>
                                                         </div>
                                                         <div class="col-2">
                                                             <label for="cest">Valor venda</label>
-                                                            <input class="form-control cadastroProd" step="0.01" type="number" placeholder="<?=$response['valor']?>" name="valVenda" id="valVenda">
+                                                            <input class="form-control cadastroProd" step="0.01" type="number" placeholder="<?=$response['valor']?>" value="" name="valVenda" id="valVenda" required>
                                                         </div>
                                                         <div class="col d-flex">
                                                             

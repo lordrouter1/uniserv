@@ -118,7 +118,7 @@
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_impXmlLog order by importacaoNota,chave');
+                                $resp = $con->query('select * from tbl_impXmlLog order by id desc,importacaoNota,chave');
                             
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
@@ -134,7 +134,7 @@
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
                                             <td>'.$row['referencia'].'</td>
                                             <td>'.date('d / m / Y',strtotime($row['importacaoNota'])).'</td>
-                                            <td>'.$row['quantia'].'</td>
+                                            <td>'.str_replace('.',',',$row['quantia']).'</td>
                                             <td>'.$simbolo.'</td>
                                             <td>'.$row['cfop_entrada'].'</td>
                                             <td>'.$row['cfop_saida'].'</td>

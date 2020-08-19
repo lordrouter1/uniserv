@@ -373,7 +373,7 @@ elseif(isset($_GET['del'])){
                         </div>
                         <div class="col-2">
                             <label for="">Estoque</label>
-                            <input type="text" value="<?=$prod['estoque'];?>" class="form-control" readonly>
+                            <input type="text" value="<?=str_replace('.',',',$prod['estoque']);?>" class="form-control" readonly>
                         </div>
                         
                     </div>
