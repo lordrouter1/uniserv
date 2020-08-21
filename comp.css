@@ -40,7 +40,33 @@
 }
 
 .login-area{
-    width: 16%;
+    /*width: 16%;*/
+}
+.login-area .group-inputs{
+    display: inline-flex;
+    padding: 3%;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #454d54;
+
+}
+.login-area .group-inputs input{
+    /*width: 100%;*/
+    padding:0;
+    background-color: inherit;
+    border:none;
+    color:#8E9197;
+    font-weight: bold;
+}
+.login-area .group-inputs i{
+    border-color: #8E9197;
+    border-width: 1px;
+    border-right-style: solid;
+    font-size: 20px;
+    color: #8E9197;
+    margin-right:0.5rem;
+    padding-right: 0.5rem;
 }
 
 .fade:not(.show){
@@ -72,6 +98,12 @@
 
 .compraClienteCelular{
     width: 25%;
+}
+
+.campPerm{
+    max-height: 20rem;
+    overflow-y: scroll;
+    padding:1%;
 }
 
 /* calular */

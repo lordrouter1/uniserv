@@ -114,6 +114,12 @@
                                 </i>Equipamentos
                             </a>
                         </li>
+                        <li>
+                            <a <?php echo $menu['estoque_localEstoque']?'href="est-localEstoque.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Local de Estoque
+                            </a>
+                        </li>
                         
                     </ul>
                 </li>

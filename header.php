@@ -5,6 +5,10 @@
         ini_set('display_startup_erros',1);
         error_reporting(E_ALL);
     }
+    if(isset($_GET['empresa'])){
+        setcookie('empresa',$_GET['empresa']);
+        $_COOKIE['empresa'] = $_GET['empresa'];
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -65,16 +69,18 @@
                 </span>
             </div>    
             <div class="app-header__content">
+                <?if($_SESSION['perm'] == '1'):?>
                 <div class="app-header-left">
                     <ul class="header-menu nav">
                         <li class="dropdown nav-item">
                             <a href="configuracao.php" class="nav-link">
                                 <i class="nav-link-icon fa fa-cog"></i>
-                                Settings
+                                Configurações
                             </a>
                         </li>
                     </ul>
                 </div>
+                <?endif;?>
 
                 <div class="app-header-right">
 
@@ -82,6 +88,31 @@
                         <div class="widget-content p-0">
                             <div class="widget-content-wrapper">
                                 <div class="widget-content-left">
+                                    <div class="btn-group mr-3 pr-3 border-secondary border-right">
+                                        <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
+                                            <div class="widget-heading">
+                                                <?
+                                                    if(isset($_COOKIE['empresa'])){
+                                                        echo $con->query('select razao_social from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc()['razao_social'];
+                                                    }
+                                                    else{
+                                                        echo 'Selecione a empresa';
+                                                    }
+                                                ?>
+                                            </div>
+                                            <i class="fa fa-angle-down ml-2 opacity-8"></i>
+                                        </a>
+                                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+                                            
+                                            <?
+                                                $resp = $con->query('select id, razao_social from tbl_configuracao where id in (select valor from tbl_usuarioMeta where meta = "habilitar_empresa" and status = 1 and usuario = "'.$_SESSION['id'].'" )');
+                                                while($row = $resp->fetch_assoc()){
+                                                    echo '<a class="dropdown-item" tabindex="0" href="?empresa='.$row['id'].'">'.$row['razao_social'].'</a>';
+                                                }
+                                            ?>
+
+                                        </div>
+                                    </div>
                                     <div class="btn-group">
                                         <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
                                             <div class="widget-heading">
