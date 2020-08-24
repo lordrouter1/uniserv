@@ -117,10 +117,15 @@
                         <li>
                             <a <?php echo $menu['estoque_localEstoque']?'href="est-localEstoque.php"':'disabled';?>>
                                 <i class="metismenu-icon">
-                                </i>Local de Estoque
+                                </i>Local de estoque
                             </a>
                         </li>
-                        
+                        <li>
+                            <a <?php echo $menu['estoque_estoque']?'href="est-estoque.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Posição de estoque
+                            </a>
+                        </li>                        
                     </ul>
                 </li>
 

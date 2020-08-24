@@ -6,6 +6,8 @@ ini_set('display_errors',1);
 ini_set('display_startup_erros',1);
 error_reporting(E_ALL);
 
+if(!isset($_FILES['xml']['tmp_name'])) echo '<script>location.href="est-impXml.php"</script>';
+
 $arq = simplexml_load_file($_FILES['xml']['tmp_name'])->NFe->infNFe;
 
 $nota = $arq->ide;
@@ -317,6 +319,27 @@ $attr = (array) $arq;
 
                                                     </div>
 
+                                                    <div class="row mb-3">
+                                                        <div class="col">
+                                                            <strong>Estoque</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-4">
+                                                            <label for="localestoque">Local</label>
+                                                            <select name="localestoque" id="localestoque" class="form-control cadastroProd">
+                                                                <?
+                                                                    $resp = $con->query('select id,nome from tbl_locaisEstoque where status = 1 and empresa = '.$_COOKIE['empresa']);
+                                                                    $lCont = 0;
+                                                                    while($row = $resp->fetch_assoc()){
+                                                                        echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
+                                                                    }
+                                                                ?>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
                                                     <?if(!$cFisc):?>
                                                         <div class="row mb-3">
                                                             <div class="col">
@@ -423,6 +446,27 @@ $attr = (array) $arq;
                                                             <input type="hidden" name="referencia" id="referencia" value="<?=$prod->cProd?>" class="cadastroProd">
 
                                                             <div class="btn btn-success ml-auto mt-auto" onclick="salvarProduto('<?=$rId?>'+'-2')">Adicionar</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3 mt-3">
+                                                        <div class="col">
+                                                            <strong>Estoque</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-4">
+                                                            <label for="localestoque">Local</label>
+                                                            <select name="localestoque" id="localestoque" class="form-control cadastroProd">
+                                                                <?
+                                                                    $resp = $con->query('select id,nome from tbl_locaisEstoque where status = 1 and empresa = '.$_COOKIE['empresa']);
+                                                                    $lCont = 0;
+                                                                    while($row = $resp->fetch_assoc()){
+                                                                        echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
+                                                                    }
+                                                                ?>
+                                                            </select>
                                                         </div>
                                                     </div>
 

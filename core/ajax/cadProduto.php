@@ -42,13 +42,14 @@ $con->query('INSERT into tbl_produtos(referencia,nome,valor,unidadeEstoque,grupo
     "'.$_POST['barras'].'",
     "'.$_POST['estoque'].'"
 )');
+$idProd = $con->insert_id;
 
 $con->query('INSERT INTO `tbl_impXmlLog`(`cfop_entrada`, `cfop_saida`, `quantia`, `referencia`, `idProduto`, `nNota`, `sNota`,`emissaoNota`,`importacaoNota`,`fornecedor`,`chave`) VALUES (
     "'.$_POST['cfopEntrada'].'",
     "'.$cfopSaida.'",
     "'.$_POST['estoque'].'",
     "'.$_POST['referencia'].'",
-    "'.$con->insert_id.'",
+    "'.$idProd.'",
     "'.$_POST['notaId'].'",
     "'.$_POST['notaSerie'].'",
     "'.date('y-m-d',strtotime($_POST['dataNota'])).'",
@@ -56,6 +57,16 @@ $con->query('INSERT INTO `tbl_impXmlLog`(`cfop_entrada`, `cfop_saida`, `quantia`
     "'.$_POST['fornecedor'].'",
     "'.$_POST['chaveNFe'].'"
 )');
+$idXml = $con->insert_id;
+
+$con->query('INSERT into tbl_estoque(quantia,produto,local,xml) values(
+    "'.$_POST['estoque'].'",
+    "'.$idProd.'",
+    "'.$_POST['localestoque'].'",
+    "'.$idXml.'"
+)');
+
+
 
 echo $con->error == ''? true:false;
 

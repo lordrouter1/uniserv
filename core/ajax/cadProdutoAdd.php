@@ -23,6 +23,14 @@ $con->query('INSERT INTO `tbl_impXmlLog`(`idProduto`, `quantia`, `referencia`, `
     "'.$_POST['fornecedor'].'",
     "'.$_POST['chaveNFe'].'"
 )');
+$idXml = $con->insert_id;
+
+$con->query('INSERT into tbl_estoque(quantia,produto,local,xml) values(
+    "'.$_POST['estoque'].'",
+    "'.$prodId.'",
+    "'.$_POST['localestoque'].'",
+    "'.$idXml.'"
+)');
 
 echo $con->erro == ''?true:false;
 ?>

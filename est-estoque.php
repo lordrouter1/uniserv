@@ -2,7 +2,11 @@
 
 <?php
 
-if(isset($_POST['cmd'])){
+ini_set('display_errors',1);
+ini_set('display_startup_erros',1);
+error_reporting(E_ALL);
+
+/*if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
@@ -29,7 +33,7 @@ if(isset($_POST['cmd'])){
 elseif(isset($_GET['del'])){
     $con->query('delete from tbl_locaisEstoque where id = '.$_GET['del']);
     redirect($con->error);
-}
+}*/
 
 ?>
 <script>
@@ -42,9 +46,20 @@ elseif(isset($_GET['del'])){
         newWin.document.write(divPrint.outerHTML);
     }
 
-    function selecionaGrupo(self){
-        $('#grupoUnidadeNome').val($(self).val());
-        $('#unBase').val(0);
+    function mostrar(classe,self){
+        $('.produtosEstoque:not("'+classe+'")').hide();
+        $('.produtosEstoque:not("'+classe+'")').hide();
+
+        const flag = $($(self).parent().find('i')).hasClass('active');
+        $('.tbl_linhaComBorda td .active').toggle();
+        $('.tbl_linhaComBorda td .active').removeClass('active');
+        
+        if(!flag){
+            $($(self).parent().find('i')).toggle();
+            $($(self).parent().find('i')).addClass('active');
+        }
+        
+        $(classe).toggle('slow');
     }
 
     $(document).ready(function(){
@@ -68,39 +83,9 @@ elseif(isset($_GET['del'])){
                 <i class="fas fa-cubes icon-gradient bg-happy-itmeo"></i>
             </div>
             <div>
-                <span>Cadastro de locais de estoque</span>
+                <span>Posição de estoque</span>
                 <div class="page-title-subheading">
-                    Campo para adição, remoção e edição de locais de estoque
-                </div>
-            </div>
-
-        </div>
-        <div class="page-title-actions">
-
-            <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
-            <i class="fas fa-plus"></i>
-            </button>
-
-            <div class="d-inline-block dropdown">
-                <button class="btn-shadow dropdown-toggle btn btn-info" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="btn-icon-wrapper pr-2 opacity-7">
-                        <i class="fa fa-business-time fa-w-20"></i>
-                    </span>
-                    Ações
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" tabindex="-1" role="menu" x_placement="bottom-end">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-
-                            <a class="nav-link text-dark" onclick="imprimir()">
-                                Imprimir
-                            </a>
-                            <a class="nav-link text-dark" target="_blank" href="exp.php?tbl=unidades">
-                                Exportar
-                            </a>
-                        
-                        </li>
-                    </ul>
+                    Campo para acompanhamento de estoque
                 </div>
             </div>
 
@@ -118,39 +103,86 @@ elseif(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
 
-                    <h5 class="card-title">Locais de estoque</h5>
-                    <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
+                    <h5 class="card-title">Estoque</h5>
+                    <div class="input-group w-50">
+                        <input type="text" class="mb-2 form-control" placeholder="Pesquisar" id="campoPesquisa">
+                        <select class="form-control" onchange="location.href='?f='+$(this).val()">
+                            <option selected disabled>Selecione o filtro</option>
+                            <option value="produto">Produto</option>
+                            <option value="local">Local</option>
+                        </select>
+                    </div>
 
-                    <table class="table mb-0 table-striped table-hover" id="tablePrint">
+                    <table class="table mb-0 table-hover" id="tablePrint">
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
-                                <th>Nome</th>
-                                <th>Local</th>
-                                <th>Empresa</th>
-                                <th>Status</th>
-                                <th class="noPrint" style="width:6%;"></th>
-                                <th class="noPrint" style="width:6%;"></th>
+                                <th>Produto</th>
+                                <th style="width:10%">Quantia</th>
+                                <th style="width:10%">UN</th>
+                                <th style="width:10%">Local</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                                $resp = $con->query('select * from tbl_locaisEstoque order by id desc');
-                            
-                                $grupoNome = '';
-                                while($row = $resp->fetch_assoc()){
-                                    $empresa = $con->query('select razao_social from tbl_configuracao where id = '.$row['id'])->fetch_assoc();
-                                    echo '
-                                        <tr>
-                                            <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td>'.$row['nome'].'</td>
-                                            <td>'.$row['local'].'</td>
-                                            <td>'.$empresa['razao_social'].'</td>
-                                            <td>'.($row['status'] == 1?'Ativo':'Inativo').'</td>
-                                            <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
-                                        </tr>
-                                    ';
+                            <?
+                                if(!isset($_GET['f']) || $_GET['f'] == "local"){
+                                    $resp = $con->query('select *,sum(quantia) as estoque_total from tbl_estoque group by produto order by local;');
+                                    $grupoNome = '';
+                                    while($row = $resp->fetch_assoc()){
+                                        $produto = $con->query('select nome,unidadeEstoque from tbl_produtos where id = '.$row['produto'])->fetch_assoc();
+                                        $local = $con->query('select local from tbl_locaisEstoque where id = '.$row['local'])->fetch_assoc();
+                                        $un = $con->query('select simbolo from tbl_unidades where id = '.$produto['unidadeEstoque'])->fetch_assoc();
+                                        
+                                        if($grupoNome != $row['local']){
+                                            echo '
+                                                <tr class="tbl_linhaComBorda bg-light">
+                                                    <td><i class="fas fa-caret-down"></i><i class="fas fa-caret-up" style="display:none"></i></td>
+                                                    <td colspan="4" onclick="mostrar(\'.c-'.$row['local'].'\',this)"><strong>'.ucfirst($local['local']).'</strong></td>
+                                                </tr>
+                                            ';
+                                            $grupoNome = $row['local'];
+                                        }
+                                        echo '
+                                            <tr class="c-'.$row['local'].' produtosEstoque" style="display:none">
+                                                <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
+                                                <td>'.$produto['nome'].'</td>
+                                                <td>'.number_format(floatval($row['estoque_total']),4,',','.').'</td>
+                                                <td>'.$un['simbolo'].'</td>
+                                                <td></td>
+                                            </tr>
+                                        ';
+                                    }
+                                }
+                                elseif($_GET['f'] == "produto"){
+                                    $resp = $con->query('select * from tbl_estoque order by produto;');
+                                    $grupoNome = '';
+                                    while($row = $resp->fetch_assoc()){
+                                        $produto = $con->query('select nome,unidadeEstoque from tbl_produtos where id = '.$row['produto'])->fetch_assoc();
+                                        $local = $con->query('select local from tbl_locaisEstoque where id = '.$row['local'])->fetch_assoc();
+                                        $un = $con->query('select simbolo from tbl_unidades where id = '.$produto['unidadeEstoque'])->fetch_assoc();
+                                        
+                                        if($grupoNome != $row['produto']){
+                                            $totalEstoque = $con->query('select sum(quantia) as total_estoque from tbl_estoque where produto = '.$row['produto'].' group by produto')->fetch_assoc();
+                                            echo '
+                                                <tr class="tbl_linhaComBorda bg-light">
+                                                    <td><i class="fas fa-caret-down"></i><i class="fas fa-caret-up" style="display:none"></i></td>
+                                                    <td colspan="3" onclick="mostrar(\'.c-'.$row['produto'].'\',this)"><strong>'.ucfirst($produto['nome']).'</strong></td>
+                                                    <td class="d-flex">Total <strong class="ml-auto">'.number_format(floatval($totalEstoque['total_estoque']),4,',','.').' '.$un['simbolo'].'</strong></td>
+                                                </tr>
+                                            ';
+                                            $grupoNome = $row['produto'];
+                                        }
+                                        echo '
+                                            <tr class="c-'.$row['produto'].' produtosEstoque" style="display:none">
+                                                <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
+                                                <td>'.$produto['nome'].'</td>
+                                                <td>'.number_format(floatval($row['quantia']),4,',','.').'</td>
+                                                <td>'.$un['simbolo'].'</td>
+                                                <td>'.$local['local'].'</td>
+                                            </tr>
+                                        ';
+                                        
+                                    }
                                 }
                         
                             ?>

@@ -70,13 +70,12 @@
         <div class="content d-flex h-100">
             <div class="login-area p-2 m-auto">
                 <form method="post">
+                    <?if(!isset($_GET['n'])):?>
                     <div class="row">
                         <div class="col text-center mb-3">
                             <h2><strong class="text-white">Login</strong></h2>
                         </div>
                     </div>
-
-                    <?if(!isset($_GET['n'])):?>
                     <div class="row mt-3">
                         <div class="col">
                             <div class="group-inputs">
@@ -100,6 +99,11 @@
                         </div>
                     </div>
                     <?else:?>
+                    <div class="row">
+                        <div class="col text-center mb-3">
+                            <h2><strong class="text-white">Digite uma nova senha</strong></h2>
+                        </div>
+                    </div>
                     <div class="row mt-3">
                         <div class="col">
                             <div class="group-inputs">
