@@ -275,11 +275,10 @@ elseif(isset($_GET['del'])){
                             <tr>
                                 <th style="width:2%">ID</th>
                                 <th></th>
-                                <th style="width:20%">Nome</th>
+                                <th>Nome</th>
                                 <th style="width:8%">referencia</th>
                                 <th style="width:14%">Grupo</th>
-                                <th style="width:14%">Subgrupo</th>
-                                <th>Descricao</th>
+                                <th style="width:14%">Preço</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
                             </tr>
@@ -296,8 +295,7 @@ elseif(isset($_GET['del'])){
                                             <td>'.$row['nome'].'</td>
                                             <td>'.$row['referencia'].'</td>
                                             <td>'.$row['grupo'].'</td>
-                                            <td>'.$row['subgrupo'].'</td>
-                                            <td>'.$row['descricao'].'</td>
+                                            <td>'.number_format($row['valor'],2,',','.').'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>

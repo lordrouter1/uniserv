@@ -105,8 +105,14 @@ $attr = (array) $arq;
 <div class="content rounded bg-white p-2 shadow">
 
     <div class="row mt-2">
-        <div class="col">
+        <div class="col" id="importarRetornar">
             <a class="btn btn-dark" href="est-impXml.php"><i class="fas fa-angle-double-left text-light"></i></a>
+        </div>
+        <div class="col d-flex" id="sucessoRetornar" style="display:hidden">
+            <a class="btn btn-success d-flex" href="est-impXml.php"><span class="mt-auto mb-auto"><i class="fas fa-angle-double-left text-light"></i> <strong>Voltar</strong></span></a>
+            <div class="alert alert-success m-auto">
+                <strong>Sucesso!</strong> Todos os produtos foram importados com sucesso.
+            </div>  
         </div>
     </div>
     <div class="row mt-3">
@@ -179,6 +185,7 @@ $attr = (array) $arq;
             </thead>
                 <tbody>
                     <?
+                        $impCompleta = true;
                         foreach($itens as $item){
                             $prod = $item->prod;
                             $imposto = (array)$item->imposto->ICMS;
@@ -189,6 +196,8 @@ $attr = (array) $arq;
                             $cadastrar = !isset($cad);
                             $checaLog = $con->query('select id from tbl_impXmlLog where referencia = "'.$prod->cProd.'" and nNota = "'.$nota->nNF.'"')->num_rows;
                             
+                            #if($checaLog) $impCompleta = false;
+
                             echo '
                                 <tr>
                                     <td linha="'.$rId.'"><button class="btn btn-dark" onclick="mostrarLinha(\''.$rId.'\',this)" '.($checaLog?'style="display:none"':'').'><i class="fas fa-caret-down"></i><i class="fas fa-caret-right" style="display:none"></i></button><span class="badge badge-success" '.($checaLog?'':'style="display:none"').'>importado</span></td>
@@ -462,8 +471,10 @@ $attr = (array) $arq;
                                                                 <?
                                                                     $resp = $con->query('select id,nome from tbl_locaisEstoque where status = 1 and empresa = '.$_COOKIE['empresa']);
                                                                     $lCont = 0;
-                                                                    while($row = $resp->fetch_assoc()){
-                                                                        echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
+                                                                    if($resp){
+                                                                        while($row = $resp->fetch_assoc()){
+                                                                            echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
+                                                                        }
                                                                     }
                                                                 ?>
                                                             </select>
@@ -483,6 +494,10 @@ $attr = (array) $arq;
                 </tbody>
             </table>
             <script>
+                <?if($impCompleta):?>
+                $('#importarRetornar').toggle();
+                $('#sucessoRetornar').toggle();
+                <?endif;?>
                 $('input[required][value=""], select[required][value=""]').css('background-color','#c1c7d6');
             </script>
         </div>

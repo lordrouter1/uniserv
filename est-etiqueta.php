@@ -2,7 +2,7 @@
 
 <?php
 
-if(isset($_POST['cmd'])){
+/*if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
@@ -30,20 +30,19 @@ if(isset($_POST['cmd'])){
         $con->query($query);
         redirect($con->error);
     }
-}
-elseif(isset($_GET['del'])){
+}*/
+/*elseif(isset($_GET['del'])){
     $con->query('delete from tbl_unidades where id = '.$_GET['del']);
     #redirect($con->error);
-}
+}*/
 
 ?>
 <script>
     async function imprimir(){
         const divPrint = document.getElementById('tablePrint');
         newWin = window.open('');
-        newWin.document.write('<link href="./main.css" rel="stylesheet">');
         newWin.document.write('<link href="./assets/css/print.css" rel="stylesheet">');
-        newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Unidades Cadastradas</h5>');
+        newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()">imprimir</button>');
         newWin.document.write(divPrint.outerHTML);
     }
 
@@ -122,48 +121,78 @@ elseif(isset($_GET['del'])){
             
             <div class="card main-card mb-3">
                 <div class="card-body">
+                    <?$confImp = $con->query('select * from tbl_confImp')->fetch_all();?>
+                    <table id="tablePrint">
+                        <style>
+                            *{
+                                margin: 0;
+                                padding: 0;
+                            }
+                            #tablePrint{
+                                border-collapse: separate;
+                                border-spacing: <?=$confImp[0][14]?>mm <?=$confImp[0][10];?>mm;
+                                padding-left: <?=$confImp[0][13];?>mm;
+                                padding-right: <?=$confImp[0][13];?>mm;
+                                border-style: solid;
+                                border-width: 1px;
+                                font-size: 10px;
+                            }
+                            .linha{
+                                height: <?=$confImp[0][11];?>mm;
+                                max-height: <?=$confImp[0][11];?>mm;
+                            }
+                            .etiqueta{
+                                height: 100%;
+                                width: <?=$confImp[0][12];?>mm;
+                                max-width: <?=$confImp[0][12];?>mm;
+                                background-color:yellow;
+                                border-style:solid;
+                                border-width:1px;
+                                position: relative;
+                            }
+                            .etiqueta span{
+                                position: absolute;
+                            }
+                        </style>
+                        <tr class="linha">
+                            <td class="etiqueta">
+                                <span style="top: <?=$confImp[0][3]?>mm;left: <?=$confImp[4][3]?>mm;display:<?=($confImp[4][3]==0&&$confImp[0][3]==0)?'none':'block';?>">0012</span>
+                                <span style="top: <?=$confImp[0][4]?>mm;left: <?=$confImp[4][4]?>mm;display:<?=($confImp[4][4]==0&&$confImp[0][4]==0)?'none':'block';?>">Peso</span>
+                                <span style="top: <?=$confImp[0][5]?>mm;left: <?=$confImp[4][5]?>mm;display:<?=($confImp[4][5]==0&&$confImp[0][5]==0)?'none':'block';?>">Preço</span>
+                                <span style="top: <?=$confImp[0][6]?>mm;left: <?=$confImp[4][6]?>mm;display:<?=($confImp[4][6]==0&&$confImp[0][6]==0)?'none':'block';?>">Tamanho</span>
+                                <span style="top: <?=$confImp[0][7]?>mm;left: <?=$confImp[4][7]?>mm;display:<?=($confImp[4][7]==0&&$confImp[0][7]==0)?'none':'block';?>">Quantidade</span>
+                                <span style="top: <?=$confImp[0][8]?>mm;left: <?=$confImp[4][8]?>mm;display:<?=($confImp[4][8]==0&&$confImp[0][8]==0)?'none':'block';?>">Produto teste</span>
+                                <span style="top: <?=$confImp[0][9]?>mm;left: <?=$confImp[4][9]?>mm;display:<?=($confImp[4][9]==0&&$confImp[0][9]==0)?'none':'block';?>">0111010101011</span>
+                            </td>
+                            <td class="etiqueta">
+                                <span style="top: <?=$confImp[1][3]?>mm;left: <?=$confImp[5][3]?>mm;display:<?=($confImp[1][3]==0&&$confImp[5][4]==0)?'none':'block';?>">0012</span>
+                                <span style="top: <?=$confImp[1][4]?>mm;left: <?=$confImp[5][4]?>mm;display:<?=($confImp[1][4]==0&&$confImp[5][4]==0)?'none':'block';?>">Peso</span>
+                                <span style="top: <?=$confImp[1][5]?>mm;left: <?=$confImp[5][5]?>mm;display:<?=($confImp[1][5]==0&&$confImp[5][5]==0)?'none':'block';?>">Preço</span>
+                                <span style="top: <?=$confImp[1][6]?>mm;left: <?=$confImp[5][6]?>mm;display:<?=($confImp[1][6]==0&&$confImp[5][6]==0)?'none':'block';?>">Tamanho</span>
+                                <span style="top: <?=$confImp[1][7]?>mm;left: <?=$confImp[5][7]?>mm;display:<?=($confImp[1][7]==0&&$confImp[5][7]==0)?'none':'block';?>">Quantidade</span>
+                                <span style="top: <?=$confImp[1][8]?>mm;left: <?=$confImp[5][8]?>mm;display:<?=($confImp[1][8]==0&&$confImp[5][8]==0)?'none':'block';?>">produto teste</span>
+                                <span style="top: <?=$confImp[1][9]?>mm;left: <?=$confImp[5][9]?>mm;display:<?=($confImp[1][9]==0&&$confImp[5][9]==0)?'none':'block';?>">0111010101011</span>
 
-                    <h5 class="card-title">Unidades de medidas</h5>
-                    <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
-
-                    <table class="table mb-0 table-striped table-hover" id="tablePrint">
-                        <thead >
-                            <tr>
-                                <th style="width:2%">ID</th>
-                                <th style="width:26%">Nome</th>
-                                <th style="width:14%">Símbolo</th>
-                                <th style="width:6%">Base</th>
-                                <th>Conversão</th>
-                                <th class="noPrint"></th>
-                                <th class="noPrint"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                                $resp = $con->query('select * from tbl_unidades order by grupoNome, base desc');
-                            
-                                $grupoNome = '';
-                                while($row = $resp->fetch_assoc()){
-                                    if($grupoNome != $row['grupoNome']){
-                                        $grupoNome = $row['grupoNome'];
-                                        echo '<tr><th colspan="7" class="bg-light text-dark text-center">'.ucfirst($grupoNome).'</th></tr>';
-                                    }
-                                    $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
-                                    echo '
-                                        <tr>
-                                            <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td>'.$row['nome'].'</td>
-                                            <td>'.$row['simbolo'].'</td>
-                                            <td>'.($row['base'] == 1?'Sim':'Não').'</td>
-                                            <td>1 '.$row['nome'].' = '.$row['convBase'].' '.$nomeBase.'</td>
-                                            <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
-                                        </tr>
-                                    ';
-                                }
-                        
-                            ?>
-                        </tbody>
+                            </td>
+                            <td class="etiqueta">
+                                <span style="top: <?=$confImp[2][3]?>mm;left: <?=$confImp[6][3]?>mm;display:<?=($confImp[2][3]==0&&$confImp[6][4]==0)?'none':'block';?>">0012</span>
+                                <span style="top: <?=$confImp[2][4]?>mm;left: <?=$confImp[6][4]?>mm;display:<?=($confImp[2][4]==0&&$confImp[6][4]==0)?'none':'block';?>">Peso</span>
+                                <span style="top: <?=$confImp[2][5]?>mm;left: <?=$confImp[6][5]?>mm;display:<?=($confImp[2][5]==0&&$confImp[6][5]==0)?'none':'block';?>">Preço</span>
+                                <span style="top: <?=$confImp[2][6]?>mm;left: <?=$confImp[6][6]?>mm;display:<?=($confImp[2][6]==0&&$confImp[6][6]==0)?'none':'block';?>">Tamanho</span>
+                                <span style="top: <?=$confImp[2][7]?>mm;left: <?=$confImp[6][7]?>mm;display:<?=($confImp[2][7]==0&&$confImp[6][7]==0)?'none':'block';?>">Quantidade</span>
+                                <span style="top: <?=$confImp[2][8]?>mm;left: <?=$confImp[6][8]?>mm;display:<?=($confImp[2][8]==0&&$confImp[6][8]==0)?'none':'block';?>">produto teste</span>
+                                <span style="top: <?=$confImp[2][9]?>mm;left: <?=$confImp[6][9]?>mm;display:<?=($confImp[2][9]==0&&$confImp[6][9]==0)?'none':'block';?>">0111010101011</span>
+                            </td>
+                            <td class="etiqueta">
+                                <span style="top: <?=$confImp[3][3]?>mm;left: <?=$confImp[7][3]?>mm;display:<?=($confImp[3][3]==0&&$confImp[7][4]==0)?'none':'block';?>">0012</span>
+                                <span style="top: <?=$confImp[3][4]?>mm;left: <?=$confImp[7][4]?>mm;display:<?=($confImp[3][4]==0&&$confImp[7][4]==0)?'none':'block';?>">Peso</span>
+                                <span style="top: <?=$confImp[3][5]?>mm;left: <?=$confImp[7][5]?>mm;display:<?=($confImp[3][5]==0&&$confImp[7][5]==0)?'none':'block';?>">Preço</span>
+                                <span style="top: <?=$confImp[3][6]?>mm;left: <?=$confImp[7][6]?>mm;display:<?=($confImp[3][6]==0&&$confImp[7][6]==0)?'none':'block';?>">Tamanho</span>
+                                <span style="top: <?=$confImp[3][7]?>mm;left: <?=$confImp[7][7]?>mm;display:<?=($confImp[3][7]==0&&$confImp[7][7]==0)?'none':'block';?>">Quantidade</span>
+                                <span style="top: <?=$confImp[3][8]?>mm;left: <?=$confImp[7][8]?>mm;display:<?=($confImp[3][8]==0&&$confImp[7][8]==0)?'none':'block';?>">produto teste</span>
+                                <span style="top: <?=$confImp[3][9]?>mm;left: <?=$confImp[7][9]?>mm;display:<?=($confImp[3][9]==0&&$confImp[7][9]==0)?'none':'block';?>">0111010101011</span>
+                            </td>
+                        </tr>                    
                     </table>
 
                 </div>

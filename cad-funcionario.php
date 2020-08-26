@@ -153,7 +153,7 @@ elseif(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
 
-                    <h5 class="card-title">Fornecedores cadastrados</h5>
+                    <h5 class="card-title">Funcionários e Técnicos cadastrados</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
