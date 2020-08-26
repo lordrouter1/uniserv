@@ -196,7 +196,7 @@ $attr = (array) $arq;
                             $cadastrar = !isset($cad);
                             $checaLog = $con->query('select id from tbl_impXmlLog where referencia = "'.$prod->cProd.'" and nNota = "'.$nota->nNF.'"')->num_rows;
                             
-                            #if($checaLog) $impCompleta = false;
+                            if($checaLog) $impCompleta = false;
 
                             echo '
                                 <tr>
