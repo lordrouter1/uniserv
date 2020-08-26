@@ -111,7 +111,7 @@ $attr = (array) $arq;
         <div class="col d-flex" id="sucessoRetornar" style="display:none !important">
             <a class="btn btn-success d-flex" href="est-impXml.php"><span class="mt-auto mb-auto"><i class="fas fa-angle-double-left text-light"></i> <strong>Voltar</strong></span></a>
             <div class="alert alert-success m-auto">
-                <strong>Sucesso!</strong> Todos os produtos foram importados com sucesso.
+                Todos os produtos foram importados com sucesso.
             </div>  
         </div>
     </div>
@@ -196,7 +196,7 @@ $attr = (array) $arq;
                             $cadastrar = !isset($cad);
                             $checaLog = $con->query('select id from tbl_impXmlLog where referencia = "'.$prod->cProd.'" and nNota = "'.$nota->nNF.'"')->num_rows;
                             
-                            if($checaLog) $impCompleta = false;
+                            if(!$checaLog) $impCompleta = false;
 
                             echo '
                                 <tr>
