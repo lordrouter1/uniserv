@@ -108,7 +108,7 @@ $attr = (array) $arq;
         <div class="col" id="importarRetornar">
             <a class="btn btn-dark" href="est-impXml.php"><i class="fas fa-angle-double-left text-light"></i></a>
         </div>
-        <div class="col d-flex" id="sucessoRetornar" style="display:hidden">
+        <div class="col d-flex" id="sucessoRetornar" style="display:hiden">
             <a class="btn btn-success d-flex" href="est-impXml.php"><span class="mt-auto mb-auto"><i class="fas fa-angle-double-left text-light"></i> <strong>Voltar</strong></span></a>
             <div class="alert alert-success m-auto">
                 <strong>Sucesso!</strong> Todos os produtos foram importados com sucesso.
@@ -495,8 +495,8 @@ $attr = (array) $arq;
             </table>
             <script>
                 <?if($impCompleta):?>
-                $('#importarRetornar').toggle();
-                $('#sucessoRetornar').toggle();
+                    $('#importarRetornar').toggle();
+                    $('#sucessoRetornar').toggle();
                 <?endif;?>
                 $('input[required][value=""], select[required][value=""]').css('background-color','#c1c7d6');
             </script>
