@@ -340,9 +340,11 @@ $attr = (array) $arq;
                                                             <select name="localestoque" id="localestoque" class="form-control cadastroProd">
                                                                 <?
                                                                     $resp = $con->query('select id,nome from tbl_locaisEstoque where status = 1 and empresa = '.$_COOKIE['empresa']);
-                                                                    $lCont = 0;
-                                                                    while($row = $resp->fetch_assoc()){
-                                                                        echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
+                                                                    if($resp){
+                                                                        $lCont = 0;
+                                                                        while($row = $resp->fetch_assoc()){
+                                                                            echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
+                                                                        }
                                                                     }
                                                                 ?>
                                                             </select>
