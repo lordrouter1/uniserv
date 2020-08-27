@@ -118,7 +118,7 @@ if(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_pedido');
+                                $resp = $con->query('select * from tbl_pedido order by id desc');
                             
                                 while($row = $resp->fetch_assoc()){
                                     $nome = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['cliente'])->fetch_assoc()['razaoSocial_nome'];

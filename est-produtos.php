@@ -273,12 +273,11 @@ elseif(isset($_GET['del'])){
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
-                                <th style="width:2%">ID</th>
-                                <th></th>
                                 <th>Nome</th>
                                 <th style="width:8%">referencia</th>
                                 <th style="width:14%">Grupo</th>
                                 <th style="width:14%">Preço</th>
+                                <th style="width:14%">Estoque</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
                             </tr>
@@ -290,12 +289,11 @@ elseif(isset($_GET['del'])){
                                 while($row = $resp->fetch_assoc()){
                                     echo '
                                         <tr>
-                                            <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td><img src="'.$row['imagem'].'" width="60"></td>
                                             <td>'.$row['nome'].'</td>
                                             <td>'.$row['referencia'].'</td>
                                             <td>'.$row['grupo'].'</td>
                                             <td>'.number_format($row['valor'],2,',','.').'</td>
+                                            <td>'.number_format($row['estoque'],4,',','.').'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>

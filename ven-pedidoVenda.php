@@ -61,7 +61,7 @@ if(isset($_POST['cmd'])){
                 "'.$lastid.'"
             )';
             $con->query($query);
-            $con->query('update tbl_produtos set quantia = quantia - '.$carrinho[$key].' where id = '.$resp['id']);
+            $con->query('update tbl_produtos set estoque = estoque - '.$carrinho[$key].' where id = '.$resp['id']);
             $con->query('INSERT INTO `tbl_estoque`(`quantia`, `produto`, `local`, `operacao`, `motivo`, `data`) VALUES (
                 "'.$carrinho[$key].'",
                 "'.$resp['id'].'",

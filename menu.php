@@ -54,7 +54,7 @@
                         Cadastros
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
-                    <ul>
+                    <ul class="mm-collapse">
                         <li>
                             <a <?php echo $menu['cadastro_clientes']?'href="cad-cliente.php"':'disabled';?>>
                                 <i class="metismenu-icon">
@@ -89,7 +89,7 @@
                         Gestão de estoque
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
-                    <ul>
+                    <ul class="mm-collapse">
                         <li>
                             <a <?php echo $menu['estoque_unidades']?'href="est-unidades.php"':'disabled';?>>
                                 <i class="metismenu-icon">
@@ -147,7 +147,7 @@
                         Produção
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
-                    <ul>
+                    <ul class="mm-collapse">
                         <li>
                             <a <?php echo $menu['producao_grade']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
@@ -187,7 +187,7 @@
                         Venda
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
-                    <ul>
+                    <ul class="mm-collapse">
                         <li>
                             <a <?php echo $menu['venda_pedido']?'href="ven-pedido.php"':'disabled';?>>
                                 <i class="metismenu-icon">
@@ -203,7 +203,7 @@
                         Financeiro
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
-                    <ul>
+                    <ul class="mm-collapse">
                         <li>
                             <a <?php echo $menu['financeiro_contasReceber']?'href="fisc-contasReceber.php"':'disabled';?>>
                                 <i class="metismenu-icon">
@@ -219,7 +219,7 @@
                         Serviços
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
-                    <ul>
+                    <ul class="mm-collapse">
                         <!--<li>
                             <a href="serv-adicionar.php">
                                 <i class="metismenu-icon">
@@ -259,7 +259,7 @@
                         Fiscal
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                     </a>
-                    <ul>
+                    <ul class="mm-collapse">
                         <li>
                             <a <?php echo $menu['fiscal_cfop']?'href="fisc-cfop.php"':'disabled';?>>
                                 <i class="metismenu-icon">
