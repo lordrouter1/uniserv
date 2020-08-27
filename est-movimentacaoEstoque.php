@@ -1,7 +1,6 @@
 <?php include('header.php'); ?>
 
 <?php
-
 if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
@@ -13,6 +12,25 @@ if(isset($_POST['cmd'])){
             "'.$_POST['status'].'"
         )';
         $con->query($query);
+        redirect($con->error);
+    }
+    elseif($cmd = "movimentacao"){
+        $produto = explode(' - ',$_POST['produto'])[0];
+        $query = 'INSERT INTO `tbl_estoque`(`quantia`, `produto`, `local`, `operacao`, `motivo`, `data`) VALUES (
+            "'.$_POST['quantia'].'",
+            "'.$produto.'",
+            "'.$_POST['estoque'].'",
+            "'.$_POST['operacao'].'",
+            "'.$_POST['motivo'].'",
+            "'.date('Y-m-d').'"
+        )';
+        $con->query($query);
+        if($_POST['operacao'] == 'e'){
+            $con->query('update tbl_produtos set estoque = estoque + "'.$_POST['quantia'].'" where id = '.$produto);
+        }
+        else{
+            $con->query('update tbl_produtos set estoque = estoque - "'.$_POST['quantia'].'" where id = '.$produto);
+        }
         redirect($con->error);
     }
 }
@@ -67,9 +85,9 @@ elseif(isset($_GET['del'])){
         </div>
         <div class="page-title-actions">
 
-            <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
+            <!--<button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
             <i class="fas fa-plus"></i>
-            </button>
+            </button>-->
 
             <div class="d-inline-block dropdown">
                 <button class="btn-shadow dropdown-toggle btn btn-info" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -111,35 +129,39 @@ elseif(isset($_GET['del'])){
                     <h5 class="card-title">Movimentações</h5>
                     <!--<input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">-->
                     
-                    <div class="input-group mt-4 mb-4">
-                        <select name="operacao" class="form-control">
-                            <option selected disabled>Operação</option>
-                            <option value="e">Entrada</option>
-                            <option value="s">Saída</option>
-                        </select>
-                        <input type="text" class="form-control w-25" list="listProd" placeholder="Insira o produto">
-                        <datalist id="listProd">
-                            <?
-                                $resp = $con->query('select id,nome from tbl_produtos');
-                                while($row = $resp->fetch_assoc()){
-                                    echo '<option value="'.$row['id'].' - '.$row['nome'].'">';
-                                }
-                            ?>
-                        </datalist>
-                        <select name="estoque" class="form-control">
-                            <?
-                                $resp = $con->query('select id,nome from tbl_locaisEstoque where empresa = '.$_COOKIE['empresa']);
-                                while($row = $resp->fetch_assoc()){
-                                    echo '<option value="'.$row['id'].'">'.$row['nome'].'</option>';
-                                }
-                            ?>
-                        </select>
-                        <input type="number" step="0.0001" min="0.0001" class="form-control" placeholder="Quantia">
-                        <input type="text" class="form-control" placeholder="Motivo">
-                        <div class="input-group-append">
-                            <button class="btn btn-secondary">Registrar</button>
+                    <form method="post" autocomplete="off">
+                        <input type="hidden" name="cmd" value="movimentacao">
+                        <div class="input-group mt-4 mb-4">
+                            <select name="operacao" class="form-control">
+                                <option selected disabled>Operação</option>
+                                <option value="e">Entrada</option>
+                                <option value="s">Saída</option>
+                            </select>
+                            <input type="text" class="form-control w-25" list="listProd" placeholder="Insira o produto" name="produto">
+                            <datalist id="listProd">
+                                <?
+                                    $resp = $con->query('select id,nome from tbl_produtos');
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['id'].' - '.$row['nome'].'">';
+                                    }
+                                ?>
+                            </datalist>
+                            <select name="estoque" class="form-control">
+                                <?
+                                    $resp = $con->query('select id,nome from tbl_locaisEstoque where empresa = '.$_COOKIE['empresa']);
+                                    $cont = 0;
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['id'].'" '.($cont++==0?'selected':'').'>'.$row['nome'].'</option>';
+                                    }
+                                ?>
+                            </select>
+                            <input type="number" step="0.0001" min="0.0001" class="form-control" placeholder="Quantia" name="quantia">
+                            <input type="text" class="form-control" placeholder="Motivo" name="motivo">
+                            <div class="input-group-append">
+                                <button class="btn btn-secondary">Registrar</button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
 
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >

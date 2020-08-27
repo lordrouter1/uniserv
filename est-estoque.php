@@ -2,11 +2,7 @@
 
 <?php
 
-ini_set('display_errors',1);
-ini_set('display_startup_erros',1);
-error_reporting(E_ALL);
-
-/*if(isset($_POST['cmd'])){
+if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
@@ -33,7 +29,7 @@ error_reporting(E_ALL);
 elseif(isset($_GET['del'])){
     $con->query('delete from tbl_locaisEstoque where id = '.$_GET['del']);
     redirect($con->error);
-}*/
+}
 
 ?>
 <script>
