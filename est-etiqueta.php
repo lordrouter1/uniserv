@@ -133,7 +133,6 @@
                                 border-spacing: <?=$confImp[0][14]?>mm <?=$confImp[0][10];?>mm;
                                 padding-left: <?=$confImp[0][13];?>mm;
                                 padding-right: <?=$confImp[0][13];?>mm;
-                                border-style: solid;
                                 border-width: 1px;
                                 font-size: 10px;
                             }

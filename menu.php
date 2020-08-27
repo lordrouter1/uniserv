@@ -125,6 +125,12 @@
                                 <i class="metismenu-icon">
                                 </i>Posição de estoque
                             </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['estoque_movimentacaoEstoque']?'href="est-movimentacaoEstoque.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Movimentação do estoque
+                            </a>
                         </li>  
                         <li>
                             <a <?php echo $menu['estoque_etiqueta']?'href="est-etiqueta.php"':'disabled';?>>

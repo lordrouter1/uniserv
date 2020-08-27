@@ -8,8 +8,9 @@
 
 <?php
 if(isset($_GET['del'])){
-    #$con->query('delete from tbl_vendaPedido where id = '.$_GET['del']);
-    #redirect($con->error);
+    $con->query('delete from tbl_pedido where id = '.$_GET['del']);
+    $con->query('delete from tbl_pedidoItem where pedido = '.$_GET['del']);
+    redirect($con->error);
 }
 
 ?>
@@ -98,7 +99,7 @@ if(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
 
-                    <h5 class="card-title">Ordens de serviços</h5>
+                    <h5 class="card-title">Vendas</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">

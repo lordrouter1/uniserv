@@ -108,7 +108,7 @@ $pedidosCarrinho = 0;
             <div>
                 <span>Carrinho</span>
                 <div class="page-title-subheading">
-                    Total de <span class="badge badge-primary"><?=$qtdCarrinho?></span> itens no carrinho
+                    Total de<span class="badge badge-primary"><?=$qtdCarrinho?></span> itens no carrinho
                 </div>
             </div>
 
@@ -134,31 +134,38 @@ $pedidosCarrinho = 0;
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th></th>
                     <th style="width:18%">Nome</th>
-                    <th>Descrição</th>
+                    <th>Valor UN</th>
                     <th>Quantidade</th>
+                    <th>Total</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?
                     $keys = array_keys($carrinho);
+                    $totalPedido = 0;
                     foreach($keys as $key){
                         $resp = $con->query('select * from tbl_produtos where id = '.explode('-',$key)[1]);
                         $row = $resp->fetch_assoc();
+                        $totalPedido += $row['valor']*$carrinho[$key];
                         echo '
                             <tr>
-                                <td><img src="'.$row['imagem'].'" width="30"></td>
                                 <td>'.$row['nome'].'</td>
-                                <td>'.$row['descricao'].'</td>
+                                <td>R$ '.number_format($row['valor'],2,',','.').'</td>
                                 <td>'.$carrinho[$key].'</td>
+                                <td>R$ '.number_format($row['valor']*$carrinho[$key],2,',','.').'</td>
                                 <td><a class="btn" href="?carDel='.$row['id'].'"><i class="fa fa-trash"></i></a></td>
                             </tr>
                         ';
                     }
                 ?>
             </tbody>
+            <tfooter>
+                <tr>
+                    <td colspan="5"><strong>Total R$ <?=number_format($totalPedido,2,',','.')?></strong></td>
+                </tr>
+            </tfooter>
         </table>
     </div>
 </div>
@@ -242,7 +249,6 @@ $pedidosCarrinho = 0;
                                                         </div>
                                                         <div class="car-footer p-2" style="bottom:0">
                                                             <h4 class="card-title">'.$row['nome'].'</h4>
-                                                            <p class="card-text vendas">'.$row['descricao'].'</p>
                                                             <form method="post">
                                                                 <div class="input-group">
                                                                     <div class="input-group-prepend">
@@ -266,14 +272,14 @@ $pedidosCarrinho = 0;
                                 while($row = $resp->fetch_assoc()){
                                     echo '
                                         <div class="row mb-3 pb-2 border-bottom onlyPhone">
-                                            <div class="col d-flex">
+                                            <div class="col '.($row['imagem']==""?'d-none':'d-flex').'">
                                                 <img class="m-auto" src="'.$row['imagem'].'" height="40">
                                             </div>
                                             <div class="col">
                                                 <h4 class="card-title">'.$row['nome'].'</h4>
                                             </div>
-                                            <div class="col onlyPhone">
-                                                <p class="card-text vendas">'.$row['descricao'].'</p>
+                                            <div class="col onlyPhone d-flex">
+                                                <strong class="ml-auto mt-auto mb-auto mr-2">R$ '.number_format($row['valor'],2,',','.').'</strong>
                                             </div>
                                             <div class="col d-flex">
                                                 <form method="post">
@@ -288,11 +294,11 @@ $pedidosCarrinho = 0;
                                             </div>
                                         </div>
                                         <div class="row onlyDesktop">
-                                            <div class="col d-flex">
+                                            <div class="col '.($row['imagem']==""?'d-none':'d-flex').'">
                                                 <img class="m-auto" src="'.$row['imagem'].'" height="40">
                                             </div>
                                             <div class="col">
-                                                <h4 class="card-title">'.$row['nome'].'</h4>
+                                                <h4 class="card-title text-center">'.$row['nome'].'</h4>
                                             </div>
                                         </div>
                                         <div class="row mb-3 pb-2 border-bottom onlyDesktop">

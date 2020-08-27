@@ -59,11 +59,14 @@ $con->query('INSERT INTO `tbl_impXmlLog`(`cfop_entrada`, `cfop_saida`, `quantia`
 )');
 $idXml = $con->insert_id;
 
-$con->query('INSERT into tbl_estoque(quantia,produto,local,xml) values(
+$con->query('INSERT into tbl_estoque(quantia,produto,local,xml,operacao,data,motivo) values(
     "'.$_POST['estoque'].'",
     "'.$idProd.'",
     "'.$_POST['localestoque'].'",
-    "'.$idXml.'"
+    "'.$idXml.'",
+    "e",
+    "'.date('Y-m-d').'",
+    "Importação automática"
 )');
 
 

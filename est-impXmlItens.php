@@ -2,10 +2,6 @@
 
 <?php
 
-ini_set('display_errors',1);
-ini_set('display_startup_erros',1);
-error_reporting(E_ALL);
-
 if(!isset($_FILES['xml']['tmp_name'])) echo '<script>location.href="est-impXml.php"</script>';
 
 $arq = simplexml_load_file($_FILES['xml']['tmp_name'])->NFe->infNFe;
