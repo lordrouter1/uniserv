@@ -137,6 +137,12 @@
                                 <i class="metismenu-icon">
                                 </i>Etiqueta
                             </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['estoque_remessa']?'href="est-remessa.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Remessa
+                            </a>
                         </li>                        
                     </ul>
                 </li>

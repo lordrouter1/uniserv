@@ -35,10 +35,11 @@ include('header.php');
 if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
     if($cmd == "add"){
-        $query = 'INSERT INTO `tbl_pedido`(`data`, `hora`, `cliente`, `subtotal`, `desconto`, `acrescimo`, `total`, '.($_POST['vencimento'] != ''?'`vencimento`,':'').'`pago`,`formaPagamento`) VALUES (
+        $query = 'INSERT INTO `tbl_pedido`(`data`, `hora`, `cliente`, `remessa`, `subtotal`, `desconto`, `acrescimo`, `total`, '.($_POST['vencimento'] != ''?'`vencimento`,':'').'`pago`,`formaPagamento`) VALUES (
             "'.$_POST['data'].'",
             "'.$_POST['hora'].'",
             "'.$_POST['cliente'].'",
+            "'.($_POST['remessa']=='null'?0:$_POST['remessa']).'",
             "'.$_POST['subtotal'].'",
             "'.($_POST['desconto'] | 0).'",
             "'.($_POST['acrescimo'] | 0).'",
@@ -100,7 +101,7 @@ $pedidosCarrinho = 0;
         })
     });
     function finalizar(){
-        location.href="?finalizar="+$('#selecionarCliente').val();
+        location.href="?finalizar="+$('#selecionarCliente').val()+'&remessa='+$('#selecionaRemessa').val();
     }
 </script>
 
@@ -191,13 +192,25 @@ $pedidosCarrinho = 0;
 
                     <div class="row mb-3">
                         <div class="col">
-                            <select class="form-control compraClienteCelular" id="selecionarCliente" onchange="document.cookie='cliente='+$(this).val()">
+                            <select class="form-control" id="selecionarCliente" onchange="document.cookie='cliente='+$(this).val()">
                                 <option selected disabled>Selecione o cliente</option>
                                 <?php
                                     $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
                                     while($row = $resp->fetch_assoc()){
                                         $selected = $_COOKIE['cliente'] == $row['id']? 'selected':'';
                                         echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['razaoSocial_nome'].'</option>';
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <select class="form-control" id="selecionaRemessa" onchange="document.cookie='remessa='+$(this).val()">
+                                <option selected disabled>Selecione a remessa</option>
+                                <?
+                                    $resp = $con->query('select id,descricao from tbl_remessa where status = 0');
+                                    while($row = $resp->fetch_assoc()){
+                                        $selected = $_COOKIE['remessa'] == $row['id']? 'selected':'';
+                                        echo '<option value="'.$row['id'].'"  '.$selected.'>'.$row['descricao'].'</option>';
                                     }
                                 ?>
                             </select>
@@ -438,6 +451,7 @@ $pedidosCarrinho = 0;
 
                     <input id="needs-validation" class="d-none" type="submit" value="enviar">
                     <input type="hidden" name="cliente" id="cliente" value="<?=$_GET['finalizar']?>">
+                    <input type="hidden" name="remessa" id="remessa" value="<?=$_GET['remessa']?>">
 
                 </form>
 
