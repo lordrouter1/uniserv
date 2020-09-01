@@ -9,6 +9,11 @@
         setcookie('empresa',$_GET['empresa']);
         $_COOKIE['empresa'] = $_GET['empresa'];
     }
+    if(!isset($_COOKIE['empresa'])){
+        $resp = $con->query('select id from tbl_configuracao')->fetch_assoc();
+        setcookie('empresa',$resp['id']);
+        $_COOKIE['empresa'] = $resp['id'];
+    }
 ?>
 <!doctype html>
 <html lang="en">
