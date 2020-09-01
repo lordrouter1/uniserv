@@ -23,10 +23,6 @@ if(isset($_POST['cmd'])){
         redirect($con->error);
     }
 }
-elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_cfop where id = '.$_GET['del']);
-    #redirect($con->error);
-}
 
 ?>
 <script>
@@ -120,7 +116,6 @@ elseif(isset($_GET['del'])){
                                 <th style="width:12%">Código</th>
                                 <th>Descrição</th>
                                 <th class="noPrint" style="width:6%"></th>
-                                <th class="noPrint" style="width:6%"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -134,7 +129,6 @@ elseif(isset($_GET['del'])){
                                             <td>'.number_format($row['cfop'],0,'','.').'</td>
                                             <td>'.$row['descricao'].'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
                                     ';
                                 }

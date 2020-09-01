@@ -47,10 +47,6 @@ if(isset($_POST['cmd'])){
         $con->query($query);
         redirect($con->error);
     }
-}elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_contasReceber where id = '.$_GET['del']);
-    redirect($con->error);
-    
 }elseif(isset($_GET['conc'])){
     $con->query('update tbl_contasReceber set status = "1" where id = '.$_GET['conc']);
     redirect($con->error);
@@ -197,7 +193,6 @@ if(isset($_GET['filtro'])){
                                 <th class="noPrint" style="width:6%"></th>
                                 <th class="noPrint" style="width:6%"></th>
                                 <th class="noPrint" style="width:6%"></th>
-                                <th class="noPrint" style="width:6%"></th>
 
                             </tr>
                         </thead>
@@ -277,7 +272,6 @@ if(isset($_GET['filtro'])){
                                     }
 
                                     echo '
-                                            <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
                                     ';
                                 }

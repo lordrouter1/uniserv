@@ -125,6 +125,7 @@
                                     $fornecedor = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['fornecedor'])->fetch_assoc();
                                     $simbolo = $con->query('select simbolo from tbl_unidades A inner join tbl_produtos B on A.id = B.unidadeEstoque where B.id = '.$row['idProduto']);
                                     $simbolo = $simbolo->num_rows == 0?'':$simbolo->fetch_assoc()['simbolo'];
+                                    $item = $con->query('select nome from tbl_produtos where id = '.$row['idProduto'])->fetch_assoc();
                                     if($grupoNome != $row['nNota']){
                                         $grupoNome = $row['nNota'];
                                         echo '<tr><th colspan="8" class="bg-light text-dark text-center">'.$fornecedor['razaoSocial_nome'].' - NFe '.number_format($grupoNome,0,',','.').'</th></tr>';
@@ -132,7 +133,7 @@
                                     echo '
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td>'.$row['referencia'].'</td>
+                                            <td>'.$item['nome'].'</td>
                                             <td>'.date('d / m / Y',strtotime($row['importacaoNota'])).'</td>
                                             <td>'.str_replace('.',',',$row['quantia']).'</td>
                                             <td>'.$simbolo.'</td>
@@ -265,7 +266,7 @@
         <div class="toast-title">Sucesso!</div>
     </div>
     <div id="toast-error" class="toast toast-error hidden" aria-live="polite" style="opacity: 0.899999;display:none;">
-        <div class="toast-title">Erro!</div>
+        <div class="toast-title">Nota inválida</div>
     </div>
     <?php
         if(isset($_GET['s']))

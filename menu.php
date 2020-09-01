@@ -97,6 +97,18 @@
                             </a>
                         </li>
                         <li>
+                            <a <?php echo $menu['estoque_grupos']?'href="est-grupos.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Grupos
+                            </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['estoque_subgrupos']?'href="est-subgrupos.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Subgrupos
+                            </a>
+                        </li>
+                        <li>
                             <a <?php echo $menu['estoque_produtos']?'href="est-produtos.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Produtos
@@ -276,12 +288,6 @@
                             <a <?php echo $menu['fiscal_ncm_cest']?'href="fisc-ncm_cest.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>NCM/CEST
-                            </a>
-                        </li>
-                        <li>
-                            <a <?php echo $menu['fiscal_classificacao_fiscal']?'href="fisc-classificacaoFiscal.php"':'disabled';?>>
-                                <i class="metismenu-icon">
-                                </i>Classificação fiscal
                             </a>
                         </li>
                         <li>

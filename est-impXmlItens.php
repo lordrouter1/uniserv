@@ -2,7 +2,7 @@
 
 <?php
 
-if(!isset($_FILES['xml']['tmp_name'])) echo '<script>location.href="est-impXml.php"</script>';
+if(!isset($_FILES['xml']['tmp_name'])) echo '<script>location.href="est-impXml.php?e"</script>';
 
 $arq = simplexml_load_file($_FILES['xml']['tmp_name'])->NFe->infNFe;
 
@@ -10,6 +10,10 @@ $nota = $arq->ide;
 $emit = $arq->emit;
 $dest = $arq->dest;
 $itens = $arq->det;
+
+$empresa = $con->query('select * from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc();
+
+if(!(ereg_replace('[\./\-]','',$empresa['cnpj']) == $dest->CNPJ))echo '<script>location.href="est-impXml.php?e"</script>';
 
 $cliente = $con->query('select * from tbl_clientes where cnpj_cpf = "'.$emit->CNPJ.'"');
 $cadastrado = true;
@@ -74,14 +78,14 @@ $attr = (array) $arq;
                 if(resp){
                     location.reload();
                 }
-            });
+            }).fail(function(err){console.log(err)});
         }
         else{
             $.post('core/ajax/cadProdutoAdd.php',data,function(resp){
                 if(resp){
                     location.reload();
                 }
-            });
+            }).fail(err => console.log(err));
         }
     }
 
@@ -162,6 +166,23 @@ $attr = (array) $arq;
     <div class="row mb-3">
         <div class="col">
             <strong>Itens</strong>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-4">
+            <label for="localestoque">Local</label>
+            <select class="form-control cadastroProd" onchange="document.cookie='lEstoque='+$(this).val()">
+                <option selected disabled>Selecione</option>
+                <?
+                    $resp = $con->query('select id,nome from tbl_locaisEstoque where status = 1 and empresa = '.$_COOKIE['empresa']);
+                    if($resp){
+                        while($row = $resp->fetch_assoc()){
+                            echo '<option value="'.$row['id'].'" '.($_COOKIE['lEstoque'] == $row['id']?'select':'').'>'.$row['nome'].'</option>';
+                        }
+                    }
+                ?>
+            </select>
         </div>
     </div>
 
@@ -255,37 +276,24 @@ $attr = (array) $arq;
                                                                 ?>
                                                             </select>
                                                         </div>
-                                                        <div class="col">
-                                                            <label for="classFisc">Classificação fiscal</label>
-                                                            <select class="form-control cadastroProd" name="classFisc" id="classFisc">
-                                                                <?
-                                                                    $resp = $con->query('SELECT * FROM `tbl_classificacaoFiscal` where ncm = "'.str_replace('.','',$prod->NCM).'"');
-                                                                    $cFisc = $resp->num_rows;
-                                                                    while($row = $resp->fetch_assoc()){
-                                                                        $cfop = $con->query('select cfop from tbl_cfop where id = '.$row['cfop'])->fetch_assoc()['cfop'];
-                                                                        echo '<option value="'.$row['id'].'">'.$cfop.' - '.$row['nome'].'</option>';
-                                                                    }
-                                                                ?>
-                                                            </select>
-                                                        </div>
                                                     </div>
 
                                                     <div class="row mb-3">
                                                         <div class="col">
                                                             <label for="valor">Preço de venda</label>
-                                                            <input class="form-control cadastroProd" type="number" step="0.01" name="valor" id="valor" value="" required>
+                                                            <input class="form-control cadastroProd" type="number" step="0.01" name="valor" id="valor" value="">
                                                         </div>
                                                         <div class="col">
                                                             <label for="grupo">Grupo<span class="ml-2 text-danger">*</span></label>
-                                                            <input type="text" value="<?=$prod['grupo'];?>" list="listaGrupo" class="form-control mb-3 cadastroProd" name="grupo" id="grupo" autocomplete="false" maxlength="80" required>
-                                                            <datalist id="listaGrupo">
+                                                            <select class="form-control mb-3 cadastroProd" name="grupo" id="grupo">
+                                                                <option selected disabled>Selecione</option>
                                                                 <?
-                                                                    $resp = $con->query('select grupo from tbl_produtos group by grupo;');
+                                                                    $resp = $con->query('select id,nome from tbl_grupo');
                                                                     while($row = $resp->fetch_assoc()){
-                                                                        echo '<option value="'.$row['grupo'].'">';
+                                                                        echo '<option value="'.$row['id'].'">'.$row['nome'].'</option>';
                                                                     }
                                                                 ?>
-                                                            </datalist>
+                                                            </select>
                                                         </div>
                                                         <div class="col">
                                                             <label for="tipodeProduto">Tipo de produto<span class="ml-2 text-danger">*</span></label>
@@ -297,7 +305,7 @@ $attr = (array) $arq;
                                                         </div>
                                                         <div class="col">
                                                             <label for="barras">Barras</label>
-                                                            <input class="form-control cadastroProd" type="text" name="barras" id="barras" value="<?=$prod->cEAN != "SEM GTIN"?$prod->cEAN:'';?>" maxlength="13" required>
+                                                            <input class="form-control cadastroProd" type="text" name="barras" id="barras" value="<?=$prod->cEAN != "SEM GTIN"?$prod->cEAN:'';?>" maxlength="13">
                                                         </div>
                                                         <div class="col-2 d-flex">
                                                             <div class="form-check mt-auto mb-auto">
@@ -323,83 +331,15 @@ $attr = (array) $arq;
                                                         <input type="hidden" name="chaveNFe" id="chaveNFe" value="<?=$attr['@attributes']['Id']?>" class="cadastroProd">
 
                                                     </div>
+                                                        
 
-                                                    <div class="row mb-3">
-                                                        <div class="col">
-                                                            <strong>Estoque</strong>
-                                                        </div>
+                                                    <div>
+                                                        <input class="cadastroProd" type="hidden" name="ncm" id="ncm" value="<?=$prod->NCM?>">
+                                                        <input class="cadastroProd" type="hidden" name="cfop" id="cfop" value="">
+                                                        <input class="cadastroProd" type="hidden" name="cst" id="cst" value="">
+                                                        <input class="cadastroProd" type="hidden" name="cest" id="cest" value="<?=$prod->CEST?>">
+                                                        <input class="cadastroProd" type="hidden" name="origem" id="origem" value="<?=$imposto->orig?>">
                                                     </div>
-
-                                                    <div class="row mb-3">
-                                                        <div class="col-4">
-                                                            <label for="localestoque">Local</label>
-                                                            <select name="localestoque" id="localestoque" class="form-control cadastroProd">
-                                                                <?
-                                                                    $resp = $con->query('select id,nome from tbl_locaisEstoque where status = 1 and empresa = '.$_COOKIE['empresa']);
-                                                                    if($resp){
-                                                                        $lCont = 0;
-                                                                        while($row = $resp->fetch_assoc()){
-                                                                            echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
-                                                                        }
-                                                                    }
-                                                                ?>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <?if(!$cFisc):?>
-                                                        <div class="row mb-3">
-                                                            <div class="col">
-                                                                <strong>Classificação fiscal</strong>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row mb-3">
-                                                            <div class="col-2">
-                                                                <label for="ncm">NCM</label>
-                                                                <input class="form-control cadastroProd" type="text" name="ncm" id="ncm" onblur="removerPontos(this)" value="<?=$prod->NCM?>" required>
-                                                            </div>
-                                                            <div class="col">
-                                                                <label for="cfop">CFOP</label>
-                                                                <input class="form-control cadastroProd" list="listaCfop" type="text" name="cfop" id="cfop" value="" onselect="if($(this).val().search(' - ') > -1)$(this)[0].setSelectionRange(0,0);" required>
-                                                                <datalist id="listaCfop">
-                                                                    <?php
-                                                                        $resp = $con->query('select cfop,descricao from tbl_cfop');
-                                                                        while($row = $resp->fetch_assoc()){
-                                                                            echo '<option value="'.implode(' - ',$row).'">';
-                                                                        }
-                                                                    ?>
-                                                                </datalist>
-                                                            </div>
-                                                            <div class="col-2">
-                                                                <label for="cst">CST/CSOSN</label>
-                                                                <!--<input class="form-control cadastroProd" type="text" name="cst" id="cst" onblur="removerPontos(this)" value="" required>-->
-                                                                <select class="form-control mb-3" name="cst" id="cst" value="" required>
-                                                                    <?php
-                                                                        $conf = $con->query('select crt from tbl_configuracao')->fetch_assoc();
-                                                                        $crt = $conf['crt'] == 0? 1: 0;
-                                                                        $resp = $con->query('select * from tbl_cst where simples = '.$crt);
-                                                                        while($row = $resp->fetch_assoc()){
-                                                                            echo '<option value="'.$row['id'].'">'.$row['codigo'].'</option>';
-                                                                        }
-                                                                    ?>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row mb-3">
-                                                            <div class="col-2">
-                                                                <label for="cest">CEST</label>
-                                                                <input class="form-control cadastroProd" type="text" name="cest" id="cest" onblur="removerPontos(this)" value="<?=$prod->CEST?>" required>
-                                                            </div>
-                                                            <div class="col-2">
-                                                                <label for="cest">Origem</label>
-                                                                <input class="form-control cadastroProd" type="text" name="cest" id="origem" value="<?=$imposto->orig?>" required>
-                                                            </div>
-                                                        </div>
-
-
-                                                    <?endif;?>
 
                                                     <div class="row">
                                                         <div class="col">

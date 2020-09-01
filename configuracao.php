@@ -96,6 +96,12 @@ $usuario = $resp->fetch_assoc();
     $(document).ready(function(){
         $('.nav-link[data-target]').click(function(){
             $('.nav-link[data-target]').removeClass('active');
+            $('.tab-pane').removeClass('active');
+            $('.tab-pane').addClass('fade');
+            $(this).addClass('active');
+            $($(this).attr('data-target')).removeClass('fade');
+            $($(this).attr('data-target')).addClass('active');
+
         });
     });
 </script>
@@ -128,7 +134,10 @@ $usuario = $resp->fetch_assoc();
 
     <div class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" data-target="#geral">Geral</a>
+            <a class="nav-link" data-target="#geral">Geral</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active"  data-target="#pagamento">Pagamento</a>
         </li>
         <li class="nav-item">
             <a class="nav-link"  data-target="#impressao">Impressão</a>
@@ -136,10 +145,13 @@ $usuario = $resp->fetch_assoc();
     </div>
     
     <div class="tab-content">
-        <div class="tab-pane container active" id="geral">
+        <div class="tab-pane fade" id="geral">
             <?include('pag/configuracao/geral.php');?>
         </div>
-        <div class="tab-pane container fade" id="impressao">
+        <div class="tab-pane active" id="pagamento">
+            <?include('pag/configuracao/pagamento.php')?>
+        </div>
+        <div class="tab-pane fade" id="impressao">
             <?include('pag/configuracao/impressao.php');?>
         </div>
     </div>

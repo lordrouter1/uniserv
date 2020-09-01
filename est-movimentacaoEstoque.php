@@ -34,10 +34,6 @@ if(isset($_POST['cmd'])){
         redirect($con->error);
     }
 }
-elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_locaisEstoque where id = '.$_GET['del']);
-    redirect($con->error);
-}
 
 ?>
 <script>
@@ -140,7 +136,7 @@ elseif(isset($_GET['del'])){
                             <input type="text" class="form-control w-25" list="listProd" placeholder="Insira o produto" name="produto">
                             <datalist id="listProd">
                                 <?
-                                    $resp = $con->query('select id,nome from tbl_produtos');
+                                    $resp = $con->query('select id,nome from tbl_produtos where status = 1');
                                     while($row = $resp->fetch_assoc()){
                                         echo '<option value="'.$row['id'].' - '.$row['nome'].'">';
                                     }
@@ -148,7 +144,7 @@ elseif(isset($_GET['del'])){
                             </datalist>
                             <select name="estoque" class="form-control">
                                 <?
-                                    $resp = $con->query('select id,nome from tbl_locaisEstoque where empresa = '.$_COOKIE['empresa']);
+                                    $resp = $con->query('select id,nome from tbl_locaisEstoque where empresa = '.$_COOKIE['empresa'].' and status = 1');
                                     $cont = 0;
                                     while($row = $resp->fetch_assoc()){
                                         echo '<option value="'.$row['id'].'" '.($cont++==0?'selected':'').'>'.$row['nome'].'</option>';

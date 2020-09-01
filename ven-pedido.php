@@ -8,8 +8,8 @@
 
 <?php
 if(isset($_GET['del'])){
-    $con->query('delete from tbl_pedido where id = '.$_GET['del']);
-    $con->query('delete from tbl_pedidoItem where pedido = '.$_GET['del']);
+    $con->query('update tbl_pedido set status = 0 where id = '.$_GET['del']);
+    $con->query('update tbl_pedidoItem set status = 0 where pedido = '.$_GET['del']);
     redirect($con->error);
 }
 
@@ -118,7 +118,7 @@ if(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_pedido order by id desc');
+                                $resp = $con->query('select * from tbl_pedido where status = 1 order by id desc');
                             
                                 while($row = $resp->fetch_assoc()){
                                     $nome = $con->query('select razaoSocial_nome from tbl_clientes where id = '.$row['cliente'])->fetch_assoc()['razaoSocial_nome'];

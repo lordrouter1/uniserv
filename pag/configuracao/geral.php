@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col shadow p-2">
 
-        <h3 class="mb-3 text-center">Empresas</h3>
+        <h3 class="mb-3 ml-4">Empresas</h3>
         <div id="accordion" data-children=".card">
             
             <?

@@ -65,7 +65,7 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_classificacaoFiscal where id = '.$_GET['del']);
+    $con->query('update tbl_classificacaoFiscal set status = 0 where id = '.$_GET['del']);
     #redirect($con->error);
 }
 
@@ -79,13 +79,7 @@ elseif(isset($_GET['del'])){
         newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Unidades Cadastradas</h5>');
         newWin.document.write(divPrint.outerHTML);
     }
-    function mostrarCest(self){
-        $('#cest').val('');
-        $.get('core/ajax/cest.php?ncm='+$(self).val(),resp => {
-            $('#listacest').empty();
-            $('#listacest').append(resp);
-        });
-    }
+    
 
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
@@ -177,7 +171,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_classificacaoFiscal');
+                                $resp = $con->query('select * from tbl_classificacaoFiscal where status = 1');
 
                                 while($row = $resp->fetch_assoc()){
                                     $cfop = $con->query('select cfop from tbl_cfop where id = '.$row['cfop'])->fetch_assoc()['cfop'];

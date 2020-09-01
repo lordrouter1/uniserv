@@ -32,7 +32,7 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_unidades where id = '.$_GET['del']);
+    $con->query('update tbl_unidades set status = 0 where id = '.$_GET['del']);
     #redirect($con->error);
 }
 
@@ -140,7 +140,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_unidades order by grupoNome, base desc');
+                                $resp = $con->query('select * from tbl_unidades where status = 1 order by grupoNome, base desc');
                             
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){

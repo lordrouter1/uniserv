@@ -27,7 +27,7 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_locaisEstoque where id = '.$_GET['del']);
+    $con->query('update tbl_locaisEstoque set status = 0 where id = '.$_GET['del']);
     redirect($con->error);
 }
 
@@ -135,7 +135,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_locaisEstoque order by id desc');
+                                $resp = $con->query('select * from tbl_locaisEstoque where status = 1 order by id desc');
                             
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){

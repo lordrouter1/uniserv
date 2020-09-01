@@ -50,8 +50,7 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_contratos where id ='.$_GET['del']);
-    $con->query('delete from tbl_contratosServicos where contrato = '.$_GET['del']);
+    $con->query('update tbl_contratos set status = -1 where id ='.$_GET['del']);
     redirect($con->error);
 }
 
@@ -140,7 +139,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_contratos order by status');
+                                $resp = $con->query('select * from tbl_contratos where status > 0 order by status');
                             
                                 while($row = $resp->fetch_assoc()){
                                     $valor = $con->query('select sum(valor) as total from tbl_contratosServicos where contrato = '.$row['id'])->fetch_assoc()['total'];

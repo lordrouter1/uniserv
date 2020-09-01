@@ -23,7 +23,7 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_servicos where id ='.$_GET['del']);
+    $con->query('update tbl_servicos set status = 0 where id ='.$_GET['del']);
     redirect($con->error);
 }
 
@@ -135,7 +135,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_servicos');
+                                $resp = $con->query('select * from tbl_servicos where status = 1');
                             
                                 while($row = $resp->fetch_assoc()){
                                     echo '

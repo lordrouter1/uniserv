@@ -34,8 +34,8 @@
         break;
     }
     if($_GET['del']){
-        $con->query('delete from tbl_remessa where id = '.$_GET['del']);
-        $con->query('delete from tbl_remessaItem where remessa = '.$_GET['del']);
+        $con->query('update tbl_remessa set status = -1 where id = '.$_GET['del']);
+        $con->query('update tbl_remessaItem set status = 0 where remessa = '.$_GET['del']);
         redirect($con->error);
     }
     elseif($_GET['fin']){
@@ -178,11 +178,22 @@
                                     }
                                     $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
                                     $finalizar = $row['status'] == 0? '<a href="?fin='.$row['id'].'" class="btn"><i class="fas fa-check text-success"></i></a>':'';
+                                    switch($row['status']){
+                                        case '0':
+                                            $status = 'Em aberto';
+                                        break;
+                                        case '1':
+                                            $status = 'Finalizado';
+                                        break;
+                                        case '-1':
+                                            $status = 'Cancelado';
+                                        break;
+                                    }
                                     echo '
                                         <tr>
                                             <td>'.$row['descricao'].'</td>
                                             <td>'.date('d / m / Y',strtotime($row['data'])).'</td>
-                                            <td>'.($row['status'] == 1?'Finalizado':'Em aberto').'</td>
+                                            <td>'.$status.'</td>
                                             <td class="noPrint text-center">'.$finalizar.'</td>
                                             <td class="noPrint text-center"><a target="_blank" href="est-remessaImprimir.php?prt='.$row['id'].'" class="btn"><i class="fas fa-print icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-edit icon-gradient bg-happy-itmeo"></i></a></td>

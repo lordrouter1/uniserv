@@ -63,7 +63,7 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('delete from tbl_clientes where id ='.$_GET['del']);
+    $con->query('update tbl_clientes set status = 0 where id ='.$_GET['del']);
     redirect($con->error);
 }
 
@@ -178,7 +178,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_clientes where tipoCliente = "on"');
+                                $resp = $con->query('select * from tbl_clientes where tipoCliente = "on" and status = 1');
                             
                                 while($row = $resp->fetch_assoc()){
                                     echo '
