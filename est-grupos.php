@@ -159,7 +159,7 @@ elseif(isset($_GET['del'])){
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo cliente</h5>
+                <h5 class="modal-title">Adicionar novo grupo</h5>
                 <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
