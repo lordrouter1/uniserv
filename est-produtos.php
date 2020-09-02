@@ -382,11 +382,12 @@ elseif(isset($_GET['del'])){
                                 $resp = $con->query('select * from tbl_produtos where status = 1');
                             
                                 while($row = $resp->fetch_assoc()){
+                                    $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc();
                                     echo '
                                         <tr>
                                             <td>'.$row['nome'].'</td>
                                             <td>'.$row['referencia'].'</td>
-                                            <td>'.$row['grupo'].'</td>
+                                            <td>'.$grupo['nome'].'</td>
                                             <td>'.number_format($row['valor'],2,',','.').'</td>
                                             <td>'.number_format($row['estoque'],4,',','.').'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>

@@ -16,7 +16,7 @@ $itens = $arq->det;
 
 $empresa = $con->query('select * from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc();
 
-if(!(str_replace(array('.','/','-'),'',$empresa['cnpj']) == $dest->CNPJ))echo '<script>location.href="est-impXml.php?e"</script>';
+#if(!(str_replace(array('.','/','-'),'',$empresa['cnpj']) == $dest->CNPJ))echo '<script>location.href="est-impXml.php?e"</script>';
 
 $cliente = $con->query('select * from tbl_clientes where cnpj_cpf = "'.$emit->CNPJ.'"');
 $cadastrado = true;
@@ -291,7 +291,7 @@ $attr = (array) $arq;
                                                             <select class="form-control mb-3 cadastroProd" name="grupo" id="grupo">
                                                                 <option selected disabled>Selecione</option>
                                                                 <?
-                                                                    $resp = $con->query('select id,nome from tbl_grupo');
+                                                                    $resp = $con->query('select id,nome from tbl_grupo where grupo = 0;');
                                                                     while($row = $resp->fetch_assoc()){
                                                                         echo '<option value="'.$row['id'].'">'.$row['nome'].'</option>';
                                                                     }
