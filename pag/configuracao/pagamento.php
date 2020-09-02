@@ -1,4 +1,5 @@
 <?
+
     $resp = $con->query('select * from tbl_configuracao where id = 1')->fetch_assoc();
     /*var_dump(array(
         "type" => "PAYMENT",
@@ -35,83 +36,122 @@
 <div class="row shadow bg-white rounded">
     <div class="col shadow p-2 pl-4">
 
-        <form method="post">
-            <h3 class="mb-3">Pagamentos</h3>
+        <h3 class="mb-3">Pagamentos</h3>
 
-            <div class="divider"></div>
+        <div class="divider"></div>
+
+        <div class="row mb-4">
+            <div class="col-2 text-right"><strong><span><label for="habilitar">Habilitar</label></span></strong></div>
+            <div class="col"><input type="checkbox" name="habilitar" id="habilitar"></div>
+        </div>
+
+        <h3>Empresa</h3>
+        <div class="divider"></div>
+
+        
+        <form method="post" >
+            <input type="hidden" name="cmd" value="empresa">
+
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Empresa</strong></div>
+                <div class="col">
+                    <select class="form-control w-25">
+                        <option selected disabled>Selecione</option>
+                        <?
+                            $resp = $con->query('select id,razao_social from tbl_configuracao');
+                            while($row = $resp->fetch_assoc()){
+                                echo '<option value="'.$row['id'].'">'.$row['razao_social'].'</option>';
+                            }
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Área de atuação</strong></div>
+                <div class="col">
+                    <select name="" id="" class="form-control w-25">
+                        <option selected disabled>Selecione</option>
+                        <?
+                            foreach($juno->getBusinessAreas() as $item){
+                                echo '<option value="'.$item->code.'">'.$item->category.'</option>';
+                            }
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Tipo de companhia</strong></div>
+                <div class="col">
+                    <select name="" id="" class="form-control w-25">
+                        <option selected disabled>Selecione</option>
+                        <?
+                            foreach($juno->getCompanyTypes() as $item){
+                                echo '<option value="'.$item.'">'.$item.'</option>';
+                            }
+                        ?>
+                    </select>
+                </div>
+            </div>
 
             <div class="row mb-4">
-                <div class="col-3"><strong><span><label for="habilitar">Habilitar</label></span></strong></div>
-                <div class="col"><input type="checkbox" name="habilitar" id="habilitar"></div>
-            </div>
-
-            <h3>Empresa</h3>
-            <div class="divider"></div>
-
-            <div class="row mb-3">
-                <div class="col-3"><strong>Área</strong></div>
+                <div class="col-2 text-right"><strong>Descrição</strong></div>
                 <div class="col">
-                    <select name="" id="" class="form-control w-25"></select>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-3"><strong>Tipo</strong></div>
-                <div class="col">
-                    <select name="" id="" class="form-control w-25"></select>
+                    <input type="text" name="" id="" class="form-control w-25">
                 </div>
             </div>
 
             <div class="row mb-4">
-                <div class="col-3"><strong>Descrição</strong></div>
-                <div class="col">
-                    <select name="" id="" class="form-control w-25"></select>
+                <div class="col-2 text-right">
+                    <input class="btn btn-success" type="submit" value="Salvar">
                 </div>
             </div>
+        </form>
 
-            <h3 class="mt-4">Banco</h3>
-            <div class="divider"></div>
+        <h3 class="mt-4">Banco</h3>
+        <div class="divider"></div>
 
-            <div class="row mb-3">
-                <div class="col-3"><strong>Banco</strong></div>
-                <div class="col">
-                    <select name="" id="" class="form-control w-25"></select>
-                </div>
+        <div class="row mb-3">
+            <div class="col-2 text-right"><strong>Banco</strong></div>
+            <div class="col">
+                <select name="" id="" class="form-control w-25"></select>
             </div>
+        </div>
 
-            <div class="row mb-3">
-                <div class="col-3"><strong>Agência</strong></div>
-                <div class="col">
-                    <input type="text" name="" id="" class="form-control w-25">
-                </div>
+        <div class="row mb-3">
+            <div class="col-2 text-right"><strong>Agência</strong></div>
+            <div class="col">
+                <input type="text" name="" id="" class="form-control w-25">
             </div>
+        </div>
 
-            <div class="row mb-3">
-                <div class="col-3"><strong>Conta</strong></div>
-                <div class="col">
-                    <input type="text" name="" id="" class="form-control w-25">
-                </div>
+        <div class="row mb-3">
+            <div class="col-2 text-right"><strong>Conta</strong></div>
+            <div class="col">
+                <input type="text" name="" id="" class="form-control w-25">
             </div>
+        </div>
 
-            <div class="row mb-3">
-                <div class="col-3"><strong>Nome</strong></div>
-                <div class="col">
-                    <input type="text" name="" id="" class="form-control w-25">
-                </div>
+        <div class="row mb-3">
+            <div class="col-2 text-right"><strong>Nome</strong></div>
+            <div class="col">
+                <input type="text" name="" id="" class="form-control w-25">
             </div>
+        </div>
 
-            <div class="row mb-3">
-                <div class="col-3"><strong>Documento</strong></div>
-                <div class="col">
-                    <input type="text" name="" id="" class="form-control w-25">
-                </div>
+        <div class="row mb-3">
+            <div class="col-2 text-right"><strong>Documento</strong></div>
+            <div class="col">
+                <input type="text" name="" id="" class="form-control w-25">
             </div>
+        </div>
 
-            <div class="row mb-3 mt-4">
-                <div class="col">
-                    <input class="btn btn-primary" type="submit" value="Salvar">
-                </div>
+        <div class="row mb-3 mt-4">
+            <div class="col">
+                <input class="btn btn-primary" type="submit" value="Salvar">
             </div>
+        </div>
         </form>
 
     </div>

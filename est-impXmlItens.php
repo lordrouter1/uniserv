@@ -212,9 +212,10 @@ $attr = (array) $arq;
                             $imposto = $imposto[array_keys($imposto)[0]];
                             $rId = uniqid();
                             
-                            $cad = $con->query('select * from tbl_produtos where referencia = "'.$prod->cProd.'"')->fetch_assoc();
+                            $cad = $con->query('select * from tbl_produtos where nome like "%'.$prod->cProd.'%"')->fetch_assoc();
                             $cadastrar = !isset($cad);
-                            $checaLog = $con->query('select id from tbl_impXmlLog where referencia = "'.$prod->cProd.'" and nNota = "'.$nota->nNF.'"')->num_rows;
+
+                            $checaLog = $con->query('select id from tbl_impXmlLog where id = "'.$cad['id'].'" and nNota = "'.$nota->nNF.'"')->num_rows;
                             
                             if(!$checaLog) $impCompleta = false;
 
@@ -254,14 +255,15 @@ $attr = (array) $arq;
                                                         </div>
                                                     </div>
 
-                                                    <div class="row mb-3">
-                                                        <div class="col-2">
+                                                    <div class="row mb-3" >
+                                                        <input class="cadastroProd" type="hidden" name="referencia" id="referencia" value="">
+                                                        <!--<div class="col-2">
                                                             <label for="referencia">Referência</label>
-                                                            <input class="form-control cadastroProd" type="text" name="referencia" id="referencia" readonly value="<?=$prod->cProd?>">
-                                                        </div>
+                                                            
+                                                        </div>-->
                                                         <div class="col">
                                                             <label for="nome">Nome</label>
-                                                            <input class="form-control cadastroProd" type="text" name="nome" id="nome" value="<?=$prod->xProd?>" required>
+                                                            <input class="form-control cadastroProd" type="text" name="nome" id="nome" value="<?=$prod->xProd?> - <?=$prod->cProd?>" required>
                                                         </div>
                                                         <div class="col">
                                                             <label for="unEstoque">Únidade de estoque</label>

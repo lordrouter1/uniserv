@@ -38,6 +38,12 @@ $con->query('INSERT into tbl_produtos(referencia,nome,valor,unidadeEstoque,grupo
 )');
 $idProd = $con->insert_id;
 
+if($_POST['referencia'] == '')
+    $con->query('update tbl_produtos set referencia = "'.$idProd.'" where id = '.$idProd);
+if($_POST['barras'] == '')
+    $con->query('update tbl_produtos set codBarras = "'.str_pad($idProd,13,0,STR_PAD_LEFT).'" where id = '.$idProd);
+
+
 $con->query('INSERT INTO `tbl_impXmlLog`(`cfop_entrada`, `cfop_saida`, `quantia`, `referencia`, `idProduto`, `nNota`, `sNota`,`emissaoNota`,`importacaoNota`,`fornecedor`,`chave`) VALUES (
     "'.$_POST['cfopEntrada'].'",
     "'.($cfopSaida | 0).'",

@@ -98,7 +98,7 @@ class Juno
 
         $resp = json_decode(curl_exec($this->curl));
 
-        return $resp;
+        return $resp->_embedded->businessAreas;
     }
 
     public function getCompanyTypes()
@@ -116,7 +116,7 @@ class Juno
 
         $resp = json_decode(curl_exec($this->curl));
 
-        return $resp;
+        return $resp->companyTypes;
     }
 
     /* ========== CONTA ========== */
@@ -317,7 +317,7 @@ $juno = new Juno();
 #$image = file_get_contents("img.png");
 #$resp = $juno->enviarDocumentos($image,"doc_CF891066125DA606");
 
-$resp = $juno->listDocumentos();
-var_dump($resp);
+#$resp = $juno->listDocumentos();
+#var_dump($resp);
 
 

@@ -3,6 +3,7 @@
 session_start();
 
 require_once('con.php');
+require_once('core/lib/juno/class.php');
 
 if($_SESSION['usuario'] != null && $_SESSION['senha'] != null && $_SESSION['id'] != null){
     $con->set_charset("utf8");
