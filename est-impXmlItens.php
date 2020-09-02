@@ -1,6 +1,9 @@
 <?php include('header.php'); ?>
 
 <?php
+ini_set('display_errors',1);
+ini_set('display_startup_erros',1);
+error_reporting(E_ALL);
 
 if(!isset($_FILES['xml']['tmp_name'])) echo '<script>location.href="est-impXml.php?e"</script>';
 
@@ -13,7 +16,7 @@ $itens = $arq->det;
 
 $empresa = $con->query('select * from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc();
 
-if(!(ereg_replace('[\./\-]','',$empresa['cnpj']) == $dest->CNPJ))echo '<script>location.href="est-impXml.php?e"</script>';
+if(!(str_replace(array('.','/','-'),'',$empresa['cnpj']) == $dest->CNPJ))echo '<script>location.href="est-impXml.php?e"</script>';
 
 $cliente = $con->query('select * from tbl_clientes where cnpj_cpf = "'.$emit->CNPJ.'"');
 $cadastrado = true;
