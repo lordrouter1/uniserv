@@ -1,5 +1,5 @@
-<div class="row">
-    <div class="col shadow p-2">
+<div class="row shadow bg-white rounded">
+    <div class="col p-2">
 
         <h3 class="mb-3 ml-4">Empresas</h3>
         <div id="accordion" data-children=".card">

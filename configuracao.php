@@ -93,6 +93,10 @@ $usuario = $resp->fetch_assoc();
 ?>
 
 <script>
+    function modal(target){
+        $('.collapse:not("'+target+'")').hide('slow');
+        $(target).toggle('slow');
+    }
     $(document).ready(function(){
         $('.nav-link[data-target]').click(function(){
             $('.nav-link[data-target]').removeClass('active');
@@ -132,7 +136,7 @@ $usuario = $resp->fetch_assoc();
 <!-- conteúdo -->
 <div class="content">
 
-    <div class="nav nav-tabs">
+    <div class="nav nav-tabs mb-0">
         <li class="nav-item">
             <a class="nav-link" data-target="#geral">Geral</a>
         </li>

@@ -1,5 +1,5 @@
-<div class="row">
-    <div class="col shadow p-2 ml-2">
+<div class="row shadow rounded bg-white">
+    <div class="col p-2 ml-2">
         <h3 class="mb-3 text-center">Impressora Etiqueta</h3>
 
         <form method="POST">
