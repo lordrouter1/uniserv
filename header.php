@@ -10,7 +10,7 @@
         $_COOKIE['empresa'] = $_GET['empresa'];
     }
     if(!isset($_COOKIE['empresa'])){
-        $resp = $con->query('select id from tbl_configuracao')->fetch_assoc();
+        $resp = $con->query('select id from tbl_configuracao where id in (select valor from tbl_usuarioMeta where meta = "habilitar_empresa" and usuario = '.$_SESSION['id'].')')->fetch_assoc();
         setcookie('empresa',$resp['id']);
         $_COOKIE['empresa'] = $resp['id'];
     }

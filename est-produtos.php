@@ -382,7 +382,12 @@ elseif(isset($_GET['del'])){
                                 $resp = $con->query('select * from tbl_produtos where status = 1');
                             
                                 while($row = $resp->fetch_assoc()){
-                                    $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc();
+                                    
+                                    if($row['grupo'])
+                                        $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc();
+                                    else
+                                        $grupo = "";
+
                                     echo '
                                         <tr>
                                             <td>'.$row['nome'].'</td>
