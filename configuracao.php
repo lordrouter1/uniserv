@@ -97,6 +97,22 @@ $usuario = $resp->fetch_assoc();
         $('.collapse:not("'+target+'")').hide('slow');
         $(target).toggle('slow');
     }
+    
+    function getEmpresa(self){
+        $('#compEmpresaID').val($(self).val());
+        $('#bancoEmpresaID').val($(self).val());
+        
+        $.get('core/ajax/configuracao/compEmpresa.php?id='+$(self).val(),function(resp){
+            resp = JSON.parse(resp);
+            console.log(resp);
+            $('#area').val(resp['area']);
+            $('#tipo').val(resp['tipo']);
+            $('#descricao').val(resp['descricao']);
+        });
+
+        
+    }
+    
     $(document).ready(function(){
         $('.nav-link[data-target]').click(function(){
             $('.nav-link[data-target]').removeClass('active');
@@ -106,6 +122,14 @@ $usuario = $resp->fetch_assoc();
             $($(this).attr('data-target')).removeClass('fade');
             $($(this).attr('data-target')).addClass('active');
 
+        });
+
+        $("#compEmpresa").submit(function(e){
+            const data = $(this).serializeArray();
+            $.post('core/ajax/configuracao/compEmpresa.php',data,function(resp){
+                loadToastNR(resp);
+            });
+            e.preventDefault();
         });
     });
 </script>
@@ -164,3 +188,12 @@ $usuario = $resp->fetch_assoc();
 <!-- fim conteúdo -->
 
 <?php include('footer.php');?>
+
+<div id="toast-container" class="toast-top-center mt-3">
+    <div id="toast-success" class="toast toast-success" aria-live="polite" style="opacity: 0.899999;display:none;">
+        <div class="toast-title">Sucesso!</div>
+    </div>
+    <div id="toast-error" class="toast toast-error hidden" aria-live="polite" style="opacity: 0.899999;display:none;">
+        <div class="toast-title">Erro!</div>
+    </div>
+</div>

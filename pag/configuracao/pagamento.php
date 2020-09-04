@@ -40,37 +40,37 @@
 
         <div class="divider"></div>
 
-        <div class="row mb-4">
+        <div class="row mb-3">
             <div class="col-2 text-right"><strong><span><label for="habilitar">Habilitar</label></span></strong></div>
             <div class="col"><input type="checkbox" name="habilitar" id="habilitar"></div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-2 text-right"><strong>Empresa</strong></div>
+            <div class="col">
+                <select class="form-control w-25" onchange="getEmpresa(this)">
+                    <option selected disabled>Selecione</option>
+                    <?
+                        $resp = $con->query('select id,razao_social from tbl_configuracao');
+                        while($row = $resp->fetch_assoc()){
+                            echo '<option value="'.$row['id'].'">'.$row['razao_social'].'</option>';
+                        }
+                    ?>
+                </select>
+            </div>
         </div>
 
         <h3>Empresa</h3>
         <div class="divider"></div>
 
         
-        <form method="post" >
-            <input type="hidden" name="cmd" value="empresa">
-
-            <div class="row mb-3">
-                <div class="col-2 text-right"><strong>Empresa</strong></div>
-                <div class="col">
-                    <select class="form-control w-25">
-                        <option selected disabled>Selecione</option>
-                        <?
-                            $resp = $con->query('select id,razao_social from tbl_configuracao');
-                            while($row = $resp->fetch_assoc()){
-                                echo '<option value="'.$row['id'].'">'.$row['razao_social'].'</option>';
-                            }
-                        ?>
-                    </select>
-                </div>
-            </div>
+        <form method="post" id="compEmpresa">
+            <input type="hidden" name="empresa" id="compEmpresaID" value="">
 
             <div class="row mb-3">
                 <div class="col-2 text-right"><strong>Área de atuação</strong></div>
                 <div class="col">
-                    <select name="" id="" class="form-control w-25">
+                    <select name="area" id="area" class="form-control w-25">
                         <option selected disabled>Selecione</option>
                         <?
                             foreach($juno->getBusinessAreas() as $item){
@@ -84,7 +84,7 @@
             <div class="row mb-3">
                 <div class="col-2 text-right"><strong>Tipo de companhia</strong></div>
                 <div class="col">
-                    <select name="" id="" class="form-control w-25">
+                    <select name="tipo" id="tipo" class="form-control w-25">
                         <option selected disabled>Selecione</option>
                         <?
                             foreach($juno->getCompanyTypes() as $item){
@@ -98,7 +98,7 @@
             <div class="row mb-4">
                 <div class="col-2 text-right"><strong>Descrição</strong></div>
                 <div class="col">
-                    <input type="text" name="" id="" class="form-control w-25">
+                    <input type="text" name="descricao" id="descricao" class="form-control w-50" maxlength="200">
                 </div>
             </div>
 
@@ -112,46 +112,51 @@
         <h3 class="mt-4">Banco</h3>
         <div class="divider"></div>
 
-        <div class="row mb-3">
-            <div class="col-2 text-right"><strong>Banco</strong></div>
-            <div class="col">
-                <select name="" id="" class="form-control w-25"></select>
-            </div>
-        </div>
+        <form id="bancoEmpresa">
+            <input type="hidden" name="empresa" id="bancoEmpresaID" value="">
 
-        <div class="row mb-3">
-            <div class="col-2 text-right"><strong>Agência</strong></div>
-            <div class="col">
-                <input type="text" name="" id="" class="form-control w-25">
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Banco</strong></div>
+                <div class="col">
+                    <select name="banco" id="banco" class="form-control w-25">
+                    
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <div class="col-2 text-right"><strong>Conta</strong></div>
-            <div class="col">
-                <input type="text" name="" id="" class="form-control w-25">
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Número da agência</strong></div>
+                <div class="col">
+                    <input type="text" name="agencia" id="agencia" class="form-control w-25" maxlength="8">
+                </div>
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <div class="col-2 text-right"><strong>Nome</strong></div>
-            <div class="col">
-                <input type="text" name="" id="" class="form-control w-25">
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Número da conta</strong></div>
+                <div class="col">
+                    <input type="text" name="conta" id="conta" class="form-control w-25" maxlength="10">
+                </div>
             </div>
-        </div>
 
-        <div class="row mb-3">
-            <div class="col-2 text-right"><strong>Documento</strong></div>
-            <div class="col">
-                <input type="text" name="" id="" class="form-control w-25">
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Nome do responsável</strong></div>
+                <div class="col">
+                    <input type="text" name="responsavel" id="responsavel" class="form-control w-25" maxlength="120">
+                </div>
             </div>
-        </div>
 
-        <div class="row mb-3 mt-4">
-            <div class="col">
-                <input class="btn btn-primary" type="submit" value="Salvar">
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong>Documento do responsável</strong></div>
+                <div class="col">
+                    <input type="text" name="documento" id="documento" class="form-control w-25" maxlength="60">
+                </div>
             </div>
-        </div>
+
+            <div class="row mb-4">
+                <div class="col-2 text-right">
+                    <input class="btn btn-success" type="submit" value="Salvar">
+                </div>
+            </div>
         </form>
 
     </div>
