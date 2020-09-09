@@ -607,8 +607,14 @@ elseif(isset($_GET['del'])){
                             <? 
                                 if($_GET['edt']){
                                     $fisc = $con->query('select * from tbl_classificacaoFiscal where id = '.$prod['classificacaoFiscal'])->fetch_assoc();
-                                    $cfop = implode(' - ',$con->query('select cfop,descricao from tbl_cfop where id = '.$fisc['cfop'])->fetch_assoc());
-                                    $cest = implode(' - ',$con->query('select cest,descricao from tbl_ncm_cest where id = '.$fisc['cest'])->fetch_assoc());
+                                    
+                                    $resp = $con->query('select cfop,descricao from tbl_cfop where id = '.$fisc['cfop']);
+                                    if($resp->num_rows > 0)
+                                        $cfop = implode(' - ',$resp->fetch_assoc());
+                                    
+                                    $resp = $con->query('select cest,descricao from tbl_ncm_cest where id = '.$fisc['cest']);
+                                    if($resp->num_rows > 0)
+                                        $cest = implode(' - ',$resp->fetch_assoc());
                                 }
                             ?>
 
