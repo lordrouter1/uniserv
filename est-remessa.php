@@ -10,6 +10,7 @@
                 "'.$_SESSION['id'].'",
                 "'.$_POST['descricao'].'"
             )');
+            var_dump($con->error);
             $lastid = $con->insert_id;
             for($i = 0; $i < sizeof($_POST['id']); $i++){
                 $con->query('INSERT INTO `tbl_remessaItem`(`produto`, `quantia`, `remessa`) VALUES (
@@ -18,7 +19,8 @@
                     "'.$lastid.'"
                 )');
             }
-            redirect($con->error);
+            var_dump($con->error);
+            #redirect($con->error);
         break;
         case 'edt':
             $con->query('UPDATE tbl_remessa set descricao = "'.$_POST['descricao'].'"');
@@ -35,10 +37,8 @@
     }
     if($_GET['del']){
         $con->query('update tbl_remessa set status = -1 where id = '.$_GET['del']);
-        var_dump($con->error);
         $con->query('update tbl_remessaItem set status = 0 where remessa = '.$_GET['del']);
-        var_dump($con->error);
-        #redirect($con->error);
+        redirect($con->error);
     }
     elseif($_GET['fin']){
         $con->query('update tbl_remessa set status = 1 where id = '.$_GET['fin']);
