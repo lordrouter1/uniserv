@@ -35,9 +35,8 @@
     }
     if($_GET['del']){
         $con->query('update tbl_remessa set status = -1 where id = '.$_GET['del']);
-        var_dump($con->error);
         $con->query('update tbl_remessaItem set status = 0 where remessa = '.$_GET['del']);
-        #redirect($con->error);
+        redirect($con->error);
     }
     elseif($_GET['fin']){
         $con->query('update tbl_remessa set status = 1 where id = '.$_GET['fin']);
