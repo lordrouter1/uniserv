@@ -104,19 +104,23 @@ $file .=           '
             </div>
         </div>
 
-        <br><br><br><br>
-        <div class="row">
-            <div class="col text-center">
-                <span>___________________________________ , _______/_______/_______</span><br>
-                '.$cliente['razaoSocial_nome'].'
-            </div>
-        </div>
-
     </div>
 
 </body>
 </html>
 ';
+
+/*
+
+<br><br><br><br>
+<div class="row">
+    <div class="col text-center">
+        <span>___________________________________ , _______/_______/_______</span><br>
+        '.$cliente['razaoSocial_nome'].'
+    </div>
+</div>
+
+*/
 
 #ob_start();
 #include 'ven-pedidoImpressao.php';

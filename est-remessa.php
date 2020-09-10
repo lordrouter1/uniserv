@@ -168,7 +168,7 @@
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_remessa order by id desc');
+                                $resp = $con->query('select * from tbl_remessa where status = 1 order by id desc');
                             
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
