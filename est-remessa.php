@@ -10,7 +10,6 @@
                 "'.$_SESSION['id'].'",
                 "'.$_POST['descricao'].'"
             )');
-            var_dump($con->error);
             $lastid = $con->insert_id;
             for($i = 0; $i < sizeof($_POST['id']); $i++){
                 $con->query('INSERT INTO `tbl_remessaItem`(`produto`, `quantia`, `remessa`) VALUES (
@@ -19,8 +18,7 @@
                     "'.$lastid.'"
                 )');
             }
-            var_dump($con->error);
-            #redirect($con->error);
+            redirect($con->error);
         break;
         case 'edt':
             $con->query('UPDATE tbl_remessa set descricao = "'.$_POST['descricao'].'"');
