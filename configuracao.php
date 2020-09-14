@@ -104,12 +104,22 @@ $usuario = $resp->fetch_assoc();
         
         $.get('core/ajax/configuracao/compEmpresa.php?id='+$(self).val(),function(resp){
             resp = JSON.parse(resp);
-            console.log(resp);
             $('#area').val(resp['area']);
             $('#tipo').val(resp['tipo']);
             $('#descricao').val(resp['descricao']);
+            $('#respLegal').val(resp['respLegal']);
+            $('#docResp').val(resp['docResp']);
+            $('#aniversarioResp').val(resp['dataResp']);
         });
 
+        $.get('core/ajax/configuracao/bancoEmpresa.php?id='+$(self).val(),function(resp){
+            resp = JSON.parse(resp);
+            $('#banco').val(resp['banco']);
+            $('#agencia').val(resp['agencia']);
+            $('#conta').val(resp['conta']);
+            $('#responsavel').val(resp['responsavel']);
+            $('#documento').val(resp['documento']);
+        });
         
     }
     
@@ -130,6 +140,23 @@ $usuario = $resp->fetch_assoc();
                 loadToastNR(resp);
             });
             e.preventDefault();
+        });
+
+        $("#bancoEmpresa").submit(function(e){
+            const data = $(this).serializeArray();
+            $.post('core/ajax/configuracao/bancoEmpresa.php',data,function(resp){
+                loadToastNR(resp);
+            });
+            e.preventDefault();
+        });
+
+        $('#habilitarPagamento').click(function(){
+            const idEmpresa = $('#habilitarPagamentoEmpresa').val();
+            const status = $(this).is(':checked');
+            $.post('core/ajax/configuracao/ativarJuno.php',{empresa:idEmpresa,habilitar:status},function(resp){
+                console.log(resp);
+                //loadToastNR(resp);
+            });
         });
     });
 </script>

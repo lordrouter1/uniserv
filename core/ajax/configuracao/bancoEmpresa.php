@@ -3,12 +3,34 @@
 
     switch($_SERVER['REQUEST_METHOD']){
         case 'GET':
-            echo json_encode($con->query('select area,tipo,descricao from tbl_configuracao where id = '.$_GET['id'])->fetch_assoc());
+            echo json_encode($con->query('select * from tbl_banco where empresa = '.$_GET['id'])->fetch_assoc());
         break;
         case 'POST':
-            $query = 'update tbl_configuracao set area = "'.$_POST['area'].'", tipo = "'.$_POST['tipo'].'", descricao = "'.$_POST['descricao'].'" where id = '.$_POST['empresa'];
-            $con->query($query);
-            echo $con->error == ""? true:false;
+            $resp = $con->query('select id from tbl_banco where empresa = '.$_POST['empresa']);
+            if($resp->num_rows == 0){
+                $query = 'insert into tbl_banco(banco,agencia,conta,responsavel,documento,empresa) values(
+                    "'.$_POST['banco'].'",
+                    "'.$_POST['agencia'].'",
+                    "'.$_POST['conta'].'",
+                    "'.$_POST['responsavel'].'",
+                    "'.$_POST['documento'].'",
+                    "'.$_POST['empresa'].'"
+                )';
+                $con->query($query);
+                echo $con->error == ""? true:false;
+            }
+            else{
+                $query = 'update tbl_banco set
+                    banco = "'.$_POST['banco'].'",
+                    agencia = "'.$_POST['agencia'].'",
+                    conta = "'.$_POST['conta'].'",
+                    responsavel = "'.$_POST['responsavel'].'",
+                    documento = "'.$_POST['documento'].'"
+                    where empresa = '.$_POST['empresa'].'
+                ';
+                $con->query($query);
+                echo $con->error == ""? true:false;
+            }
         break;
     }
 ?>

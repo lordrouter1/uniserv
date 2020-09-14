@@ -23,7 +23,7 @@ class Juno
     private $recipientToken = "15A39D6C119E71C98B2837EA5DDC42BBEE84B01CE26631D0CB655CC2A0F92C72";
     private $masterToken = "1230E4ECA4E796BF373DD272FFC5D24482D4DA794EA41A4455EEB95AC7A9A75B";
 
-    private $resourceToken = "";
+    #private $resourceToken = "";
 
     private $curl;
     private $url = "https://sandbox.boletobancario.com/api-integration/";
@@ -39,7 +39,7 @@ class Juno
         //$this->loadResourceToken();
     }
 
-    private function loadResourceToken()
+    /*private function loadResourceToken()
     {
         $resp = mysql_query('select resourceToken from config_site');
         
@@ -53,6 +53,10 @@ class Juno
             $this->resourceToken = "";
             return false;
         }
+    }*/
+
+    private function loadRecipientToken($token){
+        $this->recipientToken = $token;
     }
 
     private function loadKey()
@@ -162,11 +166,12 @@ class Juno
             "Content-Type: application/json",
             "Authorization: Bearer ".$this->token,
             "X-Api-Version: 2",
-            "X-Resource-Token: 1230E4ECA4E796BF373DD272FFC5D24482D4DA794EA41A4455EEB95AC7A9A75B",
+            "X-Resource-Token: ".$this->masterToken,
         ));
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($account));
 
         $temp = curl_exec($this->curl);
+        $this->recipientToken = $temp['resourceToken'];
         $resp = json_decode($temp);
 
         return $resp;

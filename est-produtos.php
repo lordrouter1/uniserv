@@ -368,8 +368,9 @@ elseif(isset($_GET['del'])){
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
+                                <th style="width:4%">Código</th>
                                 <th>Nome</th>
-                                <th style="width:8%">referencia</th>
+                                <th style="width:8%">Referencia</th>
                                 <th style="width:14%">Grupo</th>
                                 <th style="width:14%">Preço</th>
                                 <th style="width:14%">Estoque</th>
@@ -390,6 +391,7 @@ elseif(isset($_GET['del'])){
 
                                     echo '
                                         <tr>
+                                            <td>'.$row['id'].'</td>
                                             <td>'.$row['nome'].'</td>
                                             <td>'.$row['referencia'].'</td>
                                             <td>'.$grupo['nome'].'</td>

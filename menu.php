@@ -167,7 +167,7 @@
                     </a>
                     <ul class="mm-collapse">
                         <li>
-                            <a <?php echo $menu['producao_grade']?'href=""':'disabled';?>>
+                            <a <?php echo $menu['producao_grade']?'href="prod-gradeProdutos.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Grade de Produtos
                             </a>
