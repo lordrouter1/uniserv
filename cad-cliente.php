@@ -178,7 +178,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_clientes where tipoCliente = "on" and status = 1');
+                                $resp = $con->query('select * from tbl_clientes where tipoCliente = "on" and status = 1 order by id desc');
                             
                                 while($row = $resp->fetch_assoc()){
                                     echo '
