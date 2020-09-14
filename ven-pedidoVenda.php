@@ -243,7 +243,7 @@ $pedidosCarrinho = 0;
 
                     <div class="content venda">
                         <?                      
-                            $resp = $con->query('select * from tbl_produtos');
+                            $resp = $con->query('select * from tbl_produtos where status = 1');
                             $itens = $resp->num_rows;
                             $itensLinha = isset($_COOKIE['iLinhas'])?$_COOKIE['iLinhas']:7;
                             $linhas = intval(($itens-1)/$itensLinha)+1;

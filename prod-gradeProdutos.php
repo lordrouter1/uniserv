@@ -61,10 +61,6 @@
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
-
-        $("#grupo").change(function(){
-            $.get('core/ajax/')
-        });
     });
 </script>
 
@@ -235,12 +231,6 @@
                                 ?>
                             </select>
                         </div>
-                        <div class="col-3">
-                            <label for="">Subgrupo<span class="ml-2 text-danger">*</span></label>
-                            <select name="grupo" id="grupo" class="form-control">
-                                
-                            </select>
-                        </div>
                     </div>
 
                     <div class="divider mb-3"></div>
@@ -250,6 +240,7 @@
                             <div class="input-group mb-3">
                                 <input type="text" placeholder="Nome do produto" class="form-control w-50" id="produto" maxlength="60" list="listProd">
                                 <input type="number" placeholder="Quantia" id="quantia" class="form-control" min="0">
+                                
                                 <div class="input-group-append" onclick="salvarProduto()">
                                         <span class="btn btn-success">Salvar</span>
                                 </div>
