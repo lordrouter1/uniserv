@@ -236,23 +236,27 @@
                     <div class="divider mb-3"></div>
 
                     <div class="row">
-                        <div class="col">
-                            <div class="input-group mb-3">
-                                <input type="text" placeholder="Nome do produto" class="form-control w-50" id="produto" maxlength="60" list="listProd">
-                                <input type="number" placeholder="Quantia" id="quantia" class="form-control" min="0">
-                                
-                                <div class="input-group-append" onclick="salvarProduto()">
-                                        <span class="btn btn-success">Salvar</span>
-                                </div>
-                            </div>
+                        <div class="col-4">
+                            <input type="text" placeholder="Nome do produto" class="form-control" id="produto" maxlength="60" list="listProd">
                             <datalist id="listProd">
                                 <?
-                                    $resp = $con->query('select id,referencia,nome from tbl_produtos');
+                                    $resp = $con->query('select id,referencia,nome from tbl_produtos where status = 1');
                                     while($row = $resp->fetch_assoc()){
                                         echo '<option value="'.$row['id'].' - '.str_replace('-','',$row['referencia']).' - '.$row['nome'].'">';
                                     }
                                 ?>
                             </datalist>
+                        </div>
+                        <div class="col-2">
+                            <input type="number" placeholder="Fator" id="fator" class="form-control" min="0" step="0.00000001">
+                        </div>
+                        <div class="col-2">
+                            <select id="formaCalculo" class="form-control">
+                                <option value="0" selected>Custo Fixo X Quantidade</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <span class="btn btn-success">Salvar</span>
                         </div>
                     </div>
 

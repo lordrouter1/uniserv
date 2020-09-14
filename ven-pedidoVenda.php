@@ -83,10 +83,11 @@ $pedidosCarrinho = 0;
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#tablePrint tbody tr").filter(function() {
+            $(".onlyPone").filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
+        
         $("#desconto").change(function(resp){
             let valor = parseFloat($(resp.currentTarget).val());
             let subtotal = parseFloat($('#subtotal').val());
@@ -195,7 +196,7 @@ $pedidosCarrinho = 0;
                             <select class="form-control" id="selecionarCliente" onchange="document.cookie='cliente='+$(this).val()">
                                 <option selected disabled>Selecione o cliente</option>
                                 <?php
-                                    $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
+                                    $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on" and status = 1');
                                     while($row = $resp->fetch_assoc()){
                                         $selected = $_COOKIE['cliente'] == $row['id']? 'selected':'';
                                         echo '<option value="'.$row['id'].'" '.$selected.'>'.$row['razaoSocial_nome'].'</option>';
@@ -225,9 +226,9 @@ $pedidosCarrinho = 0;
                                 <a class="btn text-center" href="?display=grid"><h3><i class="fas fa-bars"></i></h3></a>
                             <?endif;?>
                         </div>
-                        <div class="col-6">
+                        <!--<div class="col-6">
                             <input type="text" class="mb-2 form-control" placeholder="Pesquisar" id="campoPesquisa">
-                        </div>
+                        </div>-->
                         <div class="col">    
                             <select class="form-control" onchange="location.href='?iLinhas='+$(this).val();">
                                 <option selected disabled>Itens por linha</option>
