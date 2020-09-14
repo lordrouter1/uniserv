@@ -57,7 +57,7 @@ if(isset($_POST['cmd'])){
         if($uploadOk === 1){
             if(move_uploaded_file($_FILES["imagem"]["tmp_name"],$target_file)){
                 $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`) VALUES (
-                    "'.($_POST['valor'] | 0).'",
+                    "'.($_POST['valor'] == 0? 0 : $_POST['valor']).'",
                     "'.$_POST['referencia'].'",
                     "'.$_POST['nome'].'",
                     "'.$_POST['un_estoque'].'",
@@ -83,7 +83,7 @@ if(isset($_POST['cmd'])){
         }
         else{
             $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`) VALUES (
-                "'.($_POST['valor'] | 0).'",
+                "'.($_POST['valor'] == 0? 0 : $_POST['valor']).'",
                 "'.$_POST['referencia'].'",
                 "'.$_POST['nome'].'",
                 "'.$_POST['un_estoque'].'",
@@ -380,7 +380,7 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_produtos where status = 1');
+                                $resp = $con->query('select * from tbl_produtos where status = 1 order by id desc');
                             
                                 while($row = $resp->fetch_assoc()){
                                     
