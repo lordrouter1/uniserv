@@ -120,6 +120,10 @@ $usuario = $resp->fetch_assoc();
             $('#responsavel').val(resp['responsavel']);
             $('#documento').val(resp['documento']);
         });
+
+        $.get('core/ajax/configuracao/ativarJuno.php?id='+$(self).val(),function(resp){
+
+        });
         
     }
     
@@ -155,6 +159,9 @@ $usuario = $resp->fetch_assoc();
             const status = $(this).is(':checked');
             $.post('core/ajax/configuracao/ativarJuno.php',{empresa:idEmpresa,habilitar:status},function(resp){
                 console.log(resp);
+                if(resp != 'true'){
+                    $('#habilitarPagamento').click();
+                }
                 //loadToastNR(resp);
             });
         });

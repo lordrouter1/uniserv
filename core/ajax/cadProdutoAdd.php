@@ -12,7 +12,7 @@ else{
 
 $con->query($query);
 
-$con->query('INSERT INTO `tbl_impXmlLog`(`idProduto`, `quantia`, `referencia`, `nNota`, `sNota`,`emissaoNota`,`importacaoNota`,`fornecedor`,`chave`) VALUES (
+$con->query('INSERT INTO `tbl_impXmlLog`(`idProduto`, `quantia`, `referencia`, `nNota`, `sNota`,`emissaoNota`,`importacaoNota`,`fornecedor`,`chave`,`produtoDeEntrada`) VALUES (
     "'.$prodId.'",
     "'.$_POST['estoque'].'",
     "'.$_POST['referencia'].'",
@@ -21,14 +21,15 @@ $con->query('INSERT INTO `tbl_impXmlLog`(`idProduto`, `quantia`, `referencia`, `
     "'.date('y-m-d',strtotime($_POST['dataNota'])).'",
     "'.date('y-m-d').'",
     "'.$_POST['fornecedor'].'",
-    "'.$_POST['chaveNFe'].'"
+    "'.$_POST['chaveNFe'].'",
+    "'.$_POST['produtoDeEntrada'].'"
 )');
 $idXml = $con->insert_id;
 
 $con->query('INSERT into tbl_estoque(quantia,produto,local,xml,operacao,data,motivo) values(
     "'.$_POST['estoque'].'",
     "'.$prodId.'",
-    "'.$_POST['localestoque'].'",
+    "'.$_COOKIE['lEstoque'].'",
     "'.$idXml.'",
     "e",
     "'.date('Y-m-d').'",

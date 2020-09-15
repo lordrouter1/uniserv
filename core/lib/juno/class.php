@@ -20,8 +20,8 @@ class Juno
     
     private $token = "";
     private $expires = "";
-    private $recipientToken = "15A39D6C119E71C98B2837EA5DDC42BBEE84B01CE26631D0CB655CC2A0F92C72";
-    private $masterToken = "1230E4ECA4E796BF373DD272FFC5D24482D4DA794EA41A4455EEB95AC7A9A75B";
+    private $recipientToken = "";
+    private $masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
 
     #private $resourceToken = "";
 

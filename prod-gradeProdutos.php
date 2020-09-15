@@ -3,8 +3,16 @@
 <?
     switch($_POST['cmd']){
         case 'add':
+            $query = 'INSERT INTO `tbl_gradeProdutos`(`descricao`, `grupo`) VALUES ("'.$_POST['descricao'].'","'.$_POST['grupo'].'")';
+            $con->query($query);
+            $last_id = $con->insert_id; 
             
-            #redirect($con->error);
+            for($i = 0; $i < sizeof($_POST['id']); $i++){
+                $query = 'INSERT INTO `tbl_gradeProdutosItens`(`item`, `fator`, `grade`) VALUES ("'.$_POST['id'][$i].'","'.$_POST['fator'][$i].'","'.$last_id.'")';
+                $con->query($query);
+            }
+
+            redirect($con->error);
         break;
         case 'edt':
             
@@ -12,8 +20,9 @@
         break;
     }
     if($_GET['del']){
-        #$con->query('update tbl_remessa set status = -1 where id = '.$_GET['del']);
-        #redirect($con->error);
+        $con->query('update tbl_gradeProdutos set status = 0 where id = '.$_GET['del']);
+        $con->query('update tbl_gradeProdutosItens set status = 0 where grade = '.$_GET['del']);
+        redirect($con->error);
     }
 ?>
 
@@ -33,25 +42,32 @@
             alert('Selecione o produto');
             return;
         }
-        
+
         $('#linhaProdutos').append(`
-            <div class="row mb-2">
-                <div class="col">
-                    <input type="hidden" name="id[]" value="`+buffer[0]+`">
-                    <input type="text" class="form-control" name="produto[]" value="`+buffer[2]+`" readonly>
-                </div>
-                <div class="col-3">
-                    <input type="number" class="form-control" name="qtd[]" value="`+$('#quantia').val()+`">
-                </div>
-                <div class="col-1">
+            <tr>
+                <td>
+                    `+buffer[0]+`    
+                </td>
+                <td>
+                    `+buffer[2]+`
+                </td>
+                <td>
+                    `+parseFloat($('#fator').val()).toFixed(8).toString()+`
+                </td>
+                <td>
                     <span onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span>
-                </div>
-            </div>
+                    <input type="hidden" name="id[]" value="`+buffer[0]+`">
+                    <input type="hidden" class="form-control" name="produto[]" value="`+buffer[2]+`" readonly>
+                    <input type="hidden" class="form-control" name="fator[]" value="`+parseFloat($('#fator').val()).toFixed(8).toString()+`">
+                    <input type="hidden" class="form-control" name="calculo[]" value="`+$('#formaCalculo option:selected').text()+`">
+                </td>
+            </tr>
         `);
 
         $('#produto').val('');
-        $('#quantia').val(0);
+        $('#fator').val(0);
         $('#produto').focus();
+        
     }
 
     $(document).ready(function(){
@@ -131,45 +147,26 @@
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
+                                <th style="width:4%">ID</th>
                                 <th>Descrição</th>
-                                <th style="width:14%">Data</th>
-                                <th style="width:6%">Status</th>
-                                <th class="noPrint"></th>
-                                <th class="noPrint"></th>
+                                <th style="width:14%">Grupo</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_remessa where status > -1 order by id desc');
+                                $resp = $con->query('select * from tbl_gradeProdutos where status = 1 order by id desc');
                             
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
-                                    if($grupoNome != $row['grupoNome']){
-                                        $grupoNome = $row['grupoNome'];
-                                        echo '<tr><th colspan="7" class="bg-light text-dark text-center">'.ucfirst($grupoNome).'</th></tr>';
-                                    }
-                                    $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
-                                    $finalizar = $row['status'] == 0? '<a href="?fin='.$row['id'].'" class="btn"><i class="fas fa-check text-success"></i></a>':'';
-                                    switch($row['status']){
-                                        case '0':
-                                            $status = 'Em aberto';
-                                        break;
-                                        case '1':
-                                            $status = 'Finalizado';
-                                        break;
-                                        case '-1':
-                                            $status = 'Cancelado';
-                                        break;
-                                    }
+                                    $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc()['nome'];
+                                    
                                     echo '
                                         <tr>
+                                            <td>'.$row['id'].'</td>
                                             <td>'.$row['descricao'].'</td>
-                                            <td>'.date('d / m / Y',strtotime($row['data'])).'</td>
-                                            <td>'.$status.'</td>
-                                            <td class="noPrint text-center">'.$finalizar.'</td>
-                                            <td class="noPrint text-center"><a target="_blank" href="est-remessaImprimir.php?prt='.$row['id'].'" class="btn"><i class="fas fa-print icon-gradient bg-happy-itmeo"></i></a></td>
+                                            <td>'.$grupo.'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
@@ -206,7 +203,7 @@
 
                     <?php
                         if(isset($_GET['edt'])){
-                            $resp = $con->query('select * from tbl_remessa where id = '.$_GET['edt']);
+                            $resp = $con->query('select * from tbl_gradeProdutos where id = '.$_GET['edt']);
                             $un = $resp->fetch_assoc();
                         }
                     ?>
@@ -226,7 +223,7 @@
                                 <?
                                     $resp = $con->query('select id,nome from tbl_grupo where status = 1 and grupo = 0');
                                     while($row = $resp->fetch_assoc()){
-                                        echo '<option value="'.$row['id'].'">'.$row['nome'].'</option>';
+                                        echo '<option value="'.$row['id'].'" '.($row['id'] == $un['grupo']?'selected':'').'>'.$row['nome'].'</option>';
                                     }
                                 ?>
                             </select>
@@ -256,36 +253,38 @@
                             </select>
                         </div>
                         <div class="col">
-                            <span class="btn btn-success">Salvar</span>
+                            <span class="btn btn-success" onclick="salvarProduto()">Salvar</span>
                         </div>
                     </div>
 
-                    <div class="divider mb-3"></div>
-
                     <div class="row">
-                        <div class="col" id="linhaProdutos">
-                            <?
-                                $resp = $con->query('select * from tbl_remessaItem where remessa = '.$_GET['edt']);
-                                if($resp){
-                                    while($row = $resp->fetch_assoc()){
-                                        $produto = $con->query('select nome from tbl_produtos where id = '.$row['produto'])->fetch_assoc();
-                                        echo '
-                                            <div class="row mb-2">
-                                                <div class="col">
-                                                    <input type="hidden" name="id[]" value="'.$row['produto'].'">
-                                                    <input type="text" class="form-control" name="produto[]" value="'.$produto['nome'].'" readonly>
+                        <div class="col">
+                            <table class="table table-striped mt-3" id="linhaProdutos">
+
+                                <?
+                                    $resp = $con->query('select * from tbl_remessaItem where remessa = '.$_GET['edt']);
+                                    if($resp){
+                                        while($row = $resp->fetch_assoc()){
+                                            $produto = $con->query('select nome from tbl_produtos where id = '.$row['produto'])->fetch_assoc();
+                                            echo '
+                                                <div class="row mb-2">
+                                                    <div class="col">
+                                                        <input type="hidden" name="id[]" value="'.$row['produto'].'">
+                                                        <input type="text" class="form-control" name="produto[]" value="'.$produto['nome'].'" readonly>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input type="number" class="form-control" name="qtd[]" value="'.$row['quantia'].'">
+                                                    </div>
+                                                    <div class="col-1">
+                                                        <span onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span>
+                                                    </div>
                                                 </div>
-                                                <div class="col-3">
-                                                    <input type="number" class="form-control" name="qtd[]" value="'.$row['quantia'].'">
-                                                </div>
-                                                <div class="col-1">
-                                                    <span onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span>
-                                                </div>
-                                            </div>
-                                        ';
+                                            ';
+                                        }
                                     }
-                                }
-                            ?>
+                                ?>
+
+                            </table>
                         </div>
                     </div>
 

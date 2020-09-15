@@ -76,6 +76,7 @@ $attr = (array) $arq;
         for(let i = 0; i < campos.length; i++){
             data[$(campos[i]).attr('id')] = $(campos[i]).is(':checked')? '1':$(campos[i]).val();
         }
+
         if(rId.split('-').length == 1){
             $.post('core/ajax/cadProduto.php',data,function(resp){
                 if(resp){
@@ -215,7 +216,8 @@ $attr = (array) $arq;
                             $cad = $con->query('select * from tbl_produtos where nome like "%'.$prod->cProd.'%"')->fetch_assoc();
                             $cadastrar = !isset($cad);
 
-                            $checaLog = $con->query('select id from tbl_impXmlLog where id = "'.$cad['id'].'" and nNota = "'.$nota->nNF.'"')->num_rows;
+                            $checaLog = $con->query('select id from tbl_impXmlLog where (id = "'.$cad['id'].'" or produtoDeEntrada = "'.$prod->xProd.'") and nNota = "'.$nota->nNF.'"')->num_rows;
+
                             
                             if(!$checaLog) $impCompleta = false;
 
@@ -386,10 +388,11 @@ $attr = (array) $arq;
                                                         </div>
                                                         <div class="col-2">
                                                             <label for="cest">Valor venda</label>
-                                                            <input class="form-control cadastroProd" step="0.01" type="number" placeholder="<?=$response['valor']?>" value="" name="valVenda" id="valVenda" required>
+                                                            <input class="form-control cadastroProd" step="0.01" type="number" value="<?=number_format(floatval($prod->vUnCom),2,'.','')?>" name="valVenda" id="valVenda" required>
                                                         </div>
                                                         <div class="col d-flex">
                                                             
+                                                            <input type="hidden" name="produtoDeEntrada" id="produtoDeEntrada" value="<?=$prod->xProd;?>" class="cadastroProd">
                                                             <input type="hidden" name="fornecedor" id="fornecedor" value="<?=$idCliente;?>" class="cadastroProd">
                                                             <input type="hidden" name="notaId" id="notaId" value="<?=$nota->nNF?>" class="cadastroProd">
                                                             <input type="hidden" name="notaSerie" id="notaSerie" value="<?=$nota->serie?>" class="cadastroProd">
@@ -398,29 +401,6 @@ $attr = (array) $arq;
                                                             <input type="hidden" name="referencia" id="referencia" value="<?=$prod->cProd?>" class="cadastroProd">
 
                                                             <div class="btn btn-success ml-auto mt-auto" onclick="salvarProduto('<?=$rId?>'+'-2')">Adicionar</div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row mb-3 mt-3">
-                                                        <div class="col">
-                                                            <strong>Estoque</strong>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="row mb-3">
-                                                        <div class="col-4">
-                                                            <label for="localestoque">Local</label>
-                                                            <select name="localestoque" id="localestoque" class="form-control cadastroProd">
-                                                                <?
-                                                                    $resp = $con->query('select id,nome from tbl_locaisEstoque where status = 1 and empresa = '.$_COOKIE['empresa']);
-                                                                    $lCont = 0;
-                                                                    if($resp){
-                                                                        while($row = $resp->fetch_assoc()){
-                                                                            echo '<option value="'.$row['id'].'" '.($lCont++ == 0?'select':'').'>'.$row['nome'].'</option>';
-                                                                        }
-                                                                    }
-                                                                ?>
-                                                            </select>
                                                         </div>
                                                     </div>
 
