@@ -1,18 +1,8 @@
 <?php
     include('functions.php');
-    if(false){
-        ini_set('display_errors',1);
-        ini_set('display_startup_erros',1);
-        error_reporting(E_ALL);
-    }
     if(isset($_GET['empresa'])){
         setcookie('empresa',$_GET['empresa']);
         $_COOKIE['empresa'] = $_GET['empresa'];
-    }
-    if(!isset($_COOKIE['empresa'])){
-        $resp = $con->query('select id from tbl_configuracao where id in (select valor from tbl_usuarioMeta where meta = "habilitar_empresa" and usuario = '.$_SESSION['id'].')')->fetch_assoc();
-        setcookie('empresa',$resp['id']);
-        $_COOKIE['empresa'] = $resp['id'];
     }
 ?>
 <!doctype html>

@@ -90,6 +90,7 @@ elseif(isset($_GET['del'])){
 
 $resp = $con->query('select * from tbl_configuracao where id = 1');
 $usuario = $resp->fetch_assoc();
+
 ?>
 
 <script>
@@ -122,7 +123,17 @@ $usuario = $resp->fetch_assoc();
         });
 
         $.get('core/ajax/configuracao/ativarJuno.php?id='+$(self).val(),function(resp){
-
+            resp = JSON.parse(resp);
+            
+            if(resp['pagamentoStatus'] == "1"){
+                $('#habilitarPagamento').attr('checked',true);
+                $('#habilitarPagamento').addClass(':checked');
+                console.log($('#habilitarPagamento').attr('checked'));
+            }
+            else{
+                $('#habilitarPagamento').removeAttr('checked');
+                $('#habilitarPagamento').removeClass(':checked');
+            } 
         });
         
     }
@@ -156,7 +167,7 @@ $usuario = $resp->fetch_assoc();
 
         $('#habilitarPagamento').click(function(){
             const idEmpresa = $('#habilitarPagamentoEmpresa').val();
-            const status = $(this).is(':checked');
+            const status = $(this).is(':checked') || $(this).attr('checked') == 'checked'? true:false;
             $.post('core/ajax/configuracao/ativarJuno.php',{empresa:idEmpresa,habilitar:status},function(resp){
                 console.log(resp);
                 if(resp != 'true'){

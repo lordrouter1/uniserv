@@ -8,7 +8,7 @@
             
         </div>
         <div class="widget-content-right">
-            <a href="#"><div class="widget-numbers text-white"><span>R$ 568</span></div></a>
+            <a href="#"><div class="widget-numbers text-white"><span>R$ <?=$juno->balanco();?></span></div></a>
         </div>
     </div>
 </div>

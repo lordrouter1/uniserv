@@ -238,17 +238,17 @@ $attr = (array) $arq;
                                         <ul class="nav nav-tabs">
                                             <?if($cadastrar):?>
                                             <li class="nav-item">
-                                                <a class="nav-link active" data-toggle="tab" href="#new">Novo</a>
+                                                <a class="nav-link active" data-toggle="tab" href="#new-<?=$rId?>">Novo</a>
                                             </li>
                                             <?endif;?>
                                             <li class="nav-item">
-                                                <a class="nav-link <?=$cadastrar?'':'active';?>" data-toggle="tab" href="#add">Adicionar</a>
+                                                <a class="nav-link <?=$cadastrar?'':'active';?>" data-toggle="tab" href="#add-<?=$rId?>">Adicionar</a>
                                             </li>
                                         </ul>
 
                                         <?if($cadastrar):?>
                                         <div class="tab-content">
-                                            <div class="tab-pane active" id="new">
+                                            <div class="tab-pane active" id="new-<?=$rId?>">
 
                                                 <form autocomplete="off" class="<?=$rId?>">
                                                     <div class="row mb-3">
@@ -358,7 +358,7 @@ $attr = (array) $arq;
 
                                             </div>
                                             <?endif;?>
-                                            <div class="tab-pane <?=$cadastrar?'fade':'active';?>" id="add">
+                                            <div class="tab-pane <?=$cadastrar?'fade':'active';?>" id="add-<?=$rId?>">
                                                 <form autocomplete="off" class="<?=$rId?>-2">
                                                     
                                                     <div class="row">

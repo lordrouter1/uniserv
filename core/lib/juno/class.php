@@ -1,14 +1,5 @@
 <?php
 
-$debug = false;
-
-if($debug)
-{
-    ini_set('display_errors',1);
-    ini_set('display_startup_erros',1);
-    error_reporting(E_ALL);
-}
-
 /*
     Conta Teste "resourceToken":"CB79F7A0F088B8AF11F2C5DEAAF949E5E3CE69AB878D87C5173BCFA13D8B7EB1"
 */
@@ -22,8 +13,6 @@ class Juno
     private $expires = "";
     private $recipientToken = "";
     private $masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
-
-    #private $resourceToken = "";
 
     private $curl;
     private $url = "https://sandbox.boletobancario.com/api-integration/";
@@ -55,7 +44,7 @@ class Juno
         }
     }*/
 
-    private function loadRecipientToken($token){
+    public function loadRecipientToken($token){
         $this->recipientToken = $token;
     }
 
@@ -194,6 +183,25 @@ class Juno
         $resp = json_decode($temp);
 
         return $resp;
+    }
+
+    public function balanco()
+    {
+        $this->isTokenVal();
+
+        curl_setopt($this->curl, CURLOPT_URL, $this->url."balance");
+        curl_setopt($this->curl, CURLOPT_POST, false);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "Authorization: Bearer ".$this->token,
+            "X-Api-Version: 2",
+            "X-Resource-Token: ".$this->recipientToken,
+        ));
+
+        $temp = curl_exec($this->curl);
+        $resp = json_decode($temp);
+
+        return $resp->balance;
     }
 
     public function atualizarContaDigital($data){

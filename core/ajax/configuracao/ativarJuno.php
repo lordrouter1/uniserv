@@ -4,7 +4,7 @@
 
     switch($_SERVER['REQUEST_METHOD']){
         case 'GET':
-            echo json_encode($con->query('select pagamentoStatus from tbl_configuracao where empresa = '.$_GET['empresa'])->fetch_assoc());
+            echo json_encode($con->query('select pagamentoStatus from tbl_configuracao where id = '.$_GET['id'])->fetch_assoc());
         break;
         case 'POST':
             if($_POST['habilitar'] == 'true'){
@@ -62,6 +62,7 @@
                     
                 }else{
                     $con->query('update tbl_configuracao set pagamentoStatus = 1 where id = '.$_POST['empresa']);
+                    $juno->loadRecipientToken($token);
                     echo $con->error == ''?'true':'false';
                 }
             }
