@@ -15,8 +15,21 @@
             redirect($con->error);
         break;
         case 'edt':
-            
-            #redirect($con->error);
+            $query = 'UPDATE `tbl_gradeProdutos` SET 
+                `descricao`= "'.$_POST['descricao'].'",
+                `grupo`= "'.$_POST['grupo'].'" 
+                WHERE id = '.$_POST['codigo'].'
+            ';
+            $con->query($query);
+
+            $con->query('delete from tbl_gradeProdutosItens where grade = '.$_POST['codigo']);
+
+            for($i = 0; $i < sizeof($_POST['id']); $i++){
+                $query = 'INSERT INTO `tbl_gradeProdutosItens`(`item`, `fator`, `grade`) VALUES ("'.$_POST['id'][$i].'","'.$_POST['fator'][$i].'","'.$_POST['codigo'].'")';
+                $con->query($query);
+            }
+
+            redirect($con->error);
         break;
     }
     if($_GET['del']){
@@ -160,7 +173,7 @@
                             
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
-                                    $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc()['nome'];
+                                    $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc()['nome'];                                        
                                     
                                     echo '
                                         <tr>
@@ -262,23 +275,23 @@
                             <table class="table table-striped mt-3" id="linhaProdutos">
 
                                 <?
-                                    $resp = $con->query('select * from tbl_remessaItem where remessa = '.$_GET['edt']);
+                                    $resp = $con->query('select * from tbl_gradeProdutosItens where grade = '.$_GET['edt']);
                                     if($resp){
                                         while($row = $resp->fetch_assoc()){
-                                            $produto = $con->query('select nome from tbl_produtos where id = '.$row['produto'])->fetch_assoc();
+                                            $produto = $con->query('select id,nome from tbl_produtos where id = '.$row['item'])->fetch_assoc();
                                             echo '
-                                                <div class="row mb-2">
-                                                    <div class="col">
-                                                        <input type="hidden" name="id[]" value="'.$row['produto'].'">
-                                                        <input type="text" class="form-control" name="produto[]" value="'.$produto['nome'].'" readonly>
-                                                    </div>
-                                                    <div class="col-3">
-                                                        <input type="number" class="form-control" name="qtd[]" value="'.$row['quantia'].'">
-                                                    </div>
-                                                    <div class="col-1">
+                                                <tr>
+                                                    <td>'.$produto['id'].'</td>
+                                                    <td>'.$produto['nome'].'</td>
+                                                    <td>'.number_format($row['fator'],8,'.','').'</td>
+                                                    <td>
                                                         <span onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span>
-                                                    </div>
-                                                </div>
+                                                        <input type="hidden" name="id[]" value="'.$produto['id'].'">
+                                                        <input type="hidden" class="form-control" name="produto[]" value="'.$produto['nome'].'" readonly>
+                                                        <input type="hidden" class="form-control" name="fator[]" value="'.number_format($row['fator'],8,'.','').'">
+                                                        <input type="hidden" class="form-control" name="calculo[]" value="'.$row['formaCalculo'].'">
+                                                    </td>
+                                                </tr>
                                             ';
                                         }
                                     }
