@@ -51,8 +51,6 @@
                     
                     $jResp = $juno->account($conta);
 
-                    var_dump($jResp);
-
                     if(isset($jResp->resourceToken)){
                         $con->query('update tbl_configuracao set pagamentoStatus = 1, token = "'.$jResp->resourceToken.'" where id = '.$_POST['empresa']);
                         echo 'true';

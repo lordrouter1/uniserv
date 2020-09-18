@@ -1,5 +1,4 @@
 <?php include('header.php'); ?>
-
 <?php
 if(isset($_POST['cmd'])){
     switch($_POST['cmd']){
@@ -93,7 +92,56 @@ $usuario = $resp->fetch_assoc();
 
 ?>
 
+<div id="my_camera"></div>
+
+<script src="assets/scripts/lib/webcam/webcam.min.js"></script>
 <script>
+    Webcam.set({
+        width: 320,
+        height: 240,
+        image_format: 'jpeg',
+        jpeg_quality: 90
+    });
+
+    function modalFoto(doc){
+        $('#mdl-confPagamento').modal();
+        $('#imgPhoto').attr('target',doc);
+        window.Webcam.reset();
+        window.Webcam.attach('#imgArea');
+    }
+
+    function baterFoto(){
+        window.Webcam.snap(function(data_uri){
+            $('#imgArea').toggle();
+            $('#imgPhoto').attr('src',data_uri);
+            $('#imgPhoto').addClass('show');
+            $('#imgPhoto').toggle();
+        });
+    }
+    
+    function limparFoto(){
+        $('#imgPhoto').attr('src','');
+        if($('#imgPhoto').is('.show')){
+            $('#imgPhoto').toggle();
+            $('#imgArea').toggle();
+            $('#imgPhoto').removeClass('show');    
+        }
+        else{
+            $('#mdl-confPagamento').modal('hide');
+            window.Webcam.reset();
+        }
+    }
+
+    function salvarFoto(){
+        if($('#imgPhoto').is('.show')){
+            $('#imgPhoto').toggle();
+            $('#imgArea').toggle();
+            $('#imgPhoto').removeClass('show');
+            $('#'+$('#imgPhoto').attr('target')).val($('imgPhoto').attr('src'));
+            $('#mdl-confPAgamento').modal('hide');
+        }
+    }
+
     function modal(target){
         $('.collapse:not("'+target+'")').hide('slow');
         $(target).toggle('slow');
@@ -102,33 +150,70 @@ $usuario = $resp->fetch_assoc();
     function getEmpresa(self){
         $('#compEmpresaID').val($(self).val());
         $('#bancoEmpresaID').val($(self).val());
+        let liberar = false;
+
+        $('#compEmpresa').css('display','block');
+        $('#bancoEmpresa').css('display','none');
+
+        $('#habilitarEmpresa').css('display','none');
         
         $.get('core/ajax/configuracao/compEmpresa.php?id='+$(self).val(),function(resp){
-            resp = JSON.parse(resp);
-            $('#area').val(resp['area']);
-            $('#tipo').val(resp['tipo']);
-            $('#descricao').val(resp['descricao']);
-            $('#respLegal').val(resp['respLegal']);
-            $('#docResp').val(resp['docResp']);
-            $('#aniversarioResp').val(resp['dataResp']);
+            if(resp != 'null'){
+                resp = JSON.parse(resp);
+                $('#area').val(resp['area']);
+                $('#tipo').val(resp['tipo']);
+                $('#descricao').val(resp['descricao']);
+                $('#respLegal').val(resp['respLegal']);
+                $('#docResp').val(resp['docResp']);
+                $('#aniversarioResp').val(resp['dataResp']);
+                $('#bancoEmpresa').css('display','block');
+                liberar = true;
+            }
+            else{
+                $('#area').val('');
+                $('#tipo').val('');
+                $('#descricao').val('');
+                $('#respLegal').val('');
+                $('#docResp').val('');
+                $('#aniversarioResp').val('');
+                liberar = false;
+            }
         });
 
         $.get('core/ajax/configuracao/bancoEmpresa.php?id='+$(self).val(),function(resp){
-            resp = JSON.parse(resp);
-            $('#banco').val(resp['banco']);
-            $('#agencia').val(resp['agencia']);
-            $('#conta').val(resp['conta']);
-            $('#responsavel').val(resp['responsavel']);
-            $('#documento').val(resp['documento']);
+            if(resp != 'null'){
+                resp = JSON.parse(resp);
+                $('#banco').val(resp['banco']);
+                $('#agencia').val(resp['agencia']);
+                $('#conta').val(resp['conta']);
+                $('#responsavel').val(resp['responsavel']);
+                $('#documento').val(resp['documento']);
+                $('#docsEmpresa').css('display','block');
+                liberar = true;
+            }
+            else{
+                console.log('entrou');
+                $('#banco').val('');
+                $('#agencia').val('');
+                $('#conta').val('');
+                $('#responsavel').val('');
+                $('#documento').val('');
+                liberar = false;
+            }
         });
 
+        if(liberar)
+            $('#habilitarEmpresa').css('display','block');
+
         $.get('core/ajax/configuracao/ativarJuno.php?id='+$(self).val(),function(resp){
+            if(resp == 'null') return;
+            
             resp = JSON.parse(resp);
             
             if(resp['pagamentoStatus'] == "1"){
                 $('#habilitarPagamento').attr('checked',true);
                 $('#habilitarPagamento').addClass(':checked');
-                console.log($('#habilitarPagamento').attr('checked'));
+                $('#habilitarPagamento').attr('checked');
             }
             else{
                 $('#habilitarPagamento').removeAttr('checked');
@@ -153,6 +238,7 @@ $usuario = $resp->fetch_assoc();
             const data = $(this).serializeArray();
             $.post('core/ajax/configuracao/compEmpresa.php',data,function(resp){
                 loadToastNR(resp);
+                $('#bancoEmpresa').css('display','block');
             });
             e.preventDefault();
         });
@@ -161,6 +247,7 @@ $usuario = $resp->fetch_assoc();
             const data = $(this).serializeArray();
             $.post('core/ajax/configuracao/bancoEmpresa.php',data,function(resp){
                 loadToastNR(resp);
+                $('#habilitarEmpresa').css('display','block');
             });
             e.preventDefault();
         });
@@ -233,6 +320,34 @@ $usuario = $resp->fetch_assoc();
 <!-- fim conteúdo -->
 
 <?php include('footer.php');?>
+
+<div class="modal" tabindex="-1" role="dialog" id="mdl-confPagamento">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col d-flex">
+                        <span id="imgArea" class="m-auto"></span>
+                        <img id="imgPhoto" src="" class="m-auto" style="display:none">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col d-flex">
+                        <div class="ml-auto mr-auto mt-4">
+                            <i class="btn text-danger fas fa-times-circle" onclick="limparFoto();" style="font-size: 2rem"></i>
+                            <i class="btn btn-outline-primary fas fa-camera" onclick="baterFoto()" style="font-size: 2rem"></i>
+                            <i class="btn text-success fas fa-check-circle" onclick="salvarFoto()" style="font-size: 2rem"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <div id="toast-container" class="toast-top-center mt-3">
     <div id="toast-success" class="toast toast-success" aria-live="polite" style="opacity: 0.899999;display:none;">

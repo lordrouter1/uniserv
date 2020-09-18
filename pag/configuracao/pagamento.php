@@ -5,19 +5,10 @@
 <div class="row shadow bg-white rounded">
     <div class="col shadow p-2 pl-4">
 
-        <h3 class="mb-3">Pagamentos</h3>
-
-        <div class="divider"></div>
-
         <form id="ativarPagamento">
-            <div class="row mb-3">
-                <div class="col-2 text-right"><strong><span><label for="habilitar">Habilitar</label></span></strong></div>
-                <div class="col"><input type="checkbox" name="habilitar" id="habilitarPagamento"></div>
-            </div>
-
-            <div class="row mb-4">
+            <div class="row mb-4 mt-4">
                 <div class="col-2 text-right"><strong>Empresa</strong></div>
-                <div class="col">
+                <div class="col d-flex">
                     <select class="form-control w-25" onchange="getEmpresa(this)" id="habilitarPagamentoEmpresa">
                         <option selected disabled>Selecione</option>
                         <?
@@ -27,15 +18,15 @@
                             }
                         ?>
                     </select>
+                    <!--<div class="ml-4 spinner-border"></div>-->
                 </div>
             </div>
         </form>
-
-        <h3>Empresa</h3>
-        <div class="divider"></div>
-
         
-        <form method="post" id="compEmpresa">
+        <form method="post" id="compEmpresa" style="display:none;">
+            <h3>Empresa</h3>
+            <div class="divider"></div>
+
             <input type="hidden" name="empresa" id="compEmpresaID" value="">
 
             <div class="row mb-3">
@@ -96,16 +87,16 @@
 
             <div class="row mb-4">
                 <div class="col-2 text-right">
-                    <input class="btn btn-success" type="submit" value="Salvar">
+                    <input class="btn btn-success" type="submit" value="Salvar e continuar">
                 </div>
             </div>
 
         </form>
 
-        <h3 class="mt-4">Banco</h3>
-        <div class="divider"></div>
+        <form id="bancoEmpresa" style="display:none;">
+            <h3 class="mt-4">Banco</h3>
+            <div class="divider"></div>
 
-        <form id="bancoEmpresa">
             <input type="hidden" name="empresa" id="bancoEmpresaID" value="">
 
             <div class="row mb-3">
@@ -275,8 +266,38 @@
 
             <div class="row mb-4">
                 <div class="col-2 text-right">
-                    <input class="btn btn-success" type="submit" value="Salvar">
+                    <input class="btn btn-success" type="submit" value="Salvar e continuar">
                 </div>
+            </div>
+        </form>
+
+        <form id="docsEmpresa" style="display:none">
+            <h3 class="mb-3">Documentos</h3>
+            <div class="divider"></div>
+
+            <?
+                $temp = $juno->listDocumentos();
+                foreach(array_keys($temp) as $item){
+                    #var_dump($temp[$item],$item,'<br>');
+                    echo '
+                        <div class="row mb-3">
+                            <div class="col-2 text-right"><strong>'.$temp[$item].'</strong></div>
+                            <div class="col"><span class="btn btn-dark" onclick="modalFoto(\''.$item.'\')">Abrir</span></div>
+                            <input type="hidden" value="" id="'.$item.'" name="'.$item.'">
+                        </div>
+                    ';
+                }
+            ?>
+
+        </form>
+
+        <form id="habilitarEmpresa" style="display:none">
+            <h3 class="mb-3">Pagamentos</h3>
+            <div class="divider"></div>
+
+            <div class="row mb-3">
+                <div class="col-2 text-right"><strong><span><label for="habilitar">Habilitar</label></span></strong></div>
+                <div class="col"><input type="checkbox" name="habilitar" id="habilitarPagamento"></div>
             </div>
         </form>
 
