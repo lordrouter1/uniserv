@@ -35,7 +35,7 @@ include('header.php');
 if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
     if($cmd == "add"){
-        $query = 'INSERT INTO `tbl_pedido`(`data`, `hora`, `cliente`, `remessa`, `subtotal`, `desconto`, `acrescimo`, `total`, '.($_POST['vencimento'] != ''?'`vencimento`,':'').'`pago`,`formaPagamento`) VALUES (
+        $query = 'INSERT INTO `tbl_pedido`(`data`, `hora`, `cliente`, `remessa`, `subtotal`, `desconto`, `acrescimo`, `total`, '.($_POST['vencimento'] != ''?'`vencimento`,':'').'`pago`,`formaPagamento`,`condicao`) VALUES (
             "'.$_POST['data'].'",
             "'.$_POST['hora'].'",
             "'.$_POST['cliente'].'",
@@ -46,7 +46,8 @@ if(isset($_POST['cmd'])){
             "'.$_POST['total'].'",
             '.($_POST['vencimento'] != ''?'"'.$_POST['vencimento'].'",':'').'
             0,
-            "'.$_POST['formaPagamento'].'"
+            "'.$_POST['formaPagamento'].'",
+            "'.$_POST['condicao'].'"
         )';
         $con->query($query);
         $lastid = $con->insert_id;
@@ -83,7 +84,7 @@ $pedidosCarrinho = 0;
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $(".onlyPone").filter(function() {
+            $(".produtos").filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
@@ -219,16 +220,16 @@ $pedidosCarrinho = 0;
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col">
+                        <!--<div class="col">
                             <?if($_COOKIE['display']=='grid'):?>
                                 <a class="btn text-center" href="?display=list"><h3><i class="fas fa-th"></i></h3></a>
                             <?else:?>
                                 <a class="btn text-center" href="?display=grid"><h3><i class="fas fa-bars"></i></h3></a>
                             <?endif;?>
-                        </div>
-                        <!--<div class="col-6">
-                            <input type="text" class="mb-2 form-control" placeholder="Pesquisar" id="campoPesquisa">
                         </div>-->
+                        <div class="col-6">
+                            <input type="text" class="mb-2 form-control" placeholder="Pesquisar" id="campoPesquisa">
+                        </div>
                         <div class="col">    
                             <select class="form-control" onchange="location.href='?iLinhas='+$(this).val();">
                                 <option selected disabled>Itens por linha</option>
@@ -249,7 +250,7 @@ $pedidosCarrinho = 0;
                             $itensLinha = isset($_COOKIE['iLinhas'])?$_COOKIE['iLinhas']:7;
                             $linhas = intval(($itens-1)/$itensLinha)+1;
                             
-                            if($_COOKIE['display'] == 'grid'){
+                            /*if($_COOKIE['display'] == 'grid'){
                                 $cont = 0;
                                 for($i=0; $i<$linhas; $i++){
                                     echo '<div class="row mb-2">';
@@ -290,13 +291,16 @@ $pedidosCarrinho = 0;
                                     
                                     echo '</div>';
                                 }
-                            }
-                            else{
-                                while($row = $resp->fetch_assoc()){
-                                    echo '
+                            }*/
+                            while($row = $resp->fetch_assoc()){
+                                echo '
+                                    <div class="produtos">
                                         <div class="row mb-3 pb-2 border-bottom onlyPhone">
                                             <div class="col '.($row['imagem']==""?'d-none':'d-flex').'">
                                                 <img class="m-auto" src="'.$row['imagem'].'" height="40">
+                                            </div>
+                                            <div class="col ml-4">
+                                                <strong>'.$row['referencia'].'</strong>
                                             </div>
                                             <div class="col">
                                                 <h4 class="card-title">'.$row['nome'].'</h4>
@@ -324,6 +328,11 @@ $pedidosCarrinho = 0;
                                                 <h4 class="card-title text-center">'.$row['nome'].'</h4>
                                             </div>
                                         </div>
+                                        <div class="row onlyDesktop">
+                                            <div class="col text-center mb-3">
+                                                <strong>'.$row['referencia'].'</strong>
+                                            </div>
+                                        </div>
                                         <div class="row mb-3 pb-2 border-bottom onlyDesktop">
                                             <div class="col d-flex">
                                                 <strong class="m-auto">R$ '.number_format($row['valor'],2,',','.').'</strong>
@@ -340,8 +349,8 @@ $pedidosCarrinho = 0;
                                                 </form>
                                             </div>
                                         </div>
-                                    ';
-                                }
+                                    </div>
+                                ';
                             }
                         ?>
                     
@@ -419,6 +428,13 @@ $pedidosCarrinho = 0;
                                 <option value="2">Cartão de débito</option>
                                 <option value="3">Cheque</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="condicao">Condição de pagamento</label>
+                            <input type="text" name="condicao" id="condicao" maxlength="400" class="form-control">
                         </div>
                     </div>
 

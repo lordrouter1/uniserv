@@ -63,13 +63,24 @@ $file = '
                     Endereço: <span>'.$cliente['logradouro'].', '.$cliente['bairro'].', '.$cliente['cep'].', '.$cliente['cidade'].'-'.$cliente['estado'].'</span>
                 </strong>
             </div>
-        </div>
+        </div>';
 
-        <div class="row linha">
+if($pedido['condicao'] != ''){
+    $file .= '
+        <div class="row linha pt-3">
+            <div class="col pb-2">
+            <strong>Condições de pagamento: </strong><span>'.$pedido['condicao'].'</span>
+            </div>
+        </div>
+    ';
+}
+
+$file .= '<div class="row linha">
             <div class="col">
                 <table class="table">
                     <tr>
                         <th>Produto</th>
+                        <th>Referência</th>
                         <th>Quantidade</th>
                         <th>UN</th>
                         <th>Preço bruto</th>
@@ -88,6 +99,7 @@ $file = '
                                 $file .= '
                                     <tr>
                                         <td>'.$produto['nome'].'</td>
+                                        <td>'.$produto['referencia'].'</td>
                                         <td>'.$item['quantidade'].'</td>
                                         <td>'.$unidadeEstoque['simbolo'].'</td>
                                         <td>'.number_format($produto['valor'],2,',','.').'</td>
