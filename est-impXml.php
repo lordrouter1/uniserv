@@ -1,3 +1,22 @@
+<?
+require_once('functions.php');
+
+if(isset($_GET['imp'])){
+    $temp = json_decode($_COOKIE['produtos']);
+    foreach($temp as $item){
+        $item = (array) $item;
+        if($item['add']){
+            addProdImp($item,$con);
+        }
+        else{
+            cadProdImp($item,$con);
+        }
+    }
+}
+else{
+    setcookie("produtos", "", time() - 3600);
+}
+?>
 <?php include('header.php'); ?>
 
 <script>

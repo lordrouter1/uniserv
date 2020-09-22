@@ -49,6 +49,9 @@ else{
 
 $attr = (array) $arq;
 
+$resp = $con->query('select id from tbl_impXmlLog where nNota = "'.$nota->nNF.'" and sNota = "'.$nota->serie.'"');
+$impChecaLog = ($resp->num_rows > 0)?true:false;
+
 ?>
 <script>
     function mostrarLinha(rId,self){
@@ -58,6 +61,8 @@ $attr = (array) $arq;
 
     function salvarProduto(rId){
         let campos = $('.'+rId+' .cadastroProd');
+        $.cookie.json = true;
+        let prod = $.cookie('produtos') || [];
         
         let req = $('.'+rId+' .cadastroProd[required]');
         let flag = false;
@@ -77,19 +82,18 @@ $attr = (array) $arq;
             data[$(campos[i]).attr('id')] = $(campos[i]).is(':checked')? '1':$(campos[i]).val();
         }
 
-        if(rId.split('-').length == 1){
-            $.post('core/ajax/cadProduto.php',data,function(resp){
-                if(resp){
-                    location.reload();
-                }
-            }).fail(function(err){console.log(err)});
-        }
-        else{
-            $.post('core/ajax/cadProdutoAdd.php',data,function(resp){
-                if(resp){
-                    location.reload();
-                }
-            }).fail(err => console.log(err));
+        data.add = rId.split('-').length == 1?false:true;
+
+        prod.push(data);
+        $.cookie('produtos',prod);
+
+        rId = rId.split('-')[0];
+
+        $('#'+rId).toggle();
+        $($('td[linha="'+rId+'"]')[0]).empty();
+
+        if($('td[linha] button').length == 0){
+            $('#sucessoRetornar').toggle();
         }
     }
 
@@ -110,13 +114,13 @@ $attr = (array) $arq;
 
     <div class="row mt-2">
         <div class="col" id="importarRetornar">
-            <a class="btn btn-dark" href="est-impXml.php"><i class="fas fa-angle-double-left text-light"></i></a>
+            <a class="btn btn-<?=$impChecaLog?'success':'dark'?>" href="est-impXml.php"><i class="fas fa-angle-double-left text-light"></i></a>
+            <a class="btn btn-success text-white" id="sucessoRetornar" style="display:none !important" href="est-impXml.php?imp">
+                <span class="mt-auto mb-auto"><strong>Importar</strong></span>
+            </a>
+            <?=$impChecaLog?'<strong><span class="bg-success p-1 rounded text-white ml-4">Nota importada!</span></strong>':''?>
         </div>
-        <div class="col d-flex" id="sucessoRetornar" style="display:none !important">
-            <a class="btn btn-success d-flex" href="est-impXml.php"><span class="mt-auto mb-auto"><i class="fas fa-angle-double-left text-light"></i> <strong>Voltar</strong></span></a>
-            <div class="alert alert-success m-auto">
-                Todos os produtos foram importados com sucesso.
-            </div>  
+        <div class="col d-flex">
         </div>
     </div>
     <div class="row mt-3">
@@ -215,15 +219,11 @@ $attr = (array) $arq;
                             
                             $cad = $con->query('select * from tbl_produtos where nome like "%'.$prod->cProd.'%"')->fetch_assoc();
                             $cadastrar = !isset($cad);
-
-                            $checaLog = $con->query('select id from tbl_impXmlLog where (id = "'.$cad['id'].'" or produtoDeEntrada = "'.$prod->xProd.'") and nNota = "'.$nota->nNF.'"')->num_rows;
-
                             
-                            if(!$checaLog) $impCompleta = false;
-
+                            
                             echo '
                                 <tr>
-                                    <td linha="'.$rId.'"><button class="btn btn-dark" onclick="mostrarLinha(\''.$rId.'\',this)" '.($checaLog?'style="display:none"':'').'><i class="fas fa-caret-down"></i><i class="fas fa-caret-right" style="display:none"></i></button><span class="badge badge-success" '.($checaLog?'':'style="display:none"').'>importado</span></td>
+                                    <td linha="'.$rId.'"><button class="btn btn-dark" onclick="mostrarLinha(\''.$rId.'\',this)" '.($impChecaLog?'style="display:none"':'').'><i class="fas fa-caret-down"></i><i class="fas fa-caret-right" style="display:none"></i></button></td>
                                     <td>'.$prod->cProd.'</td>
                                     <td>'.$prod->xProd.'</td>
                                     <td>R$ '.number_format(floatval($prod->vUnCom),2,',','.').'</td>
@@ -416,13 +416,6 @@ $attr = (array) $arq;
                     ?>
                 </tbody>
             </table>
-            <script>
-                <?if($impCompleta):?>
-                    $('#importarRetornar').toggle();
-                    $('#sucessoRetornar').toggle();
-                <?endif;?>
-                $('input[required][value=""], select[required][value=""]').css('background-color','#c1c7d6');
-            </script>
         </div>
     </div>
 
