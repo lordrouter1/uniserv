@@ -277,6 +277,7 @@
 
             <?
                 $temp = $juno->listDocumentos();
+                var_dump($temp);
                 foreach(array_keys($temp) as $item){
                     $status = '';
                     $sFlag = false;
