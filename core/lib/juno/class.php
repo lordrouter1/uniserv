@@ -265,12 +265,28 @@ class Juno
         ));
         
         $files = [
-        	'files' => new \CurlFile('img.png', 'img/png',$docID.".png")
+        	'files' => new \CurlFile($img,'img/jpeg',$docID.".jpeg")
         ];
         
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $files);
 
 				#var_dump(curl_getinfo($this->curl));
+
+        $temp = curl_exec($this->curl);
+        $resp = json_decode($temp);
+        
+        return $resp;
+    }
+
+    public function consultarDocumentos($docID){
+        curl_setopt($this->curl, CURLOPT_URL, $this->url."documents/".$docID);
+        curl_setopt($this->curl, CURLOPT_POST, 0);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "Authorization: Bearer ".$this->token,
+            "X-Api-Version: 2",
+            "X-Resource-Token: ".$this->recipientToken,
+        ));
 
         $temp = curl_exec($this->curl);
         $resp = json_decode($temp);

@@ -137,8 +137,10 @@ $usuario = $resp->fetch_assoc();
             $('#imgPhoto').toggle();
             $('#imgArea').toggle();
             $('#imgPhoto').removeClass('show');
-            $('#'+$('#imgPhoto').attr('target')).val($('imgPhoto').attr('src'));
-            $('#mdl-confPAgamento').modal('hide');
+            $('#'+$('#imgPhoto').attr('target')).val($('#imgPhoto').attr('src'));
+            window.Webcam.reset();
+            $('#mdl-confPagamento').modal('hide');
+            $('#check-'+$('#imgPhoto').attr('target')).toggle();
         }
     }
 
@@ -154,7 +156,7 @@ $usuario = $resp->fetch_assoc();
 
         $('#compEmpresa').css('display','block');
         $('#bancoEmpresa').css('display','none');
-
+        $('#docsEmpresa').css('display','none');
         $('#habilitarEmpresa').css('display','none');
         
         $.get('core/ajax/configuracao/compEmpresa.php?id='+$(self).val(),function(resp){
@@ -189,21 +191,16 @@ $usuario = $resp->fetch_assoc();
                 $('#responsavel').val(resp['responsavel']);
                 $('#documento').val(resp['documento']);
                 $('#docsEmpresa').css('display','block');
-                liberar = true;
+                $('#habilitarEmpresa').css('display','block');
             }
             else{
-                console.log('entrou');
                 $('#banco').val('');
                 $('#agencia').val('');
                 $('#conta').val('');
                 $('#responsavel').val('');
                 $('#documento').val('');
-                liberar = false;
             }
         });
-
-        if(liberar)
-            $('#habilitarEmpresa').css('display','block');
 
         $.get('core/ajax/configuracao/ativarJuno.php?id='+$(self).val(),function(resp){
             if(resp == 'null') return;
@@ -248,6 +245,16 @@ $usuario = $resp->fetch_assoc();
             $.post('core/ajax/configuracao/bancoEmpresa.php',data,function(resp){
                 loadToastNR(resp);
                 $('#habilitarEmpresa').css('display','block');
+            });
+            e.preventDefault();
+        });
+
+        $('#docsEmpresa').submit(function(e){
+            const data = $(this).serializeArray();
+            $.post('core/ajax/configuracao/enviarDoc.php',data,function(resp){
+                console.log(resp);
+                //loadToastNR(resp);
+                //$('#habilitarEmpresa').css('display','block');
             });
             e.preventDefault();
         });
