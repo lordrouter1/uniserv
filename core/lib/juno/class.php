@@ -233,15 +233,15 @@ class Juno
         return $resp;
     }
     
-    public function listDocumentos(){
+    public function listDocumentos($token){
     		curl_setopt($this->curl, CURLOPT_URL, $this->url."documents");
-        curl_setopt($this->curl, CURLOPT_POST, 0);
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
-            "Content-Type: application/json",
-            "Authorization: Bearer ".$this->token,
-            "X-Api-Version: 2",
-            "X-Resource-Token: ".$this->recipientToken,
-        ));
+            curl_setopt($this->curl, CURLOPT_POST, 0);
+            curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
+                "Content-Type: application/json",
+                "Authorization: Bearer ".$this->token,
+                "X-Api-Version: 2",
+                "X-Resource-Token: ".$token,
+            ));
 
         $temp = curl_exec($this->curl);
         $resp = json_decode($temp);
@@ -251,7 +251,7 @@ class Juno
 					$ret[$item->id] = $item->description;
 				}
         
-        return $resp;
+        return $ret;
     }
     
     public function enviarDocumentos($img,$docID){

@@ -275,47 +275,7 @@
             <h3 class="mb-3">Documentos</h3>
             <div class="divider"></div>
 
-            <?
-                $temp = $juno->listDocumentos();
-                var_dump($temp);
-                foreach(array_keys($temp) as $item){
-                    $status = '';
-                    $sFlag = false;
-                    
-                    $consResp = $juno->consultarDocumentos($item);
-                    if(isset($consResp->approvalStatus)){
-                        switch($consResp->approvalStatus){
-                            case 'VERIFYING':
-                                $status = '<i class="fas fa-check ml-3 mt-auto mb-auto text-warning" style="font-size:24px;"></i>';
-                                $sFlag = 1;
-                            break;
-                            case 'VERIFIED':
-                                $status = '<i class="fas fa-check ml-3 mt-auto mb-auto text-success" style="font-size:24px;"></i>';
-                                $sFlag = 1;
-                            break;
-                        }
-                    }
-                    else{
-                        $status = '<i class="fas fa-cloud-upload-alt ml-3 mt-auto mb-auto text-success" style="display:none; font-size:24px;" id="check-'.$item.'"></i>';
-                        $sFlag = 0;
-                    }
-                    echo '
-                        <div class="row mb-3">
-                            <div class="col-2 text-right"><strong>'.$temp[$item].'</strong></div>
-                            <div class="col d-flex">
-                                <div class="mt-auto mb-auto w-50 d-flex">
-                                    <div class="btn btn-dark w-25 d-flex" onclick="modalFoto(\''.$item.'\')">
-                                        <i class="fas fa-camera mr-auto mt-auto mb-auto"></i>
-                                        <strong class="m-auto">Foto</strong>
-                                    </div>
-                                    '.$status.'
-                                </div>
-                            </div>
-                            <input type="hidden" value="" id="'.$item.'" name="'.$item.'">
-                        </div>
-                    ';
-                }
-            ?>
+            <div id="campDocs"></div>
 
             <div class="row mb-4">
                 <div class="col-2 text-right">

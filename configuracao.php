@@ -202,6 +202,13 @@ $usuario = $resp->fetch_assoc();
             }
         });
 
+        $.get('core/ajax/configuracao/enviarDoc.php?id='+$(self).val(),function(resp){
+            if(resp == null) return;
+
+            $('#campDocs').empty();
+            $('#campDocs').append(resp);
+        });
+
         $.get('core/ajax/configuracao/ativarJuno.php?id='+$(self).val(),function(resp){
             if(resp == 'null') return;
             
