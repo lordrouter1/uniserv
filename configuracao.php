@@ -142,6 +142,21 @@ $usuario = $resp->fetch_assoc();
             $('#mdl-confPagamento').modal('hide');
             $('#check-'+$('#imgPhoto').attr('target')).toggle();
         }
+        else{
+            if($('#impImagem')[0].files.length == 0) return;
+            var reader = new FileReader();
+            reader.onload = function(e){
+                var dataUri = e.target.result;
+                $('#imgPhoto').toggle();
+                $('#imgArea').toggle();
+                $('#imgPhoto').removeClass('show');
+                $('#'+$('#imgPhoto').attr('target')).val(dataUri);
+                window.Webcam.reset();
+                $('#mdl-confPagamento').modal('hide');
+                $('#check-'+$('#imgPhoto').attr('target')).toggle();
+            }
+            reader.readAsDataURL($('#impImagem')[0].files[0]);
+        }
     }
 
     function modal(target){
@@ -347,9 +362,14 @@ $usuario = $resp->fetch_assoc();
                         <img id="imgPhoto" src="" class="m-auto" style="display:none">
                     </div>
                 </div>
+                <div class="row m-3">
+                    <div class="col">
+                        <input type="file" id="impImagem" class="form-control">
+                    </div> 
+                </div>
                 <div class="row">
                     <div class="col d-flex">
-                        <div class="ml-auto mr-auto mt-4">
+                        <div class="ml-auto mr-auto mt-3">
                             <i class="btn text-danger fas fa-times-circle" onclick="limparFoto();" style="font-size: 2rem"></i>
                             <i class="btn btn-outline-primary fas fa-camera" onclick="baterFoto()" style="font-size: 2rem"></i>
                             <i class="btn text-success fas fa-check-circle" onclick="salvarFoto()" style="font-size: 2rem"></i>
