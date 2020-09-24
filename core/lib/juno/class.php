@@ -251,7 +251,7 @@ class Juno
 					$ret[$item->id] = $item->description;
 				}
         
-        return $ret;
+        return $resp;
     }
     
     public function enviarDocumentos($img,$docID){
