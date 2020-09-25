@@ -1,7 +1,7 @@
 <?php
     session_start();
 
-    require_once('con.php');
+    require_once('_con.php');
     
     if(isset($_POST['cmd'])){ 
         if($_POST['cmd'] == "acessar"){

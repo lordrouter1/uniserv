@@ -7,7 +7,7 @@ if(false){
 
 session_start();
 
-require_once('con.php');
+require_once('_con.php');
 
 if($_SESSION['usuario'] != null && $_SESSION['senha'] != null && $_SESSION['id'] != null){
     $con->set_charset("utf8");
@@ -36,11 +36,12 @@ if(isset($_SESSION['id'])){
         $_COOKIE['empresa'] = $resp['id'];
     }
 
+    
+    /*$resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc();
     require_once('core/lib/juno/class.php');
-    $resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc();
     if($resp['pagamentoStatus'] == '1'){
         $juno->loadRecipientToken($resp['token']);
-    }
+    }*/
 }
 
 ?>
