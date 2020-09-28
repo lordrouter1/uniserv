@@ -4,6 +4,9 @@ if(false){
     ini_set('display_startup_erros',1);
     error_reporting(E_ALL);
 }
+else{
+    error_reporting(0);
+}
 
 session_start();
 
