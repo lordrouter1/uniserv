@@ -11,7 +11,7 @@ class Juno
     
     private $token = "";
     private $expires = "";
-    private $recipientToken = "";
+    public $recipientToken = "";
     private $masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
 
     private $curl;
@@ -278,14 +278,16 @@ class Juno
         return $resp;
     }
 
-    public function consultarDocumentos($docID){
+    public function consultarDocumentos($docID,$token=false){
+        $recipientToken = ($token)?$token:$this->recipientToken;
+
         curl_setopt($this->curl, CURLOPT_URL, $this->url."documents/".$docID);
         curl_setopt($this->curl, CURLOPT_POST, 0);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
             "Content-Type: application/json",
             "Authorization: Bearer ".$this->token,
             "X-Api-Version: 2",
-            "X-Resource-Token: ".$this->recipientToken,
+            "X-Resource-Token: ".$recipientToken,
         ));
 
         $temp = curl_exec($this->curl);
