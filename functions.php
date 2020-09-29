@@ -1,5 +1,5 @@
 <?php
-if(false){
+if(true){
     ini_set('display_errors',1);
     ini_set('display_startup_erros',1);
     error_reporting(E_ALL);
@@ -40,10 +40,13 @@ if(isset($_SESSION['id'])){
     }
 
     require_once('core/lib/juno/class.php');
-    $resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc();
-    if($resp['pagamentoStatus'] == '1'){
-        $juno->loadRecipientToken($resp['token']);
-    }
+    $resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa']);
+    if($resp->num_rows > 0){
+    	$resp = $resp->fetch_assoc();
+		  if($resp['pagamentoStatus'] == '1'){
+		      $juno->loadRecipientToken($resp['token']);
+		  }
+		}
 }
 
 function cadProdImp($data,$con){
