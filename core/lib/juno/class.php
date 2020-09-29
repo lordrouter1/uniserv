@@ -5,6 +5,7 @@
 
     public $clientId = "fnkLj1Luh3nJwM4v";
     public $clientSecret = "1yW@M+lI,-dxmmnLUzaxo5,NP;Zv(If^";
+    private $masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
 
     producao
 
@@ -22,7 +23,7 @@ class Juno
     private $token = "";
     private $expires = "";
     public $recipientToken = "";
-    private $masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
+    private $masterToken = "667C521CA722AC4986DDCB8ED4CEEF94F0813E1544F89BFF6C8BBEC8C7DEDF1A";
 
     private $curl;
     private $url = "https://api.juno.com.br/api-integration/";
