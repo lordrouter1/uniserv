@@ -1,8 +1,60 @@
-<?php include('header.php'); ?>
+<?php 
+ini_set('display_errors',1);
+ini_set('display_startup_erros',1);
+error_reporting(E_ALL);
+
+require_once($_COOKIE['ROOT'].'/includes/header.php');
+
+?>
 
 <?php
 
-if(isset($_GET['conc'])){
+if(isset($_POST['cmd'])){
+    $cmd = $_POST['cmd'];
+
+    if($cmd == "add"){
+        $anterior = 0;
+        //var_dump(date('d/m/y',strtotime(($_POST['parcela']*$_POST['intervalo']).' day')));
+        for($i = 0; $i < $_POST['parcela']; $i++){
+            if($_POST['intervalo'] == '30'){
+                $dia = substr($_POST['vencimento'],8,2);
+                $data = strtotime(substr($_POST['vencimento'],0,7).'-01 + '.($i).' month');
+                $dVen = $dia > date('t',$data)?date('t',$data):$dia;
+                $data = date('Y-m-',$data).$dVen;
+            }
+            else{
+                $data = date('d/m/Y',strtotime($_POST['vencimento'].' + '.($i*$_POST['intervalo']).' day'));
+            }
+            $query = 'insert into tbl_contasReceber(valor,descricao,vencimento,status,cliente,nDocumento,parcela,intervalo,anterior,totalParcela) values(
+                "'.$_POST['valor'].'",
+                "'.$_POST['descricao'].'",
+                "'.$data.'",
+                "'.$_POST['status'].'",
+                "'.$_POST['cliente'].'",
+                "'.$_POST['nDocumento'].'",
+                "'.($i+1).'",
+                "'.$_POST['intervalo'].'",
+                "'.$anterior.'",
+                "'.$_POST['parcela'].'"
+            )';
+            $con->query($query);
+            $anterior = $con->insert_id;
+        }
+        redirect($con->error);
+    }
+    elseif($cmd == "edt"){
+        $query = 'update tbl_contasReceber set
+            nDocumento = "'.$_POST['nDocumento'].'",
+            valor = "'.$_POST['valor'].'",
+            vencimento = "'.$_POST['vencimento'].'",
+            status = "'.$_POST['status'].'",
+            descricao = "'.$_POST['descricao'].'"
+            where id = '.$_POST['id'].'
+        ';
+        $con->query($query);
+        redirect($con->error);
+    }
+}elseif(isset($_GET['conc'])){
     $con->query('update tbl_contasReceber set status = "1" where id = '.$_GET['conc']);
     redirect($con->error);
 
@@ -64,9 +116,9 @@ if(isset($_GET['filtro'])){
         </div>
         <div class="page-title-actions">
 
-            <a class="btn-shadow mr-3 btn btn-dark" id="btn-modal" href="fisc-contasReceberPagamento.php?">
-                <i class="fas fa-plus"></i>
-            </a>
+            <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
+            <i class="fas fa-plus"></i>
+            </button>
 
             <div class="d-inline-block dropdown">
                 <button class="btn-shadow dropdown-toggle btn btn-info" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -212,10 +264,10 @@ if(isset($_GET['filtro'])){
                                     
                                     if($row['status'] == '0'){
                                         echo '
-                                            <td class="noPrint text-center"><div class="badge badge-'.$statusCor.' d-flex"><i class="fas fa-money-bill-wave m-auto"></i><span class="ml-2">'.$status.'</span></div></td>
+                                            <td class="noPrint text-center"><div class="btn btn-'.$statusCor.' d-flex"><i class="fas fa-money-bill-wave m-auto"></i><span class="ml-2">'.$status.'</span></div></td>
                                             <td class="noPrint text-center"><a href="?conc='.$row['id'].'" class="btn"><i class="fas fa-thumbs-up icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?canc='.$row['id'].'" class="btn"><i class="fas fa-times icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint text-center"><a href="fisc-contasReceberPagamento.php?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
+                                            <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                         ';
                                     }else{
                                         echo '
@@ -250,11 +302,99 @@ if(isset($_GET['filtro'])){
 <div class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar novo cliente</h5>
+                <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
             <div class="modal-body">
-                
+                <form method="post">
+
+                    <?php
+                        if(isset($_GET['edt'])){
+                            $resp = $con->query('select * from tbl_contasReceber where id = '.$_GET['edt']);
+                            $un = $resp->fetch_assoc();
+                        }
+                    ?>
+
+                    <input type="hidden" value="<?php echo isset($_GET['edt'])?'edt':'add';?>" name="cmd">
+                    <input type="hidden" value="<?php echo $_GET['edt'];?>" name="id" id="id">
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
+                            <select name="cliente" id="cliente" class="form-control" <?=isset($_GET['edt'])?'readonly':'';?>>
+                                <?
+                                    $resp = $con->query('select id,razaoSocial_nome from tbl_clientes where tipoCliente = "on"');
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['id'].'" '.($un['cliente'] == $row['id']?'selected':'').'>'.$row['razaoSocial_nome'].'</option>';
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="nDocumento">N° Documento</label>
+                            <input type="text" class="form-control" name="nDocumento" id="nDocumento" maxlength="20" value="<?=$un['nDocumento']?>">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="valor">Valor (parcela)<span class="ml-2 text-danger">*</span></label>
+                            <input type="number" step="0.01" value="<?=isset($un['valor'])?$un['valor']:'0.01';?>" min="0.01" class="form-control" name="valor" id="valor" required onchange="calcValor()">
+                        </div>
+                        <div class="col">
+                            <label for="parcela">Parcelas<span class="ml-2 text-danger">*</span></label>
+                            <input type="number" step="1" min="1" value="<?=isset($un['parcela'])?$un['parcela']:'1';?>" class="form-control" name="parcela" id="parcela" required onchange="calcValor()" <?=isset($_GET['edt'])?'readonly':'';?>>
+                        </div>
+                        <div class="col-3">
+                            <label for="total">Total</label>
+                            <input type="text" value="100.000" class="form-control" id="total" readonly>
+                        </div>                  
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="vencimento">Vencimento<span class="ml-2 text-danger">*</span></label>
+                            <input type="date" class="form-control" name="vencimento" id="vencimento" value="<?=$un['vencimento']?>" required>
+                        </div>
+                        <div class="col">
+                            <label for="intervalo">Intervalo (dias)</label>
+                            <input type="number" class="form-control" name="intervalo" id="intervalo" value="<?=isset($un['intervalo'])?$un['intervalo']:'30';?>" <?=isset($_GET['edt'])?'readonly':'';?>>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="status">Status<span class="ml-2 text-danger">*</span></label>
+                            <select name="status" id="status" class="form-control">
+                                    <option value="0" <?=$un['status'] == 0?'selected':'';?>>Em andamento</option>
+                                    <option value="1" <?=$un['status'] == 1?'selected':'';?>>Finalizado</option>
+                                    <option value="2" <?=$un['status'] == 2?'selected':'';?>>Cancelado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="descricao">Descrição</label>
+                            <textarea name="descricao" id="descricao" rows="4" class="form-control" style="resize:none;" maxlength="200"><?=$un['descricao']?></textarea>
+                        </div>
+                    </div>
+
+                    <input id="needs-validation" class="d-none" type="submit" value="enviar">
+
+                </form>
+
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="location.href='?'">Fechar</button>
+                <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
+                <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('needs-validation').click();"><?php echo isset($_GET['edt'])? 'Atualizar':'Salvar';?></button>
             </div>
         </div>
     </div>
@@ -276,4 +416,4 @@ if(isset($_GET['filtro'])){
     ?>
 </div>
 
-<?php if(isset($_GET['edt'])) echo "<script>$('#mdl-cliente').modal()</script>"; ?>
+<?php if(isset($_GET['edt'])) echo "<script>$('#btn-modal').click()</script>"; ?>

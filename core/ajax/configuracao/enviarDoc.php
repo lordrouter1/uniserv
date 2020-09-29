@@ -23,7 +23,6 @@
                             $sFlag = 1;
                         break;
                     }
-                    var_dump($consResp->approvalStatus,$juno->recipientToken);
                 }
                 else{
                     $status = '<i class="fas fa-cloud-upload-alt ml-3 mt-auto mb-auto text-success" style="display:none; font-size:24px;" id="check-'.$item.'"></i>';

@@ -250,7 +250,6 @@ $usuario = $resp->fetch_assoc();
             $(this).addClass('active');
             $($(this).attr('data-target')).removeClass('fade');
             $($(this).attr('data-target')).addClass('active');
-
         });
 
         $("#compEmpresa").submit(function(e){

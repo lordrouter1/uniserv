@@ -298,6 +298,29 @@ class Juno
 
     /* ========== Pagamento ========== */
 
+    /*
+        "charge" => array(
+            "description" => "string",
+            "totalAmount" => 0.01,
+            "dueDate" => "yyyy-MM-dd",
+            "installments" => 0,
+            "maxOverdueDays" => 0,
+            "fine" => 0,
+            "interest" => "0.00",
+            "discountAmount" => "0.00",
+            "discountDays" => -1,
+            "paymentTypes" => array(
+                "BOLETO",
+                "CREDIT_CARD"
+            ),
+            "split" => array()
+
+        ),
+        "billing" => array(
+            "name" => "string",
+            "document" => "string"
+        )
+    */
     public function criarCobrancas($pagamento){
         $this->isTokenVal();
 
@@ -313,16 +336,6 @@ class Juno
                 "chargeFee" => true
             )
         );
-
-        $pagamento['charge']['paymentTypes'] = array(
-            "CREDIT_CARD"
-        );
-
-        /*$pagamento['charge']['paymentTypes'] = array(
-            "BOLETO"
-        );*/
-
-        //$pagamento['charge']['installments'] = 2
 
         curl_setopt($this->curl, CURLOPT_URL, $this->url."charges");
         curl_setopt($this->curl, CURLOPT_POST, 1);
