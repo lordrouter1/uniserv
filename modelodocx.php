@@ -1,11 +1,12 @@
 <?php 
 require 'assets/vendor/autoload.php';
 
-$templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor('assets/contratoTemplates/contrato_m1.docx');
+$source = 'assets/contratoTemplates/contrato_m1.docx';
 
-$templateProcessor->setValue('razaoSocial', 'Alan Cleber Borim Associados e LTDA');
- 
-$templateProcessor->saveAs('MyWordFile.docx');
+$phpWord = \PhpOffice\PhpWord\IOFactory::load($source);
+
+$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'HTML');
+$objWriter->save("saida.html");
 
 ?>
 

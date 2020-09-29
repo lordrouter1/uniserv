@@ -20,7 +20,7 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
     }
 }
 
-if($_GET['del']=='1'){
+if(@$_GET['del']=='1'){
     $arquivo = base64_decode($_GET['arquivo']);
     if(unlink($arquivo)){
         echo "arquivo excluido com sucesso";

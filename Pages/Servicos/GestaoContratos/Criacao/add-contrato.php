@@ -58,28 +58,35 @@ elseif(isset($_GET['del'])){
                     }
                     ?>
                     <h5 class="card-title">Criar contrato para: <?=$row->razaoSocial_nome?></h5>
-                    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+                    <script src="https://cdn.tiny.cloud/1/6vhij89h5nambfeb3v118fvefkds6o755v8awtjujxvxl3te/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
                     <script>
+                        
                         tinymce.init({
                             selector: 'textarea#mytextarea',
-                            plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
-                            imagetools_cors_hosts: ['picsum.photos'],
-                            menubar: 'file edit view insert format tools table help',
-                            toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-                            toolbar_sticky: true,
-                            autosave_ask_before_unload: true,
-                            autosave_interval: '30s',
-                            autosave_prefix: '{path}{query}-{id}-',
-                            autosave_restore_when_empty: false,
-                            autosave_retention: '2m',
-                            image_advtab: false
+                            plugins: 'a11ychecker advcode casechange formatpainter linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tinycomments tinymcespellchecker',
+                            toolbar: 'a11ycheck addcomment showcomments casechange checklist code formatpainter pageembed permanentpen table',
+                            toolbar_mode: 'floating',
+                            toolbar:"undo redo | styleselect | fontselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent",
+                            tinycomments_mode: 'embedded',
+                            tinycomments_author: 'Author name',
                         });
+
+                        function externo() {
+                            
+                            var url = 'saida.html';
+                            $.get(url, function(response) {
+                                tinymce.activeEditor.setContent(response);
+                            });
+                        }
+
                     </script>
 
                     
                     <form>
                     <textarea id="mytextarea"></textarea>
-                        Testemunhas:
+
+                    <button id="carregaExterno" onclick="externo()" type="button" class="btn btn-primary">Carregar Template</button>    
+                    Testemunhas:
                         <fieldset class="todos_labels">
 
                         <div class="repeatable"></div>
