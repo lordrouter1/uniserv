@@ -1,13 +1,23 @@
 <?php
 
 /*
-    Conta Teste "resourceToken":"CB79F7A0F088B8AF11F2C5DEAAF949E5E3CE69AB878D87C5173BCFA13D8B7EB1"
+    sandbox
+
+    public $clientId = "fnkLj1Luh3nJwM4v";
+    public $clientSecret = "1yW@M+lI,-dxmmnLUzaxo5,NP;Zv(If^";
+
+    producao
+
+    private $clientId = "LHTz7QUBe1lUMqjT";
+    private $clientSecret = "acjPK@]I)_:SgEAV,Nxk%b6!mOiqj{E=";
+
+
 */
 
 class Juno
 {
-    public $clientId = "fnkLj1Luh3nJwM4v";
-    public $clientSecret = "1yW@M+lI,-dxmmnLUzaxo5,NP;Zv(If^";
+    private $clientId = "LHTz7QUBe1lUMqjT";
+    private $clientSecret = "acjPK@]I)_:SgEAV,Nxk%b6!mOiqj{E=";
     
     private $token = "";
     private $expires = "";
@@ -15,7 +25,7 @@ class Juno
     private $masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
 
     private $curl;
-    private $url = "https://sandbox.boletobancario.com/api-integration/";
+    private $url = "https://api.juno.com.br/api-integration/";
 
     private $taxa = 2.8;
 
@@ -51,7 +61,7 @@ class Juno
     private function loadKey()
     {
         curl_setopt($this->curl, CURLOPT_POST, 1);
-        curl_setopt($this->curl, CURLOPT_URL, "https://sandbox.boletobancario.com/authorization-server/oauth/token");
+        curl_setopt($this->curl, CURLOPT_URL, "https://api.juno.com.br/authorization-server/oauth/token");
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
             "Content-Type: application/x-www-form-urlencoded",
             "Authorization: Basic ".base64_encode($this->clientId.":".$this->clientSecret)

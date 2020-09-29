@@ -251,7 +251,17 @@ if(isset($_GET['filtro'])){
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                
+                <div class="row">
+                    <div class="col text-center">
+                        <h3>Pagamento gerado com sucesso</h3>
+                    </div>
+                </div>
+                <div class="row mb-3 mt-3">
+                    <div class="col d-flex">
+                        <a class="btn btn-light mr-2 ml-auto w-50 d-flex" href="<?=urldecode($_GET['boletos'])?>" target="_blank"><i class="fas fa-file-pdf mt-auto mb-auto"></i><span class="ml-auto mr-auto">Boletos</span></a>
+                        <a class="btn btn-light mr-auto w-50 d-flex" href="<?=urldecode($_GET['cartao'])?>" target="_blank"><i class="fas fa-credit-card mt-auto mb-auto"></i><span class="ml-auto mr-auto">Cartão</span></a>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="location.href='?'">Fechar</button>

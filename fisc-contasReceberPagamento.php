@@ -93,8 +93,11 @@ if(isset($_POST['cmd'])){
                 $con->query($query);
                 $anterior = $con->insert_id;
             }
-            if($con->error == ""){
-                
+            if($con->error == "" && $cobranca){
+                echo '<script>location.href="fisc-contasReceber.php?edt&boletos='.urlencode($cobranca[0]->checkoutUrl).'&cartao='.urlencode($cobranca[0]->link).'"</script>';
+            }
+            else{
+                echo '<script>location.href="fisc-contasReceber.php?s"</script>';
             }
         break;
     }
@@ -135,7 +138,7 @@ if(isset($_POST['cmd'])){
 
 <h3><strong>Nova conta a receber</strong></h3>
 
-<?if(sizeof($un['referenciaPagamento'] | 0)):?>
+<?if(isset($_GET['edt'])):?>
 <div class="row mt-4 mb-4">
     <div class="col d-flex">
         <a target="_blank" href="<?=$un['boletos']?>" class="btn btn-light ml-auto d-flex"><i class="fas fa-file-pdf m-auto"></i><span class="ml-2">Boletos</span></a>
@@ -186,7 +189,7 @@ if(isset($_POST['cmd'])){
             <div class="row mb-3">
                 <div class="col">
                     <label for="total">Total<span class="ml-2 text-danger">*</span></label>
-                    <input type="text" value="<?=($un['valor'] * $un['totalParcela'])?>" class="form-control" id="total" onchange="calcValorParcela()" <?=isset($_GET['edt'])?'readonly':'';?>>
+                    <input type="text" value="<?=($un['valor'] * $un['totalParcela'])?>" class="form-control" name="valor" id="total" onchange="calcValorParcela()" <?=isset($_GET['edt'])?'readonly':'';?>>
                 </div>   
                 <div class="col">
                     <label for="parcela">Parcelas<span class="ml-2 text-danger">*</span></label>
@@ -194,7 +197,7 @@ if(isset($_POST['cmd'])){
                 </div>
                 <div class="col">
                     <label for="valor">Valor (parcela)</label>
-                    <input type="number" step="0.01" value="<?=isset($un['valor'])?$un['valor']:'0.01';?>" min="0.01" class="form-control" name="valor" id="valor" readonly>
+                    <input type="number" step="0.01" value="<?=isset($un['valor'])?$un['valor']:'0.01';?>" min="0.01" class="form-control" id="valor" readonly>
                 </div>             
             </div>
 
@@ -253,18 +256,18 @@ if(isset($_POST['cmd'])){
                     <input type="number" name="pagamento[overdueDays]" min="0" class="form-control">
                 </div>
                 <div class="col">
-                    <label for="pagamento[multa]">Multa</label>
+                    <label for="pagamento[multa]">Multa %</label>
                     <input type="number" name="pagamento[multa]" min="0" max="20" step="0.01" class="form-control">
                 </div>
                 <div class="col">
-                    <label for="pagamento[juros]">Juros</label>
+                    <label for="pagamento[juros]">Juros %</label>
                     <input type="number" name="pagamento[juros]" min="0" max="20" step="0.01" class="form-control">
                 </div>
             </div>
 
             <div class="row mt-4">
                 <div class="col">
-                    <label for="pagamento[descontoValor]">Valor de Desconto</label>
+                    <label for="pagamento[descontoValor]">Valor de Desconto %</label>
                     <input type="number" name="pagamento[descontoValor]" min="0" max="20" step="0.01" class="form-control">
                 </div>
                 <div class="col">
