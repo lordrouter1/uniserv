@@ -253,7 +253,7 @@
                         <li>
                             <a <?php echo @$menu['criacao_contratos']?'href="serv-criacontratos.php"':'disabled';?>>
                                 <i class="metismenu-icon">
-                                </i>Cria&ccedil;&atilde;o de contratos
+                                </i>Criação de contratos
                             </a>
                         </li>
                         <li>
