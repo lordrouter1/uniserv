@@ -84,7 +84,7 @@
                 </li>
 
                 <li>
-                    <a <?php echo $menu['estoque']?'href="#"':'disabled';?>>
+                    <a <?php echo @$menu['estoque']?'href="#"':'disabled';?>>
                         <i class="metismenu-icon fa fa-cubes"></i>
                         Gestão de estoque
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
@@ -160,7 +160,7 @@
                 </li>
 
                 <li>
-                    <a <?php echo $menu['producao']?'href="#"':'disabled';?>>
+                    <a <?php echo @$menu['producao']?'href="#"':'disabled';?>>
                         <i class="metismenu-icon fas fa-hammer"></i>
                         Produção
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
@@ -200,7 +200,7 @@
                 </li>
 
                 <li>
-                    <a <?php echo $menu['venda']?'':'disabled';?>>
+                    <a <?php echo @$menu['venda']?'':'disabled';?>>
                         <i class="metismenu-icon fas fa-shopping-basket"></i>
                         Venda
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
@@ -251,7 +251,13 @@
                             </a>
                         </li>
                         <li>
-                            <a <?php echo $menu['servicos_chamados']?'href=""':'disabled';?>>
+                            <a <?php echo @$menu['criacao_contratos']?'href="serv-criacontratos.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Cria&ccedil;&atilde;o de contratos
+                            </a>
+                        </li>
+                        <li>
+                            <a <?php echo @$menu['servicos_chamados']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Chamados
                             </a>
@@ -263,7 +269,7 @@
                             </a>
                         </li>
                         <li>
-                            <a <?php echo $menu['servicos_equipamentos']?'href=""':'disabled';?>>
+                            <a <?php echo @$menu['servicos_equipamentos']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Equipamentos
                             </a>
@@ -272,7 +278,7 @@
                 </li>
 
                 <li>
-                    <a <?php echo $menu['fiscal']?'href="#"':'disabled';?>>
+                    <a <?php echo @$menu['fiscal']?'href="#"':'disabled';?>>
                         <i class="metismenu-icon fas fa-file-invoice-dollar"></i>
                         Fiscal
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>

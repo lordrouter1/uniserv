@@ -38,9 +38,8 @@ if(isset($_SESSION['id'])){
         setcookie('empresa',$resp['id']);
         $_COOKIE['empresa'] = $resp['id'];
     }
-
-    require_once('core/lib/juno/class.php');
-    $resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa']);
+ 
+   	$resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa']);
     if($resp->num_rows > 0){
     	$resp = $resp->fetch_assoc();
 		  if($resp['pagamentoStatus'] == '1'){
@@ -165,6 +164,9 @@ function addProdImp($data,$con){
     var_dump($con->error);
 
     return $con->erro == ''?true:false;
+    if($resp['pagamentoStatus'] == '1'){
+        $juno->loadRecipientToken($resp['token']);
+    }
 }
 
 ?>
