@@ -8,21 +8,20 @@ if(isset($_POST['cmd'])){
     switch($cmd){
         case 'add':
             $anterior = 0;
+            $erro = false;
             if($_POST['pagamento']['habilitar'] == 1){
                 $cliente = $con->query('select razaoSocial_nome,cnpj_cpf from tbl_clientes where id = '.$_POST['cliente'])->fetch_assoc();
                 $pagamento = array(
                     "charge" => array(
                         "description" => $_POST['descricao'],
-                        "totalAmount" => $_POST['valor'],
                         "dueDate" => $_POST['vencimento'],
-                        "installments" => $_POST['parcela'],
                         "maxOverdueDays" => $_POST['pagamento']['overdueDays'],
                         "fine" => $_POST['pagamento']['multa'],
                         "interest" => $_POST['pagamento']['juros'],
                         "discountAmount" => $_POST['pagamento']['descontoValor'],
                         "discountDays" => $_POST['pagamento']['descontoDias'],
                         "paymentTypes" => array(
-                            "BOLETO",
+                            /*"BOLETO",*/
                             "CREDIT_CARD"
                         ),
                         "split" => array()
@@ -33,6 +32,14 @@ if(isset($_POST['cmd'])){
                         "document" => $cliente['cnpj_cpf']
                     )
                 );
+
+                if($_POST['parcela'] > 1){
+                   $pagamento['charge']['installments'] = $_POST['parcela'];
+                   $pagamento['charge']['totalAmount'] = $_POST['valor'];
+                }
+                else{
+                    $pagamento['charge']['amount'] = $_POST['valor'];
+                }
                 
                 $resp = $juno->criarCobrancas($pagamento);
                 
@@ -59,7 +66,7 @@ if(isset($_POST['cmd'])){
                     $data = date('d/m/Y',strtotime($_POST['vencimento'].' + '.($i*$_POST['intervalo']).' day'));
                 }
                 if($cobranca){
-                    $query = 'insert into tbl_contasReceber(valor,descricao,vencimento,status,cliente,nDocumento,parcela,intervalo,anterior,totalParcela,referenciaPagamento,checkoutUrl,installmentLink,boletos) values(
+                    $query = 'insert into tbl_contasReceber(valor,descricao,vencimento,status,cliente,nDocumento,parcela,intervalo,anterior,totalParcela,referenciaPagamento,checkoutUrl,installmentLink,boletos,empresa) values(
                         "'.$_POST['valor'].'",
                         "'.$_POST['descricao'].'",
                         "'.$cobranca[$i]->dueDate.'",
@@ -73,11 +80,12 @@ if(isset($_POST['cmd'])){
                         "'.$cobranca[$i]->id.'",
                         "'.$cobranca[$i]->checkoutUrl.'",
                         "'.$cobranca[$i]->installmentLink.'",
-                        "'.$cobranca[$i]->link.'"
+                        "'.$cobranca[$i]->link.'",
+                        "'.$_COOKIE['empresa'].'"
                     )';
                 }
                 else{
-                    $query = 'insert into tbl_contasReceber(valor,descricao,vencimento,status,cliente,nDocumento,parcela,intervalo,anterior,totalParcela) values(
+                    $query = 'insert into tbl_contasReceber(valor,descricao,vencimento,status,cliente,nDocumento,parcela,intervalo,anterior,totalParcela,empresa) values(
                         "'.$_POST['valor'].'",
                         "'.$_POST['descricao'].'",
                         "'.$data.'",
@@ -87,14 +95,15 @@ if(isset($_POST['cmd'])){
                         "'.($i+1).'",
                         "'.$_POST['intervalo'].'",
                         "'.$anterior.'",
-                        "'.$_POST['parcela'].'"
+                        "'.$_POST['parcela'].'",
+                        "'.$_COOKIE['empresa'].'"
                     )';
                 }
                 $con->query($query);
                 $anterior = $con->insert_id;
             }
             if($con->error == "" && $cobranca){
-                echo '<script>location.href="fisc-contasReceber.php?edt&boletos='.urlencode($cobranca[0]->checkoutUrl).'&cartao='.urlencode($cobranca[0]->link).'"</script>';
+                echo '<script>location.href="fisc-contasReceber.php?edt&boletos='.urlencode($cobranca[0]->checkoutUrl).'&cartao='.$cobranca[0]->id.'&empresa='.$_COOKIE['empresa'].'"</script>';
             }
             else{
                 echo '<script>location.href="fisc-contasReceber.php?s"</script>';
@@ -141,9 +150,9 @@ if(isset($_POST['cmd'])){
 <?if(isset($_GET['edt'])):?>
 <div class="row mt-4 mb-4">
     <div class="col d-flex">
-        <a target="_blank" href="<?=$un['boletos']?>" class="btn btn-light ml-auto d-flex"><i class="fas fa-file-pdf m-auto"></i><span class="ml-2">Boletos</span></a>
-        <a target="_blank" href="<?=$un['installmentLink']?>" class="btn btn-light ml-2 d-flex"><i class="fas fa-file-pdf m-auto"></i><span class="ml-2">Parcela</span></a>
-        <a target="_blank" href="<?=$un['checkoutUrl']?>" class="btn btn-light ml-2 d-flex"><i class="fas fa-credit-card m-auto"></i><span class="ml-2">Cartão</span></a>
+        <!--<a target="_blank" href="<?=$un['boletos']?>" class="btn btn-light ml-auto d-flex"><i class="fas fa-file-pdf m-auto"></i><span class="ml-2">Boletos</span></a>
+        <a target="_blank" href="<?=$un['installmentLink']?>" class="btn btn-light ml-2 d-flex"><i class="fas fa-file-pdf m-auto"></i><span class="ml-2">Parcela</span></a>-->
+        <a target="_blank" href="pagamento.php?e=<?=$un['empresa']?>&c=<?=$un['referenciaPagamento']?>" class="btn btn-light ml-auto d-flex"><i class="fas fa-credit-card m-auto"></i><span class="ml-2">Cartão</span></a>
     </div>
 </div>
 <?endif;?>
@@ -208,7 +217,7 @@ if(isset($_POST['cmd'])){
                 </div>
                 <div class="col">
                     <label for="intervalo">Intervalo (dias)</label>
-                    <input type="number" class="form-control" name="intervalo" id="intervalo" value="<?=isset($un['intervalo'])?$un['intervalo']:'30';?>" <?=isset($_GET['edt'])?'readonly':'';?>>
+                    <input type="number" class="form-control" name="intervalo" id="intervalo" value="<?=isset($un['intervalo'])?$un['intervalo']:'30';?>" <?=/*isset($_GET['edt'])*/true?'readonly':'';?>>
                 </div>
             </div>
 
@@ -253,26 +262,26 @@ if(isset($_POST['cmd'])){
             <div class="row mt-4">
                 <div class="col">
                     <label for="pagamento[over]">Dias permitidos após o vencimento</label>
-                    <input type="number" name="pagamento[overdueDays]" min="0" class="form-control">
+                    <input type="number" name="pagamento[overdueDays]" min="0" class="form-control" value="0">
                 </div>
                 <div class="col">
                     <label for="pagamento[multa]">Multa %</label>
-                    <input type="number" name="pagamento[multa]" min="0" max="20" step="0.01" class="form-control">
+                    <input type="number" name="pagamento[multa]" min="0" max="20" step="0.01" class="form-control" value="0">
                 </div>
                 <div class="col">
                     <label for="pagamento[juros]">Juros %</label>
-                    <input type="number" name="pagamento[juros]" min="0" max="20" step="0.01" class="form-control">
+                    <input type="number" name="pagamento[juros]" min="0" max="20" step="0.01" class="form-control" value="0">
                 </div>
             </div>
 
             <div class="row mt-4">
                 <div class="col">
                     <label for="pagamento[descontoValor]">Valor de Desconto %</label>
-                    <input type="number" name="pagamento[descontoValor]" min="0" max="20" step="0.01" class="form-control">
+                    <input type="number" name="pagamento[descontoValor]" min="0" max="20" step="0.01" class="form-control" value="0">
                 </div>
                 <div class="col">
                     <label for="pagamento[descontoDias]">Dias de Desconto</label>
-                    <input type="number" name="pagamento[descontoDias]" min="0" max="20" step="0.01" class="form-control">
+                    <input type="number" name="pagamento[descontoDias]" min="-1" max="20" step="0.01" class="form-control" value="-1">
                 </div>
             </div>
 

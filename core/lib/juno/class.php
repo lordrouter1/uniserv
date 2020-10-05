@@ -1,20 +1,5 @@
 <?php
 
-/*
-    sandbox
-
-    public $clientId = "fnkLj1Luh3nJwM4v";
-    public $clientSecret = "1yW@M+lI,-dxmmnLUzaxo5,NP;Zv(If^";
-    private $masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
-
-    producao
-
-    private $clientId = "LHTz7QUBe1lUMqjT";
-    private $clientSecret = "acjPK@]I)_:SgEAV,Nxk%b6!mOiqj{E=";
-
-
-*/
-
 class Juno
 {
     private $clientId = "LHTz7QUBe1lUMqjT";
@@ -22,18 +7,44 @@ class Juno
     
     private $token = "";
     private $expires = "";
-    public $recipientToken = "";
-    private $masterToken = "667C521CA722AC4986DDCB8ED4CEEF94F0813E1544F89BFF6C8BBEC8C7DEDF1A";
+    private $recipientToken = "";
+    private $masterToken = "";
+    public $publicToken = "";
 
     private $curl;
-    private $url = "https://api.juno.com.br/api-integration/";
+    private $url = "";
+    private $urlToken = "";
+    public $jsUrl = "";
 
     private $taxa = 2.8;
 
-    function __construct()
+    public $debug;
+
+    function __construct($debug=true,$taxa=2.8)
     {
         $this->curl = curl_init();
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+
+        $this->taxa = $taxa;
+        $this->debug = $debug;
+        
+        if($debug){
+            $this->clientId = "fnkLj1Luh3nJwM4v";
+            $this->clientSecret = "1yW@M+lI,-dxmmnLUzaxo5,NP;Zv(If^";
+            $this->masterToken = "1230E4ECA4E796BFC7BA89AD3B1B3A0D6FB01B240CEA521166D7A9A0568EBCF2";
+            $this->url = "https://sandbox.boletobancario.com/api-integration/";
+            $this->urlToken = "https://sandbox.boletobancario.com/authorization-server/oauth/token";
+            $this->jsUrl = "https://sandbox.boletobancario.com/boletofacil/wro/direct-checkout.min.js";
+            $this->publicToken = "1446F0E10770EF9219F3E8E94E233CA2D277E10581F31ACADA634B43A85CDCE4";
+        }
+        else{
+            $this->clientId = "LHTz7QUBe1lUMqjT";
+            $this->clientSecret = "acjPK@]I)_:SgEAV,Nxk%b6!mOiqj{E=";
+            $this->masterToken = "667C521CA722AC4986DDCB8ED4CEEF94F0813E1544F89BFF6C8BBEC8C7DEDF1A";
+            $this->url = "https://api.juno.com.br/api-integration/";
+            $this->urlToken = "https://api.juno.com.br/authorization-server/oauth/token";
+            $this->jsUrl = "https://www.boletobancario.com/boletofacil/wro/direct-checkout.min.js";
+        }
 
         $this->loadKey();
         //$this->loadResourceToken();
@@ -62,14 +73,15 @@ class Juno
     private function loadKey()
     {
         curl_setopt($this->curl, CURLOPT_POST, 1);
-        curl_setopt($this->curl, CURLOPT_URL, "https://api.juno.com.br/authorization-server/oauth/token");
+        curl_setopt($this->curl, CURLOPT_URL, $this->urlToken);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
             "Content-Type: application/x-www-form-urlencoded",
             "Authorization: Basic ".base64_encode($this->clientId.":".$this->clientSecret)
         ));
         curl_setopt($this->curl, CURLOPT_POSTFIELDS,"grant_type=client_credentials");
 
-        $resp = json_decode(curl_exec($this->curl));
+        $temp = curl_exec($this->curl);
+        $resp = json_decode($temp);
 
         $this->token = $resp->access_token;
         $this->expires = $resp->expires_in;
@@ -212,7 +224,7 @@ class Juno
         $temp = curl_exec($this->curl);
         $resp = json_decode($temp);
 
-        return $resp->balance;
+        return $resp;
     }
 
     public function atualizarContaDigital($data){
@@ -280,8 +292,6 @@ class Juno
         ];
         
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $files);
-
-				#var_dump(curl_getinfo($this->curl));
 
         $temp = curl_exec($this->curl);
         $resp = json_decode($temp);
@@ -360,19 +370,94 @@ class Juno
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($pagamento));
 
         $temp = curl_exec($this->curl);
+
         $resp = json_decode($temp);
 
         return $resp;
     }
 
+    public function consultarCobranca($cobranca){
+        $this->isTokenVal();
+
+        curl_setopt($this->curl, CURLOPT_URL, $this->url."charges/".$cobranca);
+        curl_setopt($this->curl, CURLOPT_POST, 0);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "Authorization: Bearer ".$this->token,
+            "X-Api-Version: 2",
+            "X-Resource-Token: ".$this->recipientToken,
+        ));
+
+        $temp = curl_exec($this->curl);
+        $resp = json_decode($temp);
+
+        return $resp;
+
+    }
+
+    /*
+        "chargeId" => "string",
+        "billing" => array(
+            "email" => "string",
+            "address" => array(
+                "street" => "string",
+                "number" => "string",
+                "complement" => "string",
+                "neighborhood" => "string",
+                "city" => "string",
+                "state" => "string",
+                "postCode" => "string"
+            ),
+            "delayed" => false
+        ),
+        "creditCardDetails" => array(
+            "creditCardId" => "string",
+            "creditCardHash" => "string"
+        )
+
+    */
+    public function pagamento($pagamento){
+        curl_setopt($this->curl, CURLOPT_URL, $this->url."payments");
+        curl_setopt($this->curl, CURLOPT_POST, 1);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "Authorization: Bearer ".$this->token,
+            "X-Api-Version: 2",
+            "X-Resource-Token: ".$this->recipientToken,
+        ));
+
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($pagamento));
+
+        $temp = curl_exec($this->curl);
+        $resp = json_decode($temp);
+
+        return $resp;
+    }
+
+    public function saque($valor){
+        curl_setopt($this->curl, CURLOPT_URL, $this->url."transfers");
+        curl_setopt($this->curl, CURLOPT_POST, 1);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "Authorization: Bearer ".$this->token,
+            "X-Api-Version: 2",
+            "X-Resource-Token: ".$this->recipientToken,
+        ));
+
+        $data = array(
+            'type' => 'DEFAULT_BANK_ACCOUNT',
+            'amount' => $valor
+        );
+
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($data));
+
+        $temp = curl_exec($this->curl);
+        $resp = json_decode($temp);
+
+        return $resp;
+    }
 }
 
 $juno = new Juno();
-
-#$image = file_get_contents("img.png");
-#$resp = $juno->enviarDocumentos($image,"doc_CF891066125DA606");
-
-#$resp = $juno->listDocumentos();
-#var_dump($resp);
 
 

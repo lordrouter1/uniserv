@@ -20,7 +20,9 @@ if(isset($_GET['filtro'])){
 }
 
 ?>
+<script src="assets/scripts/lib/copy/clipboard.min.js"></script>
 <script>
+
     async function imprimir(){
         const divPrint = document.getElementById('tablePrint');
         newWin = window.open('');
@@ -32,6 +34,12 @@ if(isset($_GET['filtro'])){
 
     function calcValor(){
         $('#total').val(parseFloat(parseFloat($('#valor').val())*parseFloat($('#parcela').val())).toFixed(2));
+    }
+
+    function copiar(){
+        $('#copy').select();
+        //$('#copy').setSelectionRange(0, 99999);
+        document.execCommand("copy");
     }
 
     $(document).ready(function(){
@@ -258,8 +266,16 @@ if(isset($_GET['filtro'])){
                 </div>
                 <div class="row mb-3 mt-3">
                     <div class="col d-flex">
-                        <a class="btn btn-light mr-2 ml-auto w-50 d-flex" href="<?=urldecode($_GET['boletos'])?>" target="_blank"><i class="fas fa-file-pdf mt-auto mb-auto"></i><span class="ml-auto mr-auto">Boletos</span></a>
-                        <a class="btn btn-light mr-auto w-50 d-flex" href="<?=urldecode($_GET['cartao'])?>" target="_blank"><i class="fas fa-credit-card mt-auto mb-auto"></i><span class="ml-auto mr-auto">Cartão</span></a>
+                        <!--<a class="btn btn-light mr-2 ml-auto w-50 d-flex" href="<?=urldecode($_GET['boletos'])?>" target="_blank"><i class="fas fa-file-pdf mt-auto mb-auto"></i><span class="ml-auto mr-auto">Boletos</span></a>-->
+                        <a class="btn btn-light mr-auto w-100 d-flex" href="pagamento.php?e=<?=$_GET['empresa']?>&c=<?=$_GET['cartao']?>" target="_blank"><i class="fas fa-credit-card mt-auto mb-auto"></i><span class="ml-auto mr-auto">Cartão</span></a>
+                    </div>
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="text" id="copy" class="form-control" value="<?='http://'.$_SERVER['HTTP_HOST']?>/pagamento.php?e=<?=$_GET['empresa']?>&c=<?=$_GET['cartao']?>" readonly>
+                            <div class="input-group-append bg-light" onclick="copiar()">
+                                <div class="btn d-flex border"><i class="fas fa-copy m-auto"></i></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
