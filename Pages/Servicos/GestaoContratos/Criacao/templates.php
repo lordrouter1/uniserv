@@ -1,4 +1,15 @@
 <?php
+//para remover o arquivo
+if(@$_GET['del']=='1'){
+    $arquivo = base64_decode($_GET['arquivo']);
+    if(unlink($arquivo)){
+        echo "<script>window.location.href='serv-contratostemplates.php';</script>";
+        exit;
+    }else{
+        echo "erro ao excluir o arquivo";
+    }
+}
+#para gravar o arquivo
 if(isset($_POST['upload'])&&$_POST['upload']=='1'){
     #executa o upload do arquivo
     $diretorioUpload = "assets/contratoTemplates/";
@@ -11,7 +22,7 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
             $nome = str_replace(' ', '-', $nome);
             
             move_uploaded_file($_FILES['template']['tmp_name'], $diretorioUpload . $nome);
-
+            
         } else {
             
             echo 'Não é permitido enviar arquivo com extensão ' . strtoupper($ext);
@@ -19,16 +30,6 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
         }
     }
 }
-
-if(@$_GET['del']=='1'){
-    $arquivo = base64_decode($_GET['arquivo']);
-    if(unlink($arquivo)){
-        echo "arquivo excluido com sucesso";
-    }else{
-        echo "erro ao excluir o arquivo";
-    }
-}
-
 ?>
 <script src="assets/scripts/serv-contratos.js"></script>
 
@@ -117,7 +118,7 @@ if(@$_GET['del']=='1'){
                             <tr>
                                 <td><?=$arquivo?></td>
                                 <td><?php echo round(filesize($path.'/'.$arquivo)/1024,0)." KB";?></td>
-                                <td><a href="?del=1&arquivo=<?php echo base64_encode($path.'/'.$arquivo);?>" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
+                                <td><a href="?del=1&arquivo=<?php echo base64_encode($path.'/'.$arquivo);?>" onclick="javascript:return confirm('Deseja mesmo excluir o arquivo?');" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
                                     <i class="fa fa-file" aria-hidden="true" title="Excluir template" style="color: darkred;"></i></a></td>
                                 <td class="noPrint"></td>
                                 <td class="noPrint"></td>
