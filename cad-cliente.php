@@ -3,11 +3,15 @@
 <?php
 if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
+    
+    $temp = explode('-',$_POST['cidade']);
+    $cidade = $temp[1];
+    $ibge = $temp[0];
 
     if($cmd == "add"){
         $existe = $con->query('select id from tbl_clientes where cnpj_cpf = "'.$_POST['cnpj_cpf'].'"');
         if($existe->num_rows == 0){
-            $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico) values(
+            $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico, ibge, ie) values(
                 '".$_POST['tipoPessoa']."',
                 '".$_POST['razaoSocial_nome']."',
                 '".$_POST['cnpj_cpf']."',
@@ -16,7 +20,7 @@ if(isset($_POST['cmd'])){
                 '".$_POST['numero']."',
                 '".$_POST['complemento']."',
                 '".$_POST['bairro']."',
-                '".$_POST['cidade']."',
+                '".$cidade."',
                 '".$_POST['cep']."',
                 '".$_POST['email']."',
                 '".$_POST['telefoneEmpresa']."',
@@ -27,7 +31,9 @@ if(isset($_POST['cmd'])){
                 '".$_POST['tipo_cliente']."',
                 '".$_POST['tipo_fornecedor']."',
                 '".$_POST['tipo_funcionario']."',
-                '".$_POST['tipo_tecnico']."'
+                '".$_POST['tipo_tecnico']."',
+                '".$ibge."',
+                '".$_POST['ie']."'
             )");
             redirect($con->error);
         }
@@ -45,7 +51,7 @@ if(isset($_POST['cmd'])){
             numero = '".$_POST['numero']."',
             complemento = '".$_POST['complemento']."',
             bairro = '".$_POST['bairro']."',
-            cidade = '".$_POST['cidade']."',
+            cidade = '".$cidade."',
             cep = '".$_POST['cep']."',
             email = '".$_POST['email']."',
             telefoneEmpresa = '".$_POST['telefoneEmpresa']."',
@@ -56,7 +62,8 @@ if(isset($_POST['cmd'])){
             tipoCliente = '".$_POST['tipo_cliente']."',
             tipoFornecedor = '".$_POST['tipo_fornecedor']."',
             tipoFuncionario = '".$_POST['tipo_funcionario']."',
-            tipoTecnico = '".$_POST['tipo_tecnico']."'
+            tipoTecnico = '".$_POST['tipo_tecnico']."',
+            ibge = '".$ibge."'
             where id  = ".$_POST['id']
         );
         redirect($con->error);
@@ -87,6 +94,12 @@ elseif(isset($_GET['del'])){
         const resp = JSON.parse(xmlHttp.responseText);
         $("#estado").val(resp['uf']);
         $("#cidade").val(resp['localidade']);
+    }
+    function listarCidades(){
+        $.post('core/ajax/cad-cliente/getCidade.php',{estado:$('#estado').val()},function(resp){
+            $('#cidade').empty();
+            $('#cidade').append(resp);
+        });
     }
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
@@ -256,6 +269,10 @@ elseif(isset($_GET['del'])){
                             </div>
 
                             <div class="row">
+                                <div class="col-3">
+                                    <label for="ie">IE</label>
+                                    <input type="text" class="form-control mb-3" name="ie" id="ie">
+                                </div>
                                 <div class="col">
                                     <label for="nomeResponsavel">Nome responsável</label>
                                     <input type="text" value="<?php echo $row['nomeResponsavel'];?>" class="form-control mb-3" name="nomeResponsavel" id="nomeResponsavel">
@@ -290,7 +307,7 @@ elseif(isset($_GET['del'])){
                                 </div>
                                 <div class="col-4">
                                     <label for="estado">Estado<span class="ml-2 text-danger">*</span></label>
-                                    <select name="estado" value="<?php echo $row['estado'];?>" id="estado" class="form-control mb-3" required readonly>
+                                    <select name="estado" value="<?php echo $row['estado'];?>" id="estado" class="form-control mb-3" onchange="listarCidades()" required>
                                         <option value="AC">Acre</option>
                                         <option value="AL">Alagoas</option>
                                         <option value="AP">Amapá</option>
@@ -322,7 +339,8 @@ elseif(isset($_GET['del'])){
                                 </div>
                                 <div class="col">
                                     <label for="cidade">Cidade<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required>
+                                    <!--<input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required>-->
+                                    <select name="cidade" id="cidade" class="form-control"></select>
                                 </div>
                             </div>
 
@@ -416,6 +434,7 @@ elseif(isset($_GET['del'])){
                         $("#cpfResponsavel").mask('000.000.000-00', {reverse: true});
                         $("#telefoneEmpresa").mask('(99) 99999-9999');
                         $("#telefoneWhatsapp").mask('(99) 99999-9999');
+                        $("#ie").mask('99999999-99');
                         $("#cep").mask('99999-999');
                     });
                 </script>
