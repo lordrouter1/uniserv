@@ -1,4 +1,9 @@
 <?php
+ini_set('display_errors',1);
+ini_set('display_startup_erros',1);
+error_reporting(E_ALL);
+
+
 #header ('Content-type: text/html; charset=iso-8859-1');
 
 $idCliente          = $_REQUEST['id'];
@@ -8,7 +13,7 @@ $arquivoProcessado  = $_REQUEST['arquivo'];
 
 /* 
 contrato_m1.docx
-Lista de variáveis para substituição
+Lista de variï¿½veis para substituiï¿½ï¿½o
 ${razaoSocial}
 ${endereco}
 ${numero}
@@ -54,9 +59,9 @@ ${DevPropUF}
 procedimento para o processamento 
 */
 
-include '../../../../_con.php';
+include '../../../../con.php';
 
-#busca os dados do cliente para inserção no contrato
+#busca os dados do cliente para inserï¿½ï¿½o no contrato
 $query = "select * from tbl_clientes where id='".$idCliente."'";
                     
 $result = $con->query($query);
@@ -77,7 +82,7 @@ $tempSaida  = '../../../../assets/contratoTemplates/temp/'.$arquivoProcessado;
 
 $templateProcessor = new TemplateProcessor($source);
 
-#gera a matriz das informações
+#gera a matriz das informaï¿½ï¿½es
 
 
 $templateProcessor->setValues(array(

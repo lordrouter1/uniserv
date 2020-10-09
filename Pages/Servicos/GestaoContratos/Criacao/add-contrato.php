@@ -47,7 +47,7 @@ elseif(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
                     <?php 
-                    #busca o nome do cliente para inserção do contrato
+                    #busca o nome do cliente para inserï¿½ï¿½o do contrato
                     $query = "select * from tbl_clientes where id='".$_GET['id']."'";
                     
                     $result = $con->query($query);
@@ -77,7 +77,9 @@ elseif(isset($_GET['del'])){
                             var url = 'Pages/Servicos/GestaoContratos/Criacao/templateprocessor.php?id='+dado[0] + "&arquivo="+dado[1];
                             $.get(url, function(response) {
                                 tinymce.activeEditor.setContent(response);
-                              //alert(response);
+                                console.log(response);
+                            }).fail(function(err) {
+                                console.log(err);
                             });
                         }
 
