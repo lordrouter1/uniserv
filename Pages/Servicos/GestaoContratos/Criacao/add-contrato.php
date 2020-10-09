@@ -71,11 +71,13 @@ elseif(isset($_GET['del'])){
                             tinycomments_author: 'Author name',
                         });
 
-                        function externo() {
-                            
-                            var url = 'saida.html';
+                        function externo(arquivo) {
+                            var dado = arquivo.split(':');
+                            //alert(dado[0] + ' - ' + dado[1]);
+                            var url = 'Pages/Servicos/GestaoContratos/Criacao/templateprocessor.php?id='+dado[0] + "&arquivo="+dado[1];
                             $.get(url, function(response) {
                                 tinymce.activeEditor.setContent(response);
+                              //alert(response);
                             });
                         }
 
@@ -84,8 +86,24 @@ elseif(isset($_GET['del'])){
                     
                     <form>
                     <textarea id="mytextarea"></textarea>
-
-                    <button id="carregaExterno" onclick="externo()" type="button" class="btn btn-primary">Carregar Template</button>    
+                    <?php
+                   
+                   $path = "assets/contratoTemplates";
+                   $diretorio = dir($path);
+                        
+                    while($arquivo = $diretorio -> read()){
+                        if($arquivo != '.' && $arquivo != '..'){
+                            $formatoDir = explode(".",$arquivo);
+                            if(@$formatoDir[1]!=""){
+                                echo "<button onclick=\"externo('".$_GET['id'].":".$arquivo."')\" type=\"button\" class=\"btn btn-primary\">Carregar Template ".$arquivo."</button><br>";
+                            }
+                                
+                            
+                        }
+                    }
+                    $diretorio -> close();
+                   ?>
+                        
                     Testemunhas:
                         <fieldset class="todos_labels">
 
