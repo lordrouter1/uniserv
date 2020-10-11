@@ -72,7 +72,7 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
                             <a class="nav-link text-dark" target="_blank" href="exp.php?tbl=clientes">
                                 Exportar
                             </a>
-                            <a class="nav-link text-dark" target="">Templates</a>
+                            
                         
                         </li>
                     </ul>
@@ -113,6 +113,8 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
                         </thead>
                         <tbody>
                             <?php while($arquivo = $diretorio -> read()){
+                                $formatoDir = explode(".",$arquivo);
+                                if(@$formatoDir[1]!=""){
                                 if($arquivo != '.' && $arquivo != '..'){
                                 ?>
                             <tr>
@@ -124,6 +126,7 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
                                 <td class="noPrint"></td>
                             </tr>
                             <?php }
+                                }
                             }
                             $diretorio -> close();?>
                             <tfoot>
@@ -131,9 +134,15 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
                                 <td>Adicionar novo Template</td>
                                 <td colspan="3">
                                     <form method="post" enctype="multipart/form-data" action="#">
-                                        <input type="file" name="template" class="form-control-file"> <input type="submit" value="Adicionar" class="mt-1 btn btn-primary">
+                                        <input type="file" name="template" class="form-control-file"> 
+                                        <input type="submit" value="Adicionar" class="mt-1 btn btn-primary" style="float: left;">
+                                       
+                                        
                                         <input type="hidden" name="upload" value="1">
                                     </form>
+                                    <a href="serv-criacontratos.php">
+                                            <button class="mt-1 btn btn-primary" style="margin-left: 20px;">Voltar</button>
+                                        </a>
                                 </td>
 
                             </tr>
