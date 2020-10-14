@@ -16,18 +16,18 @@ if(isset($_POST['cmd'])){
                 "'.$_POST['crt'].'",
                 "'.$_POST['email'].'",
                 "'.$_POST['site'].'",
-                "'.$_POST[''].'",
+                "'.$_POST['logo'].'",
                 "'.$_POST['msg_fiscal'].'",
                 "'.$_POST['ie'].'",
                 "'.$_POST['numero'].'",
                 "'.$_POST['bairro'].'",
                 "'.$_POST['estado'].'",
                 "'.$_POST['ibge'].'",
-                "'.$_POST['iss'].'",
-                "'.$_POST['aliq_sn'].'",
-                "'.$_POST['aliq_pis'].'",
-                "'.$_POST['aliq_cofins'].'",
-                "'.$_POST['nome_fantasia'].'"
+                "'.($_POST['iss']?$_POST['iss']:0).'",
+                "'.($_POST['aliq_sn']?$_POST['aliq_sn']:0).'",
+                "'.($_POST['aliq_pis']?$_POST['aliq_pis']:0).'",
+                "'.($_POST['aliq_cofins']?$_POST['aliq_cofins']:0).'",
+                "'.($_POST['nome_fantasia']?$_POST['nome_fantasia']:0).'"
             )');
             $con->query('INSERT into tbl_usuarioMeta(meta,valor,descricao,status,usuario) values("habilitar_empresa",'.$con->insert_id.',"",1,0)');
             redirect($con->error);
