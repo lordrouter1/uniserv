@@ -134,6 +134,16 @@ elseif(isset($_GET['del'])){
                   </div>
                   
                   <?php
+                        #busca se ja existe algum contrato cadastrado no banco
+                        $busca_contrato = "select id from tbl_doc_contrato where id_cliente = '".$row->id."'";
+                        $exec_contratos = $con->query($busca_contrato);
+                        $contrato       = $exec_contratos->fetch_object();
+                        if($exec_contratos->num_rows > 0){
+                          $exibe_contrato = '<a href="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php?id='.$contrato->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
+                          <i class="fa fa-file-pdf" aria-hidden="true" title="Gerar arquivo PDF"></i>';
+                        }else{
+                          $exibe_contrato = '';
+                        }
                         echo '<tr>
                         <td>'.str_pad($row->id,3,"0",STR_PAD_LEFT).'</td>
                         <td>'.$row->tipoPessoa.'</td>
@@ -143,7 +153,7 @@ elseif(isset($_GET['del'])){
                         <td><a href="serv-addcontratos.php?id='.$row->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
                         <i class="fa fa-file" aria-hidden="true" title="Criar contrato"></i></a>
                         </td>
-                        <td></td>
+                        <td>'.$exibe_contrato.'</td>
                         <td></td>
                     </tr>';
                       }

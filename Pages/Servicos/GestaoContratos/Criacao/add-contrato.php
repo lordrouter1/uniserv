@@ -3,7 +3,26 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
+        $corpo = base64_encode($_POST['contrato']);
+       
+        $grava_contrato = "insert into tbl_doc_contrato(id_cliente,criacao,id_usuario,conteudo) values(
+            '".$_POST['id']."',
+            '".date("Y-m-d h:i:s")."',
+            '".$_SESSION['id']."',
+            '".$corpo."'            
+        )";
+           
 
+        #grava as informações no banco de dados
+        if($con->query($grava_contrato)){
+            echo "<script>window.location.href='serv-criacontratos.php';</script>";
+        }else{
+            echo $con->error;
+
+        }
+            
+        
+        exit;
     }
     elseif($cmd == "edt"){
      
@@ -86,8 +105,8 @@ elseif(isset($_GET['del'])){
                     </script>
 
                     
-                    <form>
-                    <textarea id="mytextarea"></textarea>
+                    <form method="post" action="serv-addcontratos.php">
+                    <textarea id="mytextarea" name="contrato"></textarea>
                     <?php
                    
                    $path = "assets/contratoTemplates";
@@ -114,7 +133,9 @@ elseif(isset($_GET['del'])){
                         <input type="button" value="Add" class="add">
 
                         </fieldset>
-                        <button type="button" class="btn btn-primary">Adicionar Contrato</button>
+                        <button type="submit" class="btn btn-primary">Adicionar Contrato</button>
+                        <input type="hidden" name="cmd" value="add">
+                        <input type="hidden" name="id" value="<?=$_REQUEST['id']?>">
                     </form>
                         
                     <script type="text/template" id="todos_labels">
