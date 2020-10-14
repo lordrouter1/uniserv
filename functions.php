@@ -10,8 +10,9 @@ else{
 
 session_start();
 
-require_once('con.php');
-require_once('core/lib/juno/class.php');
+require_once "con.php";
+require_once "core/lib/juno/class.php";
+require_once "assets/vendor/autoload.php";
 
 if($_SESSION['usuario'] != null && $_SESSION['senha'] != null && $_SESSION['id'] != null){
     $con->set_charset("utf8");
@@ -42,11 +43,11 @@ if(isset($_SESSION['id'])){
  
    	$resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa']);
     if($resp->num_rows > 0){
-    	$resp = $resp->fetch_assoc();
-		  if($resp['pagamentoStatus'] == '1'){
-		      $juno->loadRecipientToken($resp['token']);
-		  }
-		}
+        $resp = $resp->fetch_assoc();
+        if($resp['pagamentoStatus'] == '1'){
+            $juno->loadRecipientToken($resp['token']);
+        }
+    }
 }
 
 function cadProdImp($data,$con){
@@ -71,7 +72,6 @@ function cadProdImp($data,$con){
         "'.$data['origem'].'"
     )');
     $data['classFisc'] = $con->insert_id;
-    var_dump($con->error);
 
     $con->query('INSERT into tbl_produtos(referencia,nome,valor,unidadeEstoque,grupo,tipoProduto,fornecedor,usoConsumo,comercializavel,classificacaoFiscal,codBarras,estoque) values (
         "'.$data['referencia'].'",
@@ -88,13 +88,11 @@ function cadProdImp($data,$con){
         "'.$data['estoque'].'"
     )');
     $idProd = $con->insert_id;
-    var_dump($con->error);
 
     if($data['referencia'] == '')
         $con->query('update tbl_produtos set referencia = "'.$idProd.'" where id = '.$idProd);
     if($data['barras'] == '')
         $con->query('update tbl_produtos set codBarras = "'.str_pad($idProd,13,0,STR_PAD_LEFT).'" where id = '.$idProd);
-    var_dump($con->error);
 
     $con->query('INSERT INTO `tbl_impXmlLog`(`cfop_entrada`, `cfop_saida`, `quantia`, `referencia`, `idProduto`, `nNota`, `sNota`,`emissaoNota`,`importacaoNota`,`fornecedor`,`chave`) VALUES (
         "'.$data['cfopEntrada'].'",
@@ -110,7 +108,6 @@ function cadProdImp($data,$con){
         "'.$data['chaveNFe'].'"
     )');
     $idXml = $con->insert_id;
-    var_dump($con->error);
 
     $con->query('INSERT into tbl_estoque(quantia,produto,local,xml,operacao,data,motivo) values(
         "'.$data['estoque'].'",
@@ -121,7 +118,6 @@ function cadProdImp($data,$con){
         "'.date('Y-m-d').'",
         "Importação automática"
     )');
-    var_dump($con->error);
     return $con->error == ''? true:false;
 }
 
@@ -136,7 +132,6 @@ function addProdImp($data,$con){
     }
 
     $con->query($query);
-    var_dump($con->error);
 
     $con->query('INSERT INTO `tbl_impXmlLog`(`idProduto`, `quantia`, `referencia`, `nNota`, `sNota`,`emissaoNota`,`importacaoNota`,`fornecedor`,`chave`,`produtoDeEntrada`) VALUES (
         "'.$prodId.'",
@@ -151,7 +146,6 @@ function addProdImp($data,$con){
         "'.$data['produtoDeEntrada'].'"
     )');
     $idXml = $con->insert_id;
-    var_dump($con->error);
 
     $con->query('INSERT into tbl_estoque(quantia,produto,local,xml,operacao,data,motivo) values(
         "'.$data['estoque'].'",
@@ -162,7 +156,6 @@ function addProdImp($data,$con){
         "'.date('Y-m-d').'",
         "Importação automática"
     )');
-    var_dump($con->error);
 
     return $con->erro == ''?true:false;
     if($resp['pagamentoStatus'] == '1'){
