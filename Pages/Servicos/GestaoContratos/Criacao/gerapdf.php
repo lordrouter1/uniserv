@@ -1,8 +1,8 @@
 <?php 
 require '../../../../core/lib/dompdf/autoload.inc.php';
-require '../../../../_con.php';
+require '../../../../con.php';
 
-//obtem as informações do banco de dados
+//obtem as informaï¿½ï¿½es do banco de dados
 #busca se ja existe algum contrato cadastrado no banco
 $busca_contrato = "select * from tbl_doc_contrato where id = '".$_GET['id']."'";
 $exec_contratos = $con->query($busca_contrato);
