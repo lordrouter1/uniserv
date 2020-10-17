@@ -44,4 +44,23 @@ if(isset($_SESSION['id'])){
     }*/
 }
 
+
+function DataHora($dado,$tipo){
+    /*
+    recebe a data e hora e retorna no formato desejado 
+    exibe: mostra data no formato Dia/Mes/Ano e hora:min:segundo
+    */
+
+
+    if($tipo == "exibe"){
+        // Creating timestamp from given date
+        $timestamp = strtotime($dado);
+        
+        // Creating new date format from that timestamp
+        $new_date = date("d/m/Y h:m:s", $timestamp);
+
+    }
+
+    return $new_date;
+}
 ?>

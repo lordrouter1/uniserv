@@ -4,7 +4,7 @@ require '../../../../_con.php';
 
 //obtem as informações do banco de dados
 #busca se ja existe algum contrato cadastrado no banco
-$busca_contrato = "select * from tbl_doc_contrato where id = '".$_GET['id']."'";
+$busca_contrato = "select * from tbl_doc_contrato where id = '".$_REQUEST['id']."'";
 $exec_contratos = $con->query($busca_contrato);
 $contrato       = $exec_contratos->fetch_object();
 
