@@ -87,20 +87,19 @@ elseif(isset($_GET['del'])){
                                 <th style="width:2%">ID</th>
                                 <th style="width:2%">Tipo</th>
                                 <th>Nome/Raz&atilde;o Social</th>
-                                <th style="width:14%">CNPJ/CPF</th>
+                                <th style="width:12%">CNPJ/CPF</th>
                                 <th style="width:14%">Respons&aacute;vel</th>
-                                <th style="width:6%">A&ccedil;&atilde;o</th>
-                                <th style="width:6%" class="noPrint"></th>
-                                <th style="width:6%" class="noPrint"></th>
+                                <th>A&ccedil;&atilde;o</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                         <?php
                                        
                     
-                    //limite para paginação
+                    //limite para paginaï¿½ï¿½o
                     $limit = 3;
-                    //quantas páginas adjacentes aparecerão junto a pagina corrente
+                    //quantas pï¿½ginas adjacentes aparecerï¿½o junto a pagina corrente
                     $adjacents = 2;
 
                     //busca o total de linhas
@@ -120,7 +119,7 @@ elseif(isset($_GET['del'])){
                       $page = 1;
                       $offset = 0;
                     }
-                    //efetua a busca dos clientes para a criação dos contratos
+                    //efetua a busca dos clientes para a criaï¿½ï¿½o dos contratos
                     $query = "select * from tbl_clientes limit $offset, $limit";
                     
                     $result = $con->query($query);
@@ -134,6 +133,33 @@ elseif(isset($_GET['del'])){
                   </div>
                   
                   <?php
+                        #busca se ja existe algum contrato cadastrado no banco
+                        $busca_contrato = "select id,criacao from tbl_doc_contrato where id_cliente = '".$row->id."'";
+                        $exec_contratos = $con->query($busca_contrato);
+                        
+                        
+                        if($exec_contratos->num_rows > 0){
+                          
+                          
+                          $exibe_contrato = '
+                          <form method="post" action="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php">
+                          <select name="id" class="form-control">
+                            <option>Selecione o Contrato</option>';
+                          while($contrato = $exec_contratos->fetch_object()) {
+                              $exibe_contrato.="<option value='". $contrato->id."'>".DataHora($contrato->criacao,'exibe')."</option>";
+                          } 
+                          $exibe_contrato .='
+                          </select>
+                          <input class="btn btn-light mt-2" type="submit" value="Gerar PDF">
+                          </form>
+                          <!--
+                          <a href="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php?id='.@$contrato->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
+                          <i class="fa fa-file-pdf" aria-hidden="true" title="Gerar arquivo PDF"></i>
+                          -->
+                          ';
+                        }else{
+                          $exibe_contrato = '';
+                        }
                         echo '<tr>
                         <td>'.str_pad($row->id,3,"0",STR_PAD_LEFT).'</td>
                         <td>'.$row->tipoPessoa.'</td>
@@ -143,7 +169,7 @@ elseif(isset($_GET['del'])){
                         <td><a href="serv-addcontratos.php?id='.$row->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
                         <i class="fa fa-file" aria-hidden="true" title="Criar contrato"></i></a>
                         </td>
-                        <td></td>
+                        <td>'.$exibe_contrato.'</td>
                         <td></td>
                     </tr>';
                       }

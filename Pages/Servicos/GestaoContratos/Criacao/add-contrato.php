@@ -3,7 +3,26 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
+        $corpo = base64_encode($_POST['contrato']);
+       
+        $grava_contrato = "insert into tbl_doc_contrato(id_cliente,criacao,id_usuario,conteudo) values(
+            '".$_POST['id']."',
+            '".date("Y-m-d h:i:s")."',
+            '".$_SESSION['id']."',
+            '".$corpo."'            
+        )";
+           
 
+        #grava as informaï¿½ï¿½es no banco de dados
+        if($con->query($grava_contrato)){
+            echo "<script>window.location.href='serv-criacontratos.php';</script>";
+        }else{
+            echo $con->error;
+
+        }
+            
+        
+        exit;
     }
     elseif($cmd == "edt"){
      
@@ -47,7 +66,7 @@ elseif(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
                     <?php 
-                    #busca o nome do cliente para inserção do contrato
+                    #busca o nome do cliente para inserï¿½ï¿½o do contrato
                     $query = "select * from tbl_clientes where id='".$_GET['id']."'";
                     
                     $result = $con->query($query);
@@ -71,33 +90,59 @@ elseif(isset($_GET['del'])){
                             tinycomments_author: 'Author name',
                         });
 
-                        function externo() {
-                            
-                            var url = 'saida.html';
+                        function externo(arquivo) {
+                            var dado = arquivo.split(':');
+                            //alert(dado[0] + ' - ' + dado[1]);
+                            var url = 'Pages/Servicos/GestaoContratos/Criacao/templateprocessor.php?id='+dado[0] + "&arquivo="+dado[1];
                             $.get(url, function(response) {
                                 tinymce.activeEditor.setContent(response);
+                                console.log(response);
+                            }).fail(function(err) {
+                                console.log(err);
                             });
                         }
 
                     </script>
 
                     
-                    <form>
-                    <textarea id="mytextarea"></textarea>
-
-                    <button id="carregaExterno" onclick="externo()" type="button" class="btn btn-primary">Carregar Template</button>    
-                    Testemunhas:
+                    <form method="post" action="serv-addcontratos.php">
+                    <b class="mt-4">Carregar Template:</b>
+                    <div class="d-flex mt-1 mb-3">
+                        <?php
+                    
+                        $path = "assets/contratoTemplates";
+                        $diretorio = dir($path);
+                                
+                            while($arquivo = $diretorio -> read()){
+                                if($arquivo != '.' && $arquivo != '..'){
+                                    $formatoDir = explode(".",$arquivo);
+                                    if(@$formatoDir[1]!=""){
+                                        echo "<button onclick=\"externo('".$_GET['id'].":".$arquivo."')\" type=\"button\" class=\"btn btn-light ml-1\">".$arquivo."</button><br>";
+                                    }
+                                        
+                                    
+                                }
+                            }
+                            $diretorio -> close();
+                        ?>
+                    </div>
+                    <textarea id="mytextarea" name="contrato"></textarea>
+                    <!--Testemunhas:
                         <fieldset class="todos_labels">
 
                         <div class="repeatable"></div>
 
                         <input type="button" value="Add" class="add">
 
-                        </fieldset>
-                        <button type="button" class="btn btn-primary">Adicionar Contrato</button>
+                        </fieldset>-->
+                        <p>&nbsp;</p>
+                        <button type="submit" class="btn btn-primary">Adicionar Contrato</button>
+                        <a class="btn btn-dark" href="serv-criacontratos.php">voltar</a>
+                        <input type="hidden" name="cmd" value="add">
+                        <input type="hidden" name="id" value="<?=$_REQUEST['id']?>">
                     </form>
                         
-                    <script type="text/template" id="todos_labels">
+                    <!--<script type="text/template" id="todos_labels">
                         <div class="field-group">
 
                             <label for="testemunha_{?}">Nome:</label>
@@ -109,7 +154,7 @@ elseif(isset($_GET['del'])){
                             <input type="button" class="delete" value="Remover">
 
                         </div>
-                    </script>
+                    </script>-->
                 </div>
             </div>
 
@@ -118,6 +163,7 @@ elseif(isset($_GET['del'])){
 
 </div> 
 <script src="//code.jquery.com/jquery.min.js"></script>
+ <!--
  <script src="assets/scripts/jquery.repeatable.js"></script>
                             <script>
 $(".todos_labels .repeatable").repeatable({
@@ -125,5 +171,5 @@ $(".todos_labels .repeatable").repeatable({
   deleteTrigger: ".todos_labels .delete",
   template: "#todos_labels"
 });
-                            </script>
+                            </script>-->
 <!-- fim conteÃºdo -->

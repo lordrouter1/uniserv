@@ -1,4 +1,15 @@
 <?php
+//para remover o arquivo
+if(@$_GET['del']=='1'){
+    $arquivo = base64_decode($_GET['arquivo']);
+    if(unlink($arquivo)){
+        echo "<script>window.location.href='serv-contratostemplates.php';</script>";
+        exit;
+    }else{
+        echo "erro ao excluir o arquivo";
+    }
+}
+#para gravar o arquivo
 if(isset($_POST['upload'])&&$_POST['upload']=='1'){
     #executa o upload do arquivo
     $diretorioUpload = "assets/contratoTemplates/";
@@ -11,7 +22,7 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
             $nome = str_replace(' ', '-', $nome);
             
             move_uploaded_file($_FILES['template']['tmp_name'], $diretorioUpload . $nome);
-
+            
         } else {
             
             echo 'Não é permitido enviar arquivo com extensão ' . strtoupper($ext);
@@ -19,16 +30,6 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
         }
     }
 }
-
-if(@$_GET['del']=='1'){
-    $arquivo = base64_decode($_GET['arquivo']);
-    if(unlink($arquivo)){
-        echo "arquivo excluido com sucesso";
-    }else{
-        echo "erro ao excluir o arquivo";
-    }
-}
-
 ?>
 <script src="assets/scripts/serv-contratos.js"></script>
 
@@ -71,7 +72,7 @@ if(@$_GET['del']=='1'){
                             <a class="nav-link text-dark" target="_blank" href="exp.php?tbl=clientes">
                                 Exportar
                             </a>
-                            <a class="nav-link text-dark" target="">Templates</a>
+                            
                         
                         </li>
                     </ul>
@@ -112,17 +113,20 @@ if(@$_GET['del']=='1'){
                         </thead>
                         <tbody>
                             <?php while($arquivo = $diretorio -> read()){
+                                $formatoDir = explode(".",$arquivo);
+                                if(@$formatoDir[1]!=""){
                                 if($arquivo != '.' && $arquivo != '..'){
                                 ?>
                             <tr>
                                 <td><?=$arquivo?></td>
                                 <td><?php echo round(filesize($path.'/'.$arquivo)/1024,0)." KB";?></td>
-                                <td><a href="?del=1&arquivo=<?php echo base64_encode($path.'/'.$arquivo);?>" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
-                                    <i class="fa fa-file" aria-hidden="true" title="Excluir template" style="color: darkred;"></i></a></td>
+                                <td><a href="?del=1&arquivo=<?php echo base64_encode($path.'/'.$arquivo);?>" onclick="javascript:return confirm('Deseja mesmo excluir o arquivo?');" class="btn btn-danger btn-lg active" role="button" aria-pressed="true">
+                                    <i class="fa fa-trash" aria-hidden="true" title="Excluir template"></i></a></td>
                                 <td class="noPrint"></td>
                                 <td class="noPrint"></td>
                             </tr>
                             <?php }
+                                }
                             }
                             $diretorio -> close();?>
                             <tfoot>
@@ -130,9 +134,15 @@ if(@$_GET['del']=='1'){
                                 <td>Adicionar novo Template</td>
                                 <td colspan="3">
                                     <form method="post" enctype="multipart/form-data" action="#">
-                                        <input type="file" name="template" class="form-control-file"> <input type="submit" value="Adicionar" class="mt-1 btn btn-primary">
+                                        <input type="file" name="template" class="form-control p-1"> 
+                                        <input type="submit" value="Adicionar" class="mt-2 btn btn-primary" style="float: left;">
+                                       
+                                        
                                         <input type="hidden" name="upload" value="1">
                                     </form>
+                                    <a href="serv-criacontratos.php">
+                                        <button class="mt-2 btn btn-dark" style="margin-left: 20px;">Voltar</button>
+                                    </a>
                                 </td>
 
                             </tr>
