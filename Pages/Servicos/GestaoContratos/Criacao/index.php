@@ -135,12 +135,29 @@ elseif(isset($_GET['del'])){
                   
                   <?php
                         #busca se ja existe algum contrato cadastrado no banco
-                        $busca_contrato = "select id from tbl_doc_contrato where id_cliente = '".$row->id."'";
+                        $busca_contrato = "select id,criacao from tbl_doc_contrato where id_cliente = '".$row->id."'";
                         $exec_contratos = $con->query($busca_contrato);
-                        $contrato       = $exec_contratos->fetch_object();
+                        
+                        
                         if($exec_contratos->num_rows > 0){
-                          $exibe_contrato = '<a href="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php?id='.$contrato->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
-                          <i class="fa fa-file-pdf" aria-hidden="true" title="Gerar arquivo PDF"></i>';
+                          
+                          
+                          $exibe_contrato = '
+                          <form method="post" action="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php">
+                          <select name="id">
+                            <option>Selecione o Contrato</option>';
+                          while($contrato = $exec_contratos->fetch_object()) {
+                              $exibe_contrato.="<option value='". $contrato->id."'>".DataHora($contrato->criacao,'exibe')."</option>";
+                          } 
+                          $exibe_contrato .='
+                          </select>
+                          <input type="submit" value="Gerar PDF">
+                          </form>
+                          <!--
+                          <a href="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php?id='.@$contrato->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
+                          <i class="fa fa-file-pdf" aria-hidden="true" title="Gerar arquivo PDF"></i>
+                          -->
+                          ';
                         }else{
                           $exibe_contrato = '';
                         }

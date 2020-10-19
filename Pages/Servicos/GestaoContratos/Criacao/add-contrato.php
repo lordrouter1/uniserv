@@ -125,20 +125,21 @@ elseif(isset($_GET['del'])){
                     $diretorio -> close();
                    ?>
                         
-                    Testemunhas:
+                    <!--Testemunhas:
                         <fieldset class="todos_labels">
 
                         <div class="repeatable"></div>
 
                         <input type="button" value="Add" class="add">
 
-                        </fieldset>
+                        </fieldset>-->
+                        <p>&nbsp;</p>
                         <button type="submit" class="btn btn-primary">Adicionar Contrato</button>
                         <input type="hidden" name="cmd" value="add">
                         <input type="hidden" name="id" value="<?=$_REQUEST['id']?>">
                     </form>
                         
-                    <script type="text/template" id="todos_labels">
+                    <!--<script type="text/template" id="todos_labels">
                         <div class="field-group">
 
                             <label for="testemunha_{?}">Nome:</label>
@@ -150,7 +151,7 @@ elseif(isset($_GET['del'])){
                             <input type="button" class="delete" value="Remover">
 
                         </div>
-                    </script>
+                    </script>-->
                 </div>
             </div>
 
@@ -159,6 +160,7 @@ elseif(isset($_GET['del'])){
 
 </div> 
 <script src="//code.jquery.com/jquery.min.js"></script>
+ <!--
  <script src="assets/scripts/jquery.repeatable.js"></script>
                             <script>
 $(".todos_labels .repeatable").repeatable({
@@ -166,5 +168,5 @@ $(".todos_labels .repeatable").repeatable({
   deleteTrigger: ".todos_labels .delete",
   template: "#todos_labels"
 });
-                            </script>
+                            </script>-->
 <!-- fim conteúdo -->
