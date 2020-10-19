@@ -270,16 +270,21 @@ class Nfe
 
 
     # -- INFORMAÇÕES DO VOLUME -- #
-    private function infVol(){
+    private function infVol($data=null){
+        /*$data = array(
+            'item' => '',
+
+        );*/
+
         // informações do volume do item N
         $tagvol = (object) array(
-            'item' => 1, // código do produto N
+            #'item' => 1, // código do produto N
             'qVol' => 0, // quantidade do volume
-            #'esp' => 'caixa', //
+            'esp' => 'caixa' //
             #'marca' => 'OLX', //
             #'nVol' => '11111', //
-            'pesoL' => 2000.000, // peso liquido do produto
-            'pesoB' => 2000.000, // peso bruto do produto
+            #'pesoL' => 2000.000, // peso liquido do produto
+            #'pesoB' => 2000.000, // peso bruto do produto
         );
         $this->nfe->tagvol($tagvol);
     }

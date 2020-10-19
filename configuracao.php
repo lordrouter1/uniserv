@@ -284,9 +284,11 @@ $usuario = $resp->fetch_assoc();
             const idEmpresa = $('#habilitarPagamentoEmpresa').val();
             const status = $(this).is(':checked') || $(this).attr('checked') == 'checked'? true:false;
             $.post('core/ajax/configuracao/ativarJuno.php',{empresa:idEmpresa,habilitar:status},function(resp){
+                resp = JSON.parse(resp);
                 console.log(resp);
-                if(resp != 'true'){
+                if(resp['status'] != 'true' && $('#habilitarPagamento').is(':checked')){
                     $('#habilitarPagamento').click();
+                    alert(resp['valor']);
                 }
                 //loadToastNR(resp);
             });

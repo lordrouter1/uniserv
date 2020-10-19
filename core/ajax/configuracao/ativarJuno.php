@@ -2,6 +2,10 @@
     require_once('../../../functions.php');
     require_once('../../lib/juno/class.php');
 
+    #ini_set('display_errors',1);
+    #ini_set('display_startup_erros',1);
+    #error_reporting(E_ALL);
+
     switch($_SERVER['REQUEST_METHOD']){
         case 'GET':
             echo json_encode($con->query('select pagamentoStatus from tbl_configuracao where id = '.$_GET['id'])->fetch_assoc());
@@ -16,9 +20,9 @@
                     $conta = array(
                         "type" => "PAYMENT",
                         "name" => $empresa['razao_social'],
-                        "document" => ereg_replace('[\./-]','',$empresa['cnpj']),
+                        "document" => str_replace(array('.','/','-'),'',$empresa['cnpj']),
                         "email" => $empresa['email'],
-                        "phone" => ereg_replace('[\.\(\)]','',$empresa['telefone']),
+                        "phone" => str_replace(array('.','(',')'),'',$empresa['telefone']),
                         "businessArea" => $empresa['area'],
                         "linesOfBusiness" => $empresa['descricao'],
                         "companyType" => $empresa['tipo'],
@@ -39,7 +43,7 @@
                             "accountType" => "SAVINGS",
                             "accountHolder" => array(
                                 "name" => $banco['responsavel'],
-                                "document" => ereg_replace('[\./-]','',$banco['documento'])
+                                "document" => str_replace(array('.','-'),'',$banco['documento'])
                             )
                         ),
                         "legalRepresentative" => array(
@@ -51,13 +55,11 @@
                     
                     $jResp = $juno->account($conta);
 
-                    var_dump($jResp);
-
                     if(isset($jResp->resourceToken)){
                         $con->query('update tbl_configuracao set pagamentoStatus = 1, token = "'.$jResp->resourceToken.'" where id = '.$_POST['empresa']);
-                        echo 'true';
+                        echo json_encode(array('status' => true,'valor' => $jResp->resourceToken,'data'=>$jResp));
                     }else{
-                        echo 'false';
+                        echo json_encode(array('status'=>'false','valor'=>$jResp->details[0]->message,'data'=>$jResp));
                     }
                     
                 }else{
