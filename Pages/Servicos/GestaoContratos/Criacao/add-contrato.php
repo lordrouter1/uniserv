@@ -13,7 +13,7 @@ if(isset($_POST['cmd'])){
         )";
            
 
-        #grava as informações no banco de dados
+        #grava as informaï¿½ï¿½es no banco de dados
         if($con->query($grava_contrato)){
             echo "<script>window.location.href='serv-criacontratos.php';</script>";
         }else{
@@ -106,25 +106,27 @@ elseif(isset($_GET['del'])){
 
                     
                     <form method="post" action="serv-addcontratos.php">
-                    <textarea id="mytextarea" name="contrato"></textarea>
-                    <?php
-                   
-                   $path = "assets/contratoTemplates";
-                   $diretorio = dir($path);
-                        
-                    while($arquivo = $diretorio -> read()){
-                        if($arquivo != '.' && $arquivo != '..'){
-                            $formatoDir = explode(".",$arquivo);
-                            if(@$formatoDir[1]!=""){
-                                echo "<button onclick=\"externo('".$_GET['id'].":".$arquivo."')\" type=\"button\" class=\"btn btn-primary\">Carregar Template ".$arquivo."</button><br>";
-                            }
+                    <b class="mt-4">Carregar Template:</b>
+                    <div class="d-flex mt-1 mb-3">
+                        <?php
+                    
+                        $path = "assets/contratoTemplates";
+                        $diretorio = dir($path);
                                 
-                            
-                        }
-                    }
-                    $diretorio -> close();
-                   ?>
-                        
+                            while($arquivo = $diretorio -> read()){
+                                if($arquivo != '.' && $arquivo != '..'){
+                                    $formatoDir = explode(".",$arquivo);
+                                    if(@$formatoDir[1]!=""){
+                                        echo "<button onclick=\"externo('".$_GET['id'].":".$arquivo."')\" type=\"button\" class=\"btn btn-light ml-1\">".$arquivo."</button><br>";
+                                    }
+                                        
+                                    
+                                }
+                            }
+                            $diretorio -> close();
+                        ?>
+                    </div>
+                    <textarea id="mytextarea" name="contrato"></textarea>
                     <!--Testemunhas:
                         <fieldset class="todos_labels">
 
@@ -135,6 +137,7 @@ elseif(isset($_GET['del'])){
                         </fieldset>-->
                         <p>&nbsp;</p>
                         <button type="submit" class="btn btn-primary">Adicionar Contrato</button>
+                        <a class="btn btn-dark" href="serv-criacontratos.php">voltar</a>
                         <input type="hidden" name="cmd" value="add">
                         <input type="hidden" name="id" value="<?=$_REQUEST['id']?>">
                     </form>

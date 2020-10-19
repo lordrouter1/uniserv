@@ -120,8 +120,8 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
                             <tr>
                                 <td><?=$arquivo?></td>
                                 <td><?php echo round(filesize($path.'/'.$arquivo)/1024,0)." KB";?></td>
-                                <td><a href="?del=1&arquivo=<?php echo base64_encode($path.'/'.$arquivo);?>" onclick="javascript:return confirm('Deseja mesmo excluir o arquivo?');" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
-                                    <i class="fa fa-file" aria-hidden="true" title="Excluir template" style="color: darkred;"></i></a></td>
+                                <td><a href="?del=1&arquivo=<?php echo base64_encode($path.'/'.$arquivo);?>" onclick="javascript:return confirm('Deseja mesmo excluir o arquivo?');" class="btn btn-danger btn-lg active" role="button" aria-pressed="true">
+                                    <i class="fa fa-trash" aria-hidden="true" title="Excluir template"></i></a></td>
                                 <td class="noPrint"></td>
                                 <td class="noPrint"></td>
                             </tr>
@@ -134,15 +134,15 @@ if(isset($_POST['upload'])&&$_POST['upload']=='1'){
                                 <td>Adicionar novo Template</td>
                                 <td colspan="3">
                                     <form method="post" enctype="multipart/form-data" action="#">
-                                        <input type="file" name="template" class="form-control-file"> 
-                                        <input type="submit" value="Adicionar" class="mt-1 btn btn-primary" style="float: left;">
+                                        <input type="file" name="template" class="form-control p-1"> 
+                                        <input type="submit" value="Adicionar" class="mt-2 btn btn-primary" style="float: left;">
                                        
                                         
                                         <input type="hidden" name="upload" value="1">
                                     </form>
                                     <a href="serv-criacontratos.php">
-                                            <button class="mt-1 btn btn-primary" style="margin-left: 20px;">Voltar</button>
-                                        </a>
+                                        <button class="mt-2 btn btn-dark" style="margin-left: 20px;">Voltar</button>
+                                    </a>
                                 </td>
 
                             </tr>

@@ -87,20 +87,19 @@ elseif(isset($_GET['del'])){
                                 <th style="width:2%">ID</th>
                                 <th style="width:2%">Tipo</th>
                                 <th>Nome/Raz&atilde;o Social</th>
-                                <th style="width:14%">CNPJ/CPF</th>
+                                <th style="width:12%">CNPJ/CPF</th>
                                 <th style="width:14%">Respons&aacute;vel</th>
-                                <th style="width:6%">A&ccedil;&atilde;o</th>
-                                <th style="width:6%" class="noPrint"></th>
-                                <th style="width:6%" class="noPrint"></th>
+                                <th>A&ccedil;&atilde;o</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                         <?php
                                        
                     
-                    //limite para paginação
+                    //limite para paginaï¿½ï¿½o
                     $limit = 3;
-                    //quantas páginas adjacentes aparecerão junto a pagina corrente
+                    //quantas pï¿½ginas adjacentes aparecerï¿½o junto a pagina corrente
                     $adjacents = 2;
 
                     //busca o total de linhas
@@ -120,7 +119,7 @@ elseif(isset($_GET['del'])){
                       $page = 1;
                       $offset = 0;
                     }
-                    //efetua a busca dos clientes para a criação dos contratos
+                    //efetua a busca dos clientes para a criaï¿½ï¿½o dos contratos
                     $query = "select * from tbl_clientes limit $offset, $limit";
                     
                     $result = $con->query($query);
@@ -144,14 +143,14 @@ elseif(isset($_GET['del'])){
                           
                           $exibe_contrato = '
                           <form method="post" action="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php">
-                          <select name="id">
+                          <select name="id" class="form-control">
                             <option>Selecione o Contrato</option>';
                           while($contrato = $exec_contratos->fetch_object()) {
                               $exibe_contrato.="<option value='". $contrato->id."'>".DataHora($contrato->criacao,'exibe')."</option>";
                           } 
                           $exibe_contrato .='
                           </select>
-                          <input type="submit" value="Gerar PDF">
+                          <input class="btn btn-light mt-2" type="submit" value="Gerar PDF">
                           </form>
                           <!--
                           <a href="Pages/Servicos/GestaoContratos/Criacao/gerapdf.php?id='.@$contrato->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
