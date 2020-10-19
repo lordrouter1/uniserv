@@ -124,6 +124,10 @@
                                         <th class="text-right" style="width:14%">Aliq. Cofins %</th>
                                         <td><input type="number" name="aliq_cofins" step="0.01" class="form-control w-25" value="<?php echo $usuario['aliq_cofins'];?>"></td>
                                     </tr>
+                                    <tr>
+                                        <th class="text-right" style="width:14%">Certificado</th>
+                                        <td><input type="file" name="certificado" class="form-control w-25 p-1"></td>
+                                    </tr>
 
                                     <tr>
                                         <td></td>
@@ -252,6 +256,10 @@
                                     <th class="text-right" style="width:14%">Aliq. Cofins %</th>
                                     <td><input type="number" name="aliq_cofins" step="0.01" class="form-control w-25" value=""></td>
                                 </tr>
+                                <tr>
+                                    <th class="text-right" style="width:14%">Certificado</th>
+                                    <td><input type="file" name="certificado" class="form-control w-25 p-1"></td>
+                                </tr>
 
                                 <tr>
                                     <td></td>
@@ -269,3 +277,11 @@
     </div>
 
 </div>
+
+<script>
+    $('input[name="cnpj"]').mask('99.999.999/9999-99');
+    $('input[name="cep"]').mask('99999-999');
+    $('input[name="estado"]').mask('ZZ',{translation:{'Z':{pattern:/[A-Z]/}}});
+    $('input[name="telefone"]').mask('(54)99999-9999');
+    $('input[name="ie"]').mask('999/9999999');
+</script>

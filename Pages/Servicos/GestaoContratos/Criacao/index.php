@@ -15,6 +15,12 @@ elseif(isset($_GET['del'])){
 
 ?>
 <script src="assets/scripts/serv-contratos.js"></script>
+<script>
+  function gerarContrato(self){
+    $('#gerarContrato').removeClass('disabled');
+    $('#gerarContrato').attr('href','serv-addcontratos.php?id='+$(self).val());
+  }
+</script>
 
 <!-- cabeçalho da página -->
 <div class="app-page-title">
@@ -80,6 +86,21 @@ elseif(isset($_GET['del'])){
 
                     <h5 class="card-title">Lista de clientes</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
+
+                    <div class="input-group w-25">
+                      <select class="mb-2 form-control" onchange="gerarContrato(this)">
+                        <option selected disabled>Selecione o cliente</option>
+                        <?
+                          $resp = $con->query('select id,razaoSocial_nome from tbl_clientes where tipoCliente = "on"');
+                          while($row = $resp->fetch_array()){
+                            echo '<option value="'.$row['id'].'">'.$row['razaoSocial_nome'].'</option>';
+                          }
+                        ?>
+                      </select>
+                      <div class="input-group-append">
+                        <a class="btn btn-light disabled mb-3" href="#" id="gerarContrato">Gerar</a>
+                      </div>
+                    </div>
                     
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
@@ -89,7 +110,6 @@ elseif(isset($_GET['del'])){
                                 <th>Nome/Raz&atilde;o Social</th>
                                 <th style="width:12%">CNPJ/CPF</th>
                                 <th style="width:14%">Respons&aacute;vel</th>
-                                <th>A&ccedil;&atilde;o</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -98,7 +118,7 @@ elseif(isset($_GET['del'])){
                                        
                     
                     //limite para pagina��o
-                    $limit = 3;
+                    $limit = 40;
                     //quantas p�ginas adjacentes aparecer�o junto a pagina corrente
                     $adjacents = 2;
 
@@ -120,7 +140,7 @@ elseif(isset($_GET['del'])){
                       $offset = 0;
                     }
                     //efetua a busca dos clientes para a cria��o dos contratos
-                    $query = "select * from tbl_clientes limit $offset, $limit";
+                    $query = "select * from tbl_clientes where id in (select id_cliente from tbl_doc_contrato group by id_cliente) limit $offset, $limit";
                     
                     $result = $con->query($query);
                     if($result->num_rows > 0) {
@@ -166,9 +186,6 @@ elseif(isset($_GET['del'])){
                         <td>'.$row->razaoSocial_nome.'</td>
                         <td>'.$row->cnpj_cpf.'</td>
                         <td>'.$row->nomeResponsavel.'</td>
-                        <td><a href="serv-addcontratos.php?id='.$row->id.'" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
-                        <i class="fa fa-file" aria-hidden="true" title="Criar contrato"></i></a>
-                        </td>
                         <td>'.$exibe_contrato.'</td>
                         <td></td>
                     </tr>';

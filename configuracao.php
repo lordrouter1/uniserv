@@ -34,34 +34,37 @@ if(isset($_POST['cmd'])){
         break;
 
         case 'edt':
+            var_dump($_FILES);
+            /*
             $con->query('update tbl_configuracao set
-            razao_social = "'.$_POST['razao_social'].'",
-            cnpj = "'.$_POST['cnpj'].'",
-            endereco = "'.$_POST['endereco'].'",
-            complemento = "'.$_POST['complemento'].'",
-            cidade = "'.$_POST['cidade'].'",
-            cep = "'.$_POST['cep'].'",
-            telefone = "'.$_POST['telefone'].'",
-            im = "'.$_POST['im'].'",
-            cnae = "'.$_POST['cnae'].'",
-            crt = "'.$_POST['crt'].'",
-            email = "'.$_POST['email'].'",
-            site = "'.$_POST['site'].'",
-            logo = "'.$_POST[''].'",
-            msg_fiscal = "'.$_POST['msg_fiscal'].'",
-            ie = "'.$_POST['ie'].'",
-            numero = "'.$_POST['numero'].'",
-            bairro = "'.$_POST['bairro'].'",
-            estado = "'.$_POST['estado'].'",
-            ibge = "'.$_POST['ibge'].'",
-            iss = "'.$_POST['iss'].'",
-            aliq_sn = "'.$_POST['aliq_sn'].'",
-            aliq_pis = "'.$_POST['aliq_pis'].'",
-            aliq_cofins = "'.$_POST['aliq_cofins'].'",
-            nome_fantasia = "'.$_POST['nome_fantasia'].'"
-            where id = '.$_POST['id'].'
-        ');
-        redirect($con->error);
+                razao_social = "'.$_POST['razao_social'].'",
+                cnpj = "'.$_POST['cnpj'].'",
+                endereco = "'.$_POST['endereco'].'",
+                complemento = "'.$_POST['complemento'].'",
+                cidade = "'.$_POST['cidade'].'",
+                cep = "'.$_POST['cep'].'",
+                telefone = "'.$_POST['telefone'].'",
+                im = "'.$_POST['im'].'",
+                cnae = "'.$_POST['cnae'].'",
+                crt = "'.$_POST['crt'].'",
+                email = "'.$_POST['email'].'",
+                site = "'.$_POST['site'].'",
+                logo = "'.$_POST[''].'",
+                msg_fiscal = "'.$_POST['msg_fiscal'].'",
+                ie = "'.$_POST['ie'].'",
+                numero = "'.$_POST['numero'].'",
+                bairro = "'.$_POST['bairro'].'",
+                estado = "'.$_POST['estado'].'",
+                ibge = "'.$_POST['ibge'].'",
+                iss = "'.$_POST['iss'].'",
+                aliq_sn = "'.$_POST['aliq_sn'].'",
+                aliq_pis = "'.$_POST['aliq_pis'].'",
+                aliq_cofins = "'.$_POST['aliq_cofins'].'",
+                nome_fantasia = "'.$_POST['nome_fantasia'].'"
+                where id = '.$_POST['id'].'
+            ');
+            */
+            #redirect($con->error);
         break;
 
         case 'impressora':
@@ -324,10 +327,10 @@ $usuario = $resp->fetch_assoc();
 
     <div class="nav nav-tabs mb-0">
         <li class="nav-item">
-            <a class="nav-link" data-target="#geral">Geral</a>
+            <a class="nav-link active" data-target="#geral">Geral</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active"  data-target="#pagamento">Pagamento</a>
+            <a class="nav-link"  data-target="#pagamento">Pagamento</a>
         </li>
         <li class="nav-item">
             <a class="nav-link"  data-target="#impressao">Impressão</a>
