@@ -245,17 +245,17 @@
                             </a>
                         </li>-->
                         <li>
-                            <a <?php echo $menu['servicos_contratos']?'href="serv-contratos.php"':'disabled';?>>
+                            <a <?php echo $menu['servicos_contratos']?'href="serv-criacontratos.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Gestão de contratos
                             </a>
                         </li>
-                        <li>
+                        <!--<li>
                             <a <?php echo @$menu['criacao_contratos']?'href="serv-criacontratos.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Criação de contratos
                             </a>
-                        </li>
+                        </li>-->
                         <li>
                             <a <?php echo @$menu['servicos_chamados']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">

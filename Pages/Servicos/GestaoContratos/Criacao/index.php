@@ -33,7 +33,7 @@ elseif(isset($_GET['del'])){
                 <i class="fas fa-file-contract icon-gradient bg-happy-itmeo"></i>
             </div>
             <div>
-                <span>Cria&ccedil;&atilde;o de Contratos</span>
+                <span>Gestão de Contratos</span>
                 <div class="page-title-subheading">
                     Campo para adição, remoção e edição de contratos
                 </div>
