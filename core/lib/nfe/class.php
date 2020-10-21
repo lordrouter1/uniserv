@@ -43,7 +43,8 @@ class Nfe
             'versao' => '4.00'
         ));
 
-        $this->certificado = NFePHP\Common\Certificate::readPfx(file_get_contents('upload/certificado.pfx'),'102040');
+        $resp = $con->query('select certificado,certSenha from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc();
+        $this->certificado = NFePHP\Common\Certificate::readPfx(file_get_contents('upload/certificado/'.$resp['certificado']),$resp['certSenha']);
 
     }
 
@@ -343,7 +344,7 @@ class Nfe
             'natOp' => 'COMPRA PARA INDUSTRIALIZACAO', // natureza da operação: venda, compra, transferência, devolução, importação, consignação, remessa
             'mod' => 55, // modelo da nota: 55 para NFe e 65 para NFCe
             'serie' => 1, // série da nota
-            'nNF' => 9, // número da nota
+            'nNF' => 10, // número da nota
             'dhEmi' => date('c'), // data e hora da emissão 
             'dhSaiEnt' => date('c'), // data e hora da entrada ou saida
             'tpNF' => 1, // tipo da nota: 1 para saida e 0 para entrada

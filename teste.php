@@ -18,7 +18,7 @@ $gerar = $nota->gerarXML();
 var_dump($gerar,'<br><br>');
 file_put_contents('upload/nota.xml',$gerar['xml']);
 var_dump($nota->assinarXML(),'<br><br>');
-/*var_dump($nota->enviarLote(),'<br><br>');
+var_dump($nota->enviarLote(),'<br><br>');
 var_dump($nota->consultarRecibo(),'<br><br>');
 
 $resp = $nota->finProcesso();
@@ -29,6 +29,6 @@ if($resp['status'] == 1){
 }
 else
     echo '<script>alert("'.$resp['erro'].'")</script>';
-*/
+
 
 ?>

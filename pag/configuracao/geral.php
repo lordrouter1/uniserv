@@ -1,6 +1,23 @@
 <div class="row shadow bg-white rounded">
     <div class="col p-2">
 
+        <h3 class="mb-3 ml-4">Sistema</h3>
+        <form method="POST" class="ml-4 mb-4">
+            <div class="row mb-3">
+                <label for="homologacao" class="col-2"><strong>Homologação</strong></label>
+                <div class="col">
+                    <input type="checkbox" name="homologacao" id="homologacao" <?=$debug==1?'checked':'';?>>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-2">
+                    <input type="hidden" name="cmd" value="sistema">
+                    <input type="submit" value="Salvar" class="btn btn-success">
+                </div>
+            </div>
+        </form>
+
         <h3 class="mb-3 ml-4">Empresas</h3>
         <div id="accordion" data-children=".card">
             
@@ -16,7 +33,7 @@
                     <div class="collapse" id="c-<?=$usuario['id']?>">
                         <div class="card-body">
                             
-                            <form method="post">
+                            <form method="post" enctype="multipart/form-data">
                                 <input type="hidden" value="edt" name="cmd">
                                 <input type="hidden" value="<?=$usuario['id'];?>" name="id">
                                 <table class="table table-borderless" id="tbl_configuracao">
@@ -124,10 +141,33 @@
                                         <th class="text-right" style="width:14%">Aliq. Cofins %</th>
                                         <td><input type="number" name="aliq_cofins" step="0.01" class="form-control w-25" value="<?php echo $usuario['aliq_cofins'];?>"></td>
                                     </tr>
-                                    <tr>
-                                        <th class="text-right" style="width:14%">Certificado</th>
-                                        <td><input type="file" name="certificado" class="form-control w-25 p-1"></td>
-                                    </tr>
+                                    
+                                    <?if(isset($usuario['certificado']) && $usuario['certificado'] != ''):?>
+                                        <tr>
+                                            <th class="text-right" style="width:14%">Certificado</th>
+                                            <td>
+                                                <div class="input-group w-50">
+                                                    <input type="file" name="certificado" class="form-control p-1">
+                                                    <div class="input-group-append">
+                                                        <input type="password" name="certSenha" value="<?php echo $usuario['certSenha'];?>">
+                                                    </div>
+                                                </div>
+                                                <span class="badge badge-success"><?=$usuario['certificado']?></span>
+                                            </td>
+                                        </tr>
+                                    <?else:?>
+                                        <tr>
+                                            <th class="text-right" style="width:14%">Certificado</th>
+                                            <td>
+                                                <div class="input-group w-50">
+                                                    <input type="file" name="certificado" class="form-control p-1">
+                                                    <div class="input-group-append">
+                                                        <input type="password" name="certSenha">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?endif;?>
 
                                     <tr>
                                         <td></td>
@@ -149,7 +189,7 @@
                 <div class="collapse" id="c-novo">
                     <div class="card-body">
                         
-                        <form method="post">
+                        <form method="post" enctype="multipart/form-data">
                             <input type="hidden" value="add" name="cmd">
                             <table class="table table-borderless" id="tbl_configuracao">
                                 
@@ -258,7 +298,14 @@
                                 </tr>
                                 <tr>
                                     <th class="text-right" style="width:14%">Certificado</th>
-                                    <td><input type="file" name="certificado" class="form-control w-25 p-1"></td>
+                                    <td>
+                                        <div class="input-group w-50">
+                                            <input type="file" name="certificado" class="form-control p-1">
+                                            <div class="input-group-append">
+                                                <input type="password" name="certSenha">
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
 
                                 <tr>

@@ -10,7 +10,18 @@ else{
 
 session_start();
 
+
+
 require_once "con.php";
+
+$resp = $con->query('select debug from tbl_configuracao');
+if($resp->num_rows > 0){
+    $debug = $resp->fetch_assoc()['debug'];
+}
+else{
+    $debug = true;
+}
+
 require_once "core/lib/juno/class.php";
 require_once "assets/vendor/autoload.php";
 
@@ -49,6 +60,8 @@ if(isset($_SESSION['id'])){
         }
     }
 }
+
+# -- FUNÇÕES -- #
 
 function cadProdImp($data,$con){
     $cfopSaida = '';

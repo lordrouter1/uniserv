@@ -370,7 +370,6 @@ class Juno
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($pagamento));
 
         $temp = curl_exec($this->curl);
-
         $resp = json_decode($temp);
 
         return $resp;
@@ -458,6 +457,14 @@ class Juno
     }
 }
 
-$juno = new Juno();
+$resp = $con->query('select debug from tbl_configuracao');
+if($resp->num_rows > 0){
+    $debug = $resp->fetch_assoc()['debug'];
+}
+else{
+    $debug = true;
+}
+
+$juno = new Juno($debug);
 
 

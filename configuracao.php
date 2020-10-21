@@ -1,9 +1,35 @@
 <?php include('header.php'); ?>
 <?php
+
+ini_set('display_errors',1);
+ini_set('display_startup_erros',1);
+error_reporting(E_ALL);
+
 if(isset($_POST['cmd'])){
     switch($_POST['cmd']){
         case 'add':
-            $con->query('INSERT INTO `tbl_configuracao`(`razao_social`,`cnpj`,`endereco`,`complemento`,`cidade`,`cep`,`telefone`,`im`,`cnae`,`crt`,`email`,`site`,`logo`,`msg_fiscal`,`ie`,`numero`,`bairro`,`estado`,`ibge`,`iss`,`aliq_sn`,`aliq_pis`,`aliq_cofins`,`nome_fantasia`) VALUES (
+            $certificado = '';
+            if(isset($_FILES['certificado']) && $_FILES['certificado']['name'] != ""){
+                if($_FILES['certificado']['type'] == 'application/x-pkcs12' && $_POST['certSenha'] != ''){
+                    $arq = $_FILES['certificado'];
+                    $ext = 'pfx';
+                    $nome = uniqid().'-'.$_COOKIE['empresa'].'.'.$ext;
+
+                    if(move_uploaded_file($arq["tmp_name"],"upload/certificado/".$nome)){
+                        $certificado = $nome;
+                    }
+                    else{
+                        echo "<script>Erro ao importar!</script>";
+                        return;
+                    }
+                }
+                else{
+                    echo '<script>alert("arquivo enviado não possui a extensão .pfx ou senha inválida")</script>';
+                    return;
+                }
+            }
+            
+            $con->query('INSERT INTO `tbl_configuracao`(`razao_social`,`cnpj`,`endereco`,`complemento`,`cidade`,`cep`,`telefone`,`im`,`cnae`,`crt`,`email`,`site`,`logo`,`msg_fiscal`,`ie`,`numero`,`bairro`,`estado`,`ibge`,`iss`,`aliq_sn`,`aliq_pis`,`aliq_cofins`,`nome_fantasia`, `certificado`,`certSenha`) VALUES (
                 "'.$_POST['razao_social'].'",
                 "'.$_POST['cnpj'].'",
                 "'.$_POST['endereco'].'",
@@ -27,15 +53,38 @@ if(isset($_POST['cmd'])){
                 "'.($_POST['aliq_sn']?$_POST['aliq_sn']:0).'",
                 "'.($_POST['aliq_pis']?$_POST['aliq_pis']:0).'",
                 "'.($_POST['aliq_cofins']?$_POST['aliq_cofins']:0).'",
-                "'.($_POST['nome_fantasia']?$_POST['nome_fantasia']:0).'"
+                "'.($_POST['nome_fantasia']?$_POST['nome_fantasia']:0).'",
+                "'.$certificado.'",
+                "'.$_POST['certSenha'].'"
             )');
             $con->query('INSERT into tbl_usuarioMeta(meta,valor,descricao,status,usuario) values("habilitar_empresa",'.$con->insert_id.',"",1,0)');
             redirect($con->error);
+            
         break;
 
         case 'edt':
             var_dump($_FILES);
-            /*
+            $certificado = '';
+            if(isset($_FILES['certificado']) && $_FILES['certificado']['name'] != ""){
+                if($_FILES['certificado']['type'] == 'application/x-pkcs12' && $_POST['certSenha'] != ""){
+                    $arq = $_FILES['certificado'];
+                    $ext = 'pfx';
+                    $nome = uniqid().'-'.$_COOKIE['empresa'].'.'.$ext;
+
+                    if(move_uploaded_file($arq["tmp_name"],"upload/certificado/".$nome)){
+                        $certificado = $nome;
+                    }
+                    else{
+                        echo "<script>Erro ao importar!</script>";
+                        return;
+                    }
+                }
+                else{
+                    echo '<script>alert("arquivo enviado não possui a extensão .pfx ou senha inválida")</script>';
+                    return;
+                }
+            }
+            
             $con->query('update tbl_configuracao set
                 razao_social = "'.$_POST['razao_social'].'",
                 cnpj = "'.$_POST['cnpj'].'",
@@ -60,11 +109,12 @@ if(isset($_POST['cmd'])){
                 aliq_sn = "'.$_POST['aliq_sn'].'",
                 aliq_pis = "'.$_POST['aliq_pis'].'",
                 aliq_cofins = "'.$_POST['aliq_cofins'].'",
-                nome_fantasia = "'.$_POST['nome_fantasia'].'"
+                nome_fantasia = "'.$_POST['nome_fantasia'].'",
+                '.($certificado == ''?'':'certificado = "'.$certificado.'",').'
+                certSenha = "'.$_POST['certSenha'].'"
                 where id = '.$_POST['id'].'
             ');
-            */
-            #redirect($con->error);
+            redirect($con->error);
         break;
 
         case 'impressora':
@@ -81,6 +131,11 @@ if(isset($_POST['cmd'])){
                 margem = '.$_POST['geral']['margem'].',
                 tEspacamento = '.$_POST['geral']['tEspacamento'].'    
             ');
+        break;
+
+        case 'sistema':
+            $con->query('update tbl_configuracao set debug = '.(isset($_POST['homologacao'])?1:0));
+            redirect($con->error);
         break;
     }
 }
@@ -338,10 +393,10 @@ $usuario = $resp->fetch_assoc();
     </div>
     
     <div class="tab-content">
-        <div class="tab-pane fade" id="geral">
+        <div class="tab-pane active" id="geral">
             <?include('pag/configuracao/geral.php');?>
         </div>
-        <div class="tab-pane active" id="pagamento">
+        <div class="tab-pane fade" id="pagamento">
             <?include('pag/configuracao/pagamento.php')?>
         </div>
         <div class="tab-pane fade" id="impressao">
