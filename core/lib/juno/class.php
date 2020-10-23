@@ -68,6 +68,7 @@ class Juno
 
     public function loadRecipientToken($token){
         $this->recipientToken = $token;
+        return $this->consulta($token)->status;
     }
 
     private function loadKey()
@@ -456,15 +457,5 @@ class Juno
         return $resp;
     }
 }
-
-$resp = $con->query('select debug from tbl_configuracao');
-if($resp->num_rows > 0){
-    $debug = $resp->fetch_assoc()['debug'];
-}
-else{
-    $debug = true;
-}
-
-$juno = new Juno($debug);
 
 

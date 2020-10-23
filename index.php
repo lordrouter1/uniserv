@@ -15,15 +15,23 @@
 
     $balanco = $juno->balanco();
 
-    if($flag && $resp->fetch_assoc()['pagamentoStatus'] == '1'):
+    if($flag && $resp->fetch_assoc()['pagamentoStatus'] == '1' && !is_numeric($_CONF['juno']['status'])):
 ?>
-<div class="mb-3 widget-content w-25 btn btn-success text-left" onclick="$('#mdl-retirar').modal()">
+<div class="mb-3 widget-content w-25 btn btn-success text-left shadow rounded" onclick="$('#mdl-retirar').modal()">
     <div class="text-white">
         <div class="widget-content-left">
             <div class="widget-heading"><h4><strong>Total a receber</strong></h4></div>
         </div>
         <div class="">
             <a class="text-light"><div class="widget-numbers text-white"><span>R$ <?=$balanco->balance;?></span></div></a>
+        </div>
+    </div>
+</div>
+<?elseif(is_numeric($_CONF['juno']['status'])):?>
+<div class="mb-3 widget-content w-25 bg-light text-left shadow rounded">
+    <div class="">
+        <div class="">
+            <div class=""><strong>Erro ao encontrar a conta de pagamento!</strong><br> verifique sua conta <a href="configuracao.php?p=pagamento" class="">clicando aqui</a></div>
         </div>
     </div>
 </div>

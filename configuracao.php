@@ -164,6 +164,13 @@ $usuario = $resp->fetch_assoc();
     function modalFoto(doc){
         $('#mdl-confPagamento').modal();
         $('#imgPhoto').attr('target',doc);
+        
+        if($('#'+doc).val() != ""){
+            $('#imgArea').toggle();
+            $('#imgPhoto').attr('src',$('#'+doc).val());
+            $('#imgPhoto').addClass('show');
+            $('#imgPhoto').toggle();
+        }
         window.Webcam.reset();
         window.Webcam.attach('#imgArea');
     }
@@ -198,7 +205,8 @@ $usuario = $resp->fetch_assoc();
             $('#'+$('#imgPhoto').attr('target')).val($('#imgPhoto').attr('src'));
             window.Webcam.reset();
             $('#mdl-confPagamento').modal('hide');
-            $('#check-'+$('#imgPhoto').attr('target')).toggle();
+            $('.custom-file-label').text('');
+            $('#check-'+$('#imgPhoto').attr('target')).show();
         }
         else{
             if($('#impImagem')[0].files.length == 0) return;
@@ -351,6 +359,11 @@ $usuario = $resp->fetch_assoc();
                 //loadToastNR(resp);
             });
         });
+
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
     });
 </script>
 
@@ -382,24 +395,24 @@ $usuario = $resp->fetch_assoc();
 
     <div class="nav nav-tabs mb-0">
         <li class="nav-item">
-            <a class="nav-link active" data-target="#geral">Geral</a>
+            <a class="nav-link <?=!isset($_GET['p'])||$_GET['p']=='geral'?'active':''?>" data-target="#geral">Geral</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link"  data-target="#pagamento">Pagamento</a>
+            <a class="nav-link <?=$_GET['p']=='pagamento'?'active':''?>"  data-target="#pagamento">Pagamento</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link"  data-target="#impressao">Impressão</a>
+            <a class="nav-link <?=$_GET['p']=='impressao'?'active':''?>"  data-target="#impressao">Impressão</a>
         </li>
     </div>
     
     <div class="tab-content">
-        <div class="tab-pane active" id="geral">
+        <div class="tab-pane <?=!isset($_GET['p'])||$_GET['p']=='geral'?'active':'fade'?>" id="geral">
             <?include('pag/configuracao/geral.php');?>
         </div>
-        <div class="tab-pane fade" id="pagamento">
+        <div class="tab-pane <?=$_GET['p']=='pagamento'?'active':'fade'?>" id="pagamento">
             <?include('pag/configuracao/pagamento.php')?>
         </div>
-        <div class="tab-pane fade" id="impressao">
+        <div class="tab-pane <?=$_GET['p']=='impressao'?'active':'fade'?>" id="impressao">
             <?include('pag/configuracao/impressao.php');?>
         </div>
     </div>
@@ -423,7 +436,11 @@ $usuario = $resp->fetch_assoc();
                 </div>
                 <div class="row m-3">
                     <div class="col">
-                        <input type="file" id="impImagem" class="form-control">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="impImagem">
+                            <label class="custom-file-label" for="impImagem">Selecione o arquivo</label>
+                        </div>
+                        <!--<input type="file" id="impImagem" class="form-control p-1">-->
                     </div> 
                 </div>
                 <div class="row">

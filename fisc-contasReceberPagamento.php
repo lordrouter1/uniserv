@@ -241,18 +241,31 @@ if(isset($_POST['cmd'])){
 
         </div>
         <div class="tab-pane fade pt-3" id="cobranca">
+            <?if(is_numeric($_CONF['juno']['status']) && $_CONF['debug'] == "1"):?>
+                <div class="alert alert-danger">
+                    <strong>Erro!</strong> Você não possui permissão <a href="configuracao.php?p=geral" class="alert-link">clique aqui</a> e desative o sistema de homologação.
+                </div>
+            <?elseif($_CONF['juno']['status'] == "AWAITING_DOCUMENTS"):?>
+                <div class="alert alert-warning">
+                    <strong>Atenção!</strong> Você precisa enviar os documentos <a href="configuracao.php?p=pagamento" class="alert-link">clicando aqui</a> para confirmar sua identidade.
+                </div>
+            <?elseif(is_numeric($_CONF['juno']['status'])):?>
+                <div class="alert alert-danger">
+                    <strong>Erro!</strong> Você não possui permissão <a href="configuracao.php?p=pagamento" class="alert-link">clique aqui</a> e verifique se todas as informações estão corretas.
+                </div>
+            <?endif;?>
             
             <div class="row">
                 <div class="col-4">
                     <label for="pagamento[habilitar]">Habilitar cobrança</label>
-                    <select name="pagamento[habilitar]" class="form-control">
+                    <select name="pagamento[habilitar]" class="form-control" <?=$_CONF['juno']['status']!='VERIFIED'?'disabled':''?>>
                         <option value="0">Desativado</option>
                         <option value="1">Ativo</option>
                     </select>
                 </div>
                 <div class="col-4">
                     <label for="pagamento[liberacao]">Liberação adiantada do valor</label>
-                    <select name="pagamento[liberacao]" class="form-control">
+                    <select name="pagamento[liberacao]" class="form-control" <?=$_CONF['juno']['status']!='VERIFIED'?'disabled':''?>>
                         <option value="0">Não</option>
                         <option value="1">Sim</option>
                     </select>
@@ -262,26 +275,26 @@ if(isset($_POST['cmd'])){
             <div class="row mt-4">
                 <div class="col">
                     <label for="pagamento[over]">Dias permitidos após o vencimento</label>
-                    <input type="number" name="pagamento[overdueDays]" min="0" class="form-control" value="0">
+                    <input type="number" name="pagamento[overdueDays]" min="0" class="form-control" value="0" <?=$_CONF['juno']['status']!='VERIFIED'?'disabled':''?>>
                 </div>
                 <div class="col">
                     <label for="pagamento[multa]">Multa %</label>
-                    <input type="number" name="pagamento[multa]" min="0" max="20" step="0.01" class="form-control" value="0">
+                    <input type="number" name="pagamento[multa]" min="0" max="20" step="0.01" class="form-control" value="0" <?=$_CONF['juno']['status']!='VERIFIED'?'disabled':''?>>
                 </div>
                 <div class="col">
                     <label for="pagamento[juros]">Juros %</label>
-                    <input type="number" name="pagamento[juros]" min="0" max="20" step="0.01" class="form-control" value="0">
+                    <input type="number" name="pagamento[juros]" min="0" max="20" step="0.01" class="form-control" value="0" <?=$_CONF['juno']['status']!='VERIFIED'?'disabled':''?>>
                 </div>
             </div>
 
             <div class="row mt-4">
                 <div class="col">
                     <label for="pagamento[descontoValor]">Valor de Desconto %</label>
-                    <input type="number" name="pagamento[descontoValor]" min="0" max="20" step="0.01" class="form-control" value="0">
+                    <input type="number" name="pagamento[descontoValor]" min="0" max="20" step="0.01" class="form-control" value="0" <?=$_CONF['juno']['status']!='VERIFIED'?'disabled':''?>>
                 </div>
                 <div class="col">
                     <label for="pagamento[descontoDias]">Dias de Desconto</label>
-                    <input type="number" name="pagamento[descontoDias]" min="-1" max="20" step="0.01" class="form-control" value="-1">
+                    <input type="number" name="pagamento[descontoDias]" min="-1" max="20" step="0.01" class="form-control" value="-1" <?=$_CONF['juno']['status']!='VERIFIED'?'disabled':''?>>
                 </div>
             </div>
 

@@ -14,6 +14,10 @@
 
                 if(isset($consResp->approvalStatus)){
                     switch($consResp->approvalStatus){
+                        case 'AWAITING':
+                            $status = '<i class="fas fa-cloud-upload-alt ml-3 mt-auto mb-auto text-success" style="display:none; font-size:24px;" id="check-'.$item.'"></i>';
+                            $sFlag = 1;
+                        break;
                         case 'VERIFYING':
                             $status = '<i class="fas fa-check ml-3 mt-auto mb-auto text-warning" style="font-size:24px;"></i>';
                             $sFlag = 1;

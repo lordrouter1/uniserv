@@ -285,35 +285,35 @@
                     </a>
                     <ul class="mm-collapse">
                         <li>
-                            <a <?php echo $menu['fiscal_cfop']?'href="fisc-cfop.php"':'disabled';?>>
+                            <a <?php echo @$menu['fiscal_cfop']?'href="fisc-cfop.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>CFOP
                             </a>
                         </li>
                         <li>
-                            <a <?php echo $menu['fiscal_ncm_cest']?'href="fisc-ncm_cest.php"':'disabled';?>>
+                            <a <?php echo @$menu['fiscal_ncm_cest']?'href="fisc-ncm_cest.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>NCM/CEST
                             </a>
                         </li>
                         <li>
-                            <a <?php echo $menu['fiscal_nfe']?'href=""':'disabled';?>>
+                            <a <?php echo @$menu['fiscal_nf']?'href="fisc-nfe.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Lançar NF
                             </a>
                         </li>
-                        <li>
-                            <a <?php echo $menu['fiscal_nfe_manual']?'href=""':'disabled';?>>
+                        <!--<li>
+                            <a <?php echo @$menu['fiscal_nfe_manual']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Lançar NF (Manual)
                             </a>
                         </li>
                         <li>
-                            <a <?php echo $menu['fiscal_nfe_saida']?'href=""':'disabled';?>>
+                            <a <?php echo @$menu['fiscal_nfe_saida']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Emitir NF Saída
                             </a>
-                        </li>
+                        </li>-->
                     </ul>
                 </li>
 

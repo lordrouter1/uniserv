@@ -10,21 +10,42 @@ else{
 
 session_start();
 
+$_CONF = array();
 
-
+# -- carrega conexão com o banco de dados -- #
 require_once "con.php";
 
-$resp = $con->query('select debug from tbl_configuracao');
+# -- altera empresa -- #
+if(isset($_GET['empresa'])){
+    setcookie('empresa',$_GET['empresa']);
+    $_COOKIE['empresa'] = $_GET['empresa'];
+    $_CONF['empresa'] = $_COOKIE['empresa'];
+}
+else{
+    $_CONF['empresa'] = $_COOKIE['empresa'];
+}
+
+# -- carrega informações sobre o cliente -- #
+$resp = $con->query('select * from tbl_configuracao where id = '.$_CONF['empresa']);
 if($resp->num_rows > 0){
-    $debug = $resp->fetch_assoc()['debug'];
+    $row = $resp->fetch_assoc();
+    $debug = $row['debug'];
+    $_CONF['debug'] = $debug;
+    $_CONF['sistema'] = $row; 
 }
 else{
     $debug = true;
+    $_CONF['debug'] = true;
 }
 
+# -- importa biblioteca da juno -- #
 require_once "core/lib/juno/class.php";
+# -- inicia composer e suas bibliotecas -- #
 require_once "assets/vendor/autoload.php";
 
+$juno = new Juno($debug);
+
+# -- checa login do usuario -- #
 if($_SESSION['usuario'] != null && $_SESSION['senha'] != null && $_SESSION['id'] != null){
     $con->set_charset("utf8");
     $resp = $con->query('select id from tbl_usuario where usuario = "'.$_SESSION['usuario'].'" and senha = "'.$_SESSION['senha'].'" and id = "'.$_SESSION['id'].'"');
@@ -36,6 +57,26 @@ else{
     echo '<script>location.href="login.php"</script>';
 }
 
+# -- verifica se existe empresa no cache do usuario e inicializa juno -- #
+if(isset($_SESSION['id'])){
+    if(!isset($_COOKIE['empresa'])){
+        $resp = $con->query('select id from tbl_configuracao where id in (select valor from tbl_usuarioMeta where meta = "habilitar_empresa" and usuario = '.$_SESSION['id'].')')->fetch_assoc();
+        setcookie('empresa',$resp['id']);
+        $_COOKIE['empresa'] = $resp['id'];
+        $_CONF['empresa'] = $_COOKIE['empresa'];
+    }
+ 
+   	$resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa']);
+    if($resp->num_rows > 0){
+        $resp = $resp->fetch_assoc();
+        if($resp['pagamentoStatus'] == '1'){
+            $_CONF['juno']['status'] = $juno->loadRecipientToken($resp['token']);
+        }
+    }
+}
+
+# -- FUNÇÕES -- #
+
 function redirect($resp){
     if($resp == ''){
         echo "<script>location.href='?s'</script>";
@@ -44,24 +85,6 @@ function redirect($resp){
         echo "<script>location.href='?e'</script>";
     }
 }
-
-if(isset($_SESSION['id'])){
-    if(!isset($_COOKIE['empresa'])){
-        $resp = $con->query('select id from tbl_configuracao where id in (select valor from tbl_usuarioMeta where meta = "habilitar_empresa" and usuario = '.$_SESSION['id'].')')->fetch_assoc();
-        setcookie('empresa',$resp['id']);
-        $_COOKIE['empresa'] = $resp['id'];
-    }
- 
-   	$resp = $con->query('select token,pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa']);
-    if($resp->num_rows > 0){
-        $resp = $resp->fetch_assoc();
-        if($resp['pagamentoStatus'] == '1'){
-            $juno->loadRecipientToken($resp['token']);
-        }
-    }
-}
-
-# -- FUNÇÕES -- #
 
 function cadProdImp($data,$con){
     $cfopSaida = '';

@@ -1,9 +1,5 @@
 <?php
     require_once('functions.php');
-    if(isset($_GET['empresa'])){
-        setcookie('empresa',$_GET['empresa']);
-        $_COOKIE['empresa'] = $_GET['empresa'];
-    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -21,7 +17,9 @@
     <script src="assets/scripts/jquery.js"></script>
     <script src="assets/scripts/jquery.mask.js"></script>
     <script src="assets/scripts/jscookies.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>-->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
 
     <script type="text/javascript" src="./assets/scripts/comp.js"></script>
 
