@@ -6,7 +6,7 @@
 ?>
 
 <?
-error_reporting(E_ALL);
+error_reporting(0);
 
 $empresa = $con->query('select * from tbl_configuracao where id = '.$_GET['e'])->fetch_assoc();
 
