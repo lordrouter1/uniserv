@@ -2,10 +2,11 @@
     #require_once('functions.php');
     require_once('con.php');
     require_once('core/lib/juno/class.php');
+    $juno = new Juno();
 ?>
 
 <?
-error_reporting(0);
+error_reporting(E_ALL);
 
 $empresa = $con->query('select * from tbl_configuracao where id = '.$_GET['e'])->fetch_assoc();
 
