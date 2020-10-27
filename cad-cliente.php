@@ -328,7 +328,7 @@ elseif(isset($_GET['del'])){
                                 </div>
                                 <div class="col-4">
                                     <label for="estado">Estado<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
-                                    <select name="estado" value="<?php echo $row['estado'];?>" id="estado" class="form-control mb-3 estarngeiroInput" onchange="listarCidades()" <?=$row['estrangeiro']!=0?'required':''?>>
+                                    <select name="estado" value="<?php echo $row['estado'];?>" id="estado" class="form-control mb-3 estarngeiroInput"  <?=$row['estrangeiro']!=0?'required':''?>><!-- onchange="listarCidades()" -->
                                         <option value="AC">Acre</option>
                                         <option value="AL">Alagoas</option>
                                         <option value="AP">Amapá</option>
@@ -360,8 +360,8 @@ elseif(isset($_GET['del'])){
                                 </div>
                                 <div class="col">
                                     <label for="cidade">Cidade<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
-                                    <!--<input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required>-->
-                                    <select name="cidade" id="cidade" class="form-control"></select>
+                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required>
+                                    <!--<select name="cidade" id="cidade" class="form-control"></select>-->
                                 </div>
                             </div>
 
