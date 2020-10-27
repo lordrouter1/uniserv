@@ -52,6 +52,10 @@
                             "birthDate" => $empresa['dataResp']
                         )
                     );
+
+                    if($banco['complementoCaixa'] != '0'){
+                        $conta['bankAccount']['accountComplementNumber'] = $banco['complementoCaixa'];
+                    }
                     
                     $jResp = $juno->account($conta);
 

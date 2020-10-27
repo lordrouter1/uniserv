@@ -11,7 +11,7 @@ if(isset($_POST['cmd'])){
     if($cmd == "add"){
         $existe = $con->query('select id from tbl_clientes where cnpj_cpf = "'.$_POST['cnpj_cpf'].'"');
         if($existe->num_rows == 0){
-            $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico, ibge, ie) values(
+            $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico, ibge, ie, estrangeiro) values(
                 '".$_POST['tipoPessoa']."',
                 '".$_POST['razaoSocial_nome']."',
                 '".$_POST['cnpj_cpf']."',
@@ -33,7 +33,8 @@ if(isset($_POST['cmd'])){
                 '".$_POST['tipo_funcionario']."',
                 '".$_POST['tipo_tecnico']."',
                 '".$ibge."',
-                '".$_POST['ie']."'
+                '".$_POST['ie']."',
+                '".$_POST['estrangeiro']."'
             )");
             redirect($con->error);
         }
@@ -63,7 +64,8 @@ if(isset($_POST['cmd'])){
             tipoFornecedor = '".$_POST['tipo_fornecedor']."',
             tipoFuncionario = '".$_POST['tipo_funcionario']."',
             tipoTecnico = '".$_POST['tipo_tecnico']."',
-            ibge = '".$ibge."'
+            ibge = '".$ibge."',
+            estrangeiro = '".$_POST['estrangeiro']."'
             where id  = ".$_POST['id']
         );
         redirect($con->error);
@@ -92,7 +94,9 @@ elseif(isset($_GET['del'])){
         xmlHttp.open("GET", "https://viacep.com.br/ws/"+$(self).val().replace('-','')+"/json/", false ); // false for synchronous request
         xmlHttp.send(null);
         const resp = JSON.parse(xmlHttp.responseText);
+        console.log(resp);
         $("#estado").val(resp['uf']);
+        listarCidades();
         $("#cidade").val(resp['localidade']);
     }
     function listarCidades(){
@@ -100,6 +104,16 @@ elseif(isset($_GET['del'])){
             $('#cidade').empty();
             $('#cidade').append(resp);
         });
+    }
+    function est(self){
+        if($(self).val()=='1'){
+            $('#cnpj_cpf').removeAttr('required');
+            $('#cpfObrigatorio').addClass('d-none');
+        }
+        else{
+            $('#cnpj_cpf').attr('required',true);
+            $('#cpfObrigatorio').removeClass('d-none');
+        }
     }
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
@@ -263,12 +277,19 @@ elseif(isset($_GET['del'])){
                                     </select>
                                 </div>
                                 <div class="col-3">
-                                    <label for="cnpj_cpf">CNPJ / CPF<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['cnpj_cpf'];?>" class="form-control mb-3" name="cnpj_cpf" id="cnpj_cpf"  required>
+                                    <label for="cnpj_cpf">CNPJ / CPF<span id="cpfObrigatorio" class="ml-2 text-danger <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['cnpj_cpf'];?>" class="form-control mb-3" name="cnpj_cpf" id="cnpj_cpf"  <?=$row['estrangeiro']!=0?'required':''?>>
                                 </div>
                             </div>
 
                             <div class="row">
+                                <div class="col-2">
+                                    <label for="estrangeiro">Estrangeiro</label>
+                                    <select class="form-control mb-3" name="estrangeiro" id="estrangeiro" onchange="est(this)">
+                                        <option value="0" <?=$row['estrangeiro']==0?'selected':''?>>Não</option>
+                                        <option value="1" <?=$row['estrangeiro']==1?'selected':''?>>Sim</option>
+                                    <select>
+                                </div>
                                 <div class="col-3">
                                     <label for="ie">IE</label>
                                     <input type="text" class="form-control mb-3" name="ie" id="ie">

@@ -102,7 +102,7 @@
             <div class="row mb-3">
                 <div class="col-2 text-right"><strong>Banco</strong></div>
                 <div class="col">
-                    <select name="banco" id="banco" class="form-control w-25">
+                    <select name="banco" id="banco" class="form-control w-25" onchange="selecionaBanco(this)">
                         <option select disabled>Selecione</option>
                         <option value="001">Banco do Brasil</option>
                         <option value="003">Banco da Amazônia</option>
@@ -248,6 +248,10 @@
                 <div class="col">
                     <input type="text" name="conta" id="conta" class="form-control w-25" maxlength="10">
                 </div>
+            </div>
+
+            <div class="row mb-3" id="caixaComplemento">
+                    
             </div>
 
             <div class="row mb-3">

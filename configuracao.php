@@ -161,6 +161,30 @@ $usuario = $resp->fetch_assoc();
         jpeg_quality: 90
     });
 
+    function selecionaBanco(self){
+        $('#caixaComplemento').empty();
+        if($(self).val() == 104){
+            $('#caixaComplemento').append(`
+                <div class="col-2 text-right"><strong>Complemento Caixa</strong></div>
+                <div class="col">
+                    <select name="compCaixa" id="compCaixa" class="form-control w-25" maxlength="120">
+                        <option value="001" selected>001</option>
+                        <option value="002">002</option>
+                        <option value="003">003</option>
+                        <option value="006">006</option>
+                        <option value="007">007</option>
+                        <option value="013">013</option>
+                        <option value="022">022</option>
+                        <option value="023">023</option>
+                        <option value="028">028</option>
+                        <option value="043">043</option>
+                        <option value="031">031</option>
+                    </select> 
+                </div>
+            `);
+        }
+    }
+
     function modalFoto(doc){
         $('#mdl-confPagamento').modal();
         $('#imgPhoto').attr('target',doc);
@@ -235,6 +259,8 @@ $usuario = $resp->fetch_assoc();
         $('#bancoEmpresaID').val($(self).val());
         let liberar = false;
 
+        $('#caixaComplemento').empty();
+
         $('#compEmpresa').css('display','block');
         $('#bancoEmpresa').css('display','none');
         $('#docsEmpresa').css('display','none');
@@ -273,6 +299,26 @@ $usuario = $resp->fetch_assoc();
                 $('#documento').val(resp['documento']);
                 $('#docsEmpresa').css('display','block');
                 $('#habilitarEmpresa').css('display','block');
+                if(resp['complementoCaixa'] != '0'){
+                    $('#caixaComplemento').append(`
+                        <div class="col-2 text-right"><strong>Complemento Caixa</strong></div>
+                        <div class="col">
+                            <select name="compCaixa" id="compCaixa" class="form-control w-25" maxlength="120">
+                                <option value="001" `+(resp['complementoCaixa']=='001'?'selected':'')+`>001</option>
+                                <option value="002" `+(resp['complementoCaixa']=='002'?'selected':'')+`>002</option>
+                                <option value="003" `+(resp['complementoCaixa']=='003'?'selected':'')+`>003</option>
+                                <option value="006" `+(resp['complementoCaixa']=='006'?'selected':'')+`>006</option>
+                                <option value="007" `+(resp['complementoCaixa']=='007'?'selected':'')+`>007</option>
+                                <option value="013" `+(resp['complementoCaixa']=='013'?'selected':'')+`>013</option>
+                                <option value="022" `+(resp['complementoCaixa']=='022'?'selected':'')+`>022</option>
+                                <option value="023" `+(resp['complementoCaixa']=='023'?'selected':'')+`>023</option>
+                                <option value="028" `+(resp['complementoCaixa']=='028'?'selected':'')+`>028</option>
+                                <option value="043" `+(resp['complementoCaixa']=='043'?'selected':'')+`>043</option>
+                                <option value="031" `+(resp['complementoCaixa']=='031'?'selected':'')+`>031</option>
+                            </select> 
+                        </div>
+                    `);
+                }
             }
             else{
                 $('#banco').val('');
@@ -329,6 +375,7 @@ $usuario = $resp->fetch_assoc();
 
         $("#bancoEmpresa").submit(function(e){
             const data = $(this).serializeArray();
+            console.log(data);
             $.post('core/ajax/configuracao/bancoEmpresa.php',data,function(resp){
                 loadToastNR(resp);
                 $('#habilitarEmpresa').css('display','block');
@@ -340,7 +387,7 @@ $usuario = $resp->fetch_assoc();
             const data = $(this).serializeArray();
             $.post('core/ajax/configuracao/enviarDoc.php',data,function(resp){
                 console.log(resp);
-                //loadToastNR(resp);
+                loadToastNR(resp);
                 //$('#habilitarEmpresa').css('display','block');
             });
             e.preventDefault();
@@ -356,7 +403,7 @@ $usuario = $resp->fetch_assoc();
                     $('#habilitarPagamento').click();
                     alert(resp['valor']);
                 }
-                //loadToastNR(resp);
+                loadToastNR(resp);
             });
         });
 
