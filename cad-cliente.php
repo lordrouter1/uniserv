@@ -10,7 +10,7 @@ if(isset($_POST['cmd'])){
 
     if($cmd == "add"){
         $existe = $con->query('select id from tbl_clientes where cnpj_cpf = "'.$_POST['cnpj_cpf'].'"');
-        if($existe->num_rows == 0){
+        if($_POST['cnpj_cpf'] != "" && $existe->num_rows == 0){
             $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico, ibge, ie, estrangeiro) values(
                 '".$_POST['tipoPessoa']."',
                 '".$_POST['razaoSocial_nome']."',
@@ -121,6 +121,11 @@ elseif(isset($_GET['del'])){
             $("#tablePrint tbody tr").filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
+        });
+        $(':input:not(textarea)').on("keydown",function(){
+            if (event.key == "Enter") {
+                event.preventDefault();
+            }
         });
     });
 </script>
