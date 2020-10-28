@@ -5,12 +5,12 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
     
     $temp = explode('-',$_POST['cidade']);
-    $cidade = $temp[1];
-    $ibge = $temp[0];
+    $cidade = $_POST['cidade'];
+    $ibge = 0;//$temp[0];
 
     if($cmd == "add"){
         $existe = $con->query('select id from tbl_clientes where cnpj_cpf = "'.$_POST['cnpj_cpf'].'"');
-        if($_POST['cnpj_cpf'] != "" && $existe->num_rows == 0){
+        if($_POST['cnpj_cpf'] == "" || $existe->num_rows == 0){
             $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico, ibge, ie, estrangeiro) values(
                 '".$_POST['tipoPessoa']."',
                 '".$_POST['razaoSocial_nome']."',
@@ -36,9 +36,11 @@ if(isset($_POST['cmd'])){
                 '".$_POST['ie']."',
                 '".$_POST['estrangeiro']."'
             )");
-            redirect($con->error);
+            var_dump($con->error);
+            //redirect($con->error);
         }
         else{
+            var_dump($_POST['cnpj_cpf']);
             echo "<script>alert('Erro! CNPJ/CPF já cadastrado, usuário não cadastrado');</script>";
         }
     }
