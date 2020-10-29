@@ -4,11 +4,12 @@
     #var_dump($_POST);
     switch($_POST['cmd']){
         case 'add':
-            $con->query('INSERT INTO `tbl_remessa`(`data`, `status`, `usuario`, `descricao`) VALUES (
+            $con->query('INSERT INTO `tbl_remessa`(`data`, `status`, `usuario`, `descricao`, `cliente`) VALUES (
                 "'.date('Y-m-d').'",
                 "0",
                 "'.$_SESSION['id'].'",
-                "'.$_POST['descricao'].'"
+                "'.$_POST['descricao'].'",
+                "'.$_POST['cliente'].'"
             )');
             $lastid = $con->insert_id;
             for($i = 0; $i < sizeof($_POST['id']); $i++){
@@ -21,7 +22,7 @@
             redirect($con->error);
         break;
         case 'edt':
-            $con->query('UPDATE tbl_remessa set descricao = "'.$_POST['descricao'].'"');
+            $con->query('UPDATE tbl_remessa set descricao = "'.$_POST['descricao'].'", cliente = "'.$_POST['cliente'].'" where id = '.$_POST['codigo']);
             $con->query('DELETE from tbl_remessaItem where remessa = '.$_POST['codigo']);
             for($i = 0; $i < sizeof($_POST['id']); $i++){
                 $con->query('INSERT INTO `tbl_remessaItem`(`produto`, `quantia`, `remessa`) VALUES (
@@ -160,6 +161,7 @@
                                 <th>Descrição</th>
                                 <th style="width:14%">Data</th>
                                 <th style="width:6%">Status</th>
+                                <th>Usuário</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
@@ -177,6 +179,11 @@
                                         echo '<tr><th colspan="7" class="bg-light text-dark text-center">'.ucfirst($grupoNome).'</th></tr>';
                                     }
                                     $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
+                                    
+                                    if($row['cliente'] != -1)
+                                        $usuario = $con->query('select nome from tbl_usuario where id = '.$row['cliente'])->fetch_assoc()['nome'];
+                                    else
+                                        $usuario = "Todos";
                                     $finalizar = $row['status'] == 0? '<a href="?fin='.$row['id'].'" class="btn"><i class="fas fa-check text-success"></i></a>':'';
                                     switch($row['status']){
                                         case '0':
@@ -194,6 +201,7 @@
                                             <td>'.$row['descricao'].'</td>
                                             <td>'.date('d / m / Y',strtotime($row['data'])).'</td>
                                             <td>'.$status.'</td>
+                                            <td>'.$usuario.'</td>
                                             <td class="noPrint text-center">'.$finalizar.'</td>
                                             <td class="noPrint text-center"><a target="_blank" href="est-remessaImprimir.php?prt='.$row['id'].'" class="btn"><i class="fas fa-print icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-edit icon-gradient bg-happy-itmeo"></i></a></td>
@@ -244,6 +252,19 @@
                         <div class="col">
                             <label for="descricao">Descrição<span class="ml-2 text-danger">*</span></label>
                             <input type="text" value="<?php echo $un['descricao']; ?>" class="form-control mb-3" name="descricao" id="descricao" maxlength="120" required>
+                        </div>
+                        <div class="col">
+                            <label for="Cliente">Cliente</label>
+                            <select name="cliente" id="cliente" class="form-control">
+                                <option value="-1" <?=!isset($un['cliente'])||$un['cliente']==-1?'selected':''?>>Selecione o cliente</option>
+                                <?php
+                                    $resp = $con->query('select id,nome from tbl_usuario');
+
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['id'].'" '.($un['cliente']==$row['id']?'selected':'').'>'.$row['nome'].'</option>';
+                                    }
+                                ?>
+                            </select>
                         </div>
                     </div>
 

@@ -105,6 +105,10 @@ $pedidosCarrinho = 0;
     function finalizar(){
         location.href="?finalizar="+$('#selecionarCliente').val()+'&remessa='+$('#selecionaRemessa').val();
     }
+    function selectRemessa(self){
+        location.href="?remessa="+$(self).val();
+        document.cookie='remessa='+$(self).val()
+    }
 </script>
 
 <!-- cabeçalho da página -->
@@ -206,10 +210,10 @@ $pedidosCarrinho = 0;
                             </select>
                         </div>
                         <div class="col">
-                            <select class="form-control" id="selecionaRemessa" onchange="document.cookie='remessa='+$(this).val()">
-                                <option selected disabled>Selecione a remessa</option>
+                            <select class="form-control" id="selecionaRemessa" onchange="selectRemessa(this)">
+                                <option selected value="0">Selecione a remessa</option>
                                 <?
-                                    $resp = $con->query('select id,descricao from tbl_remessa where status = 0');
+                                    $resp = $con->query('select id,descricao from tbl_remessa where status = 0 and cliente in (-1,'.$_CONF['usuario']['id'].')');
                                     while($row = $resp->fetch_assoc()){
                                         $selected = $_COOKIE['remessa'] == $row['id']? 'selected':'';
                                         echo '<option value="'.$row['id'].'"  '.$selected.'>'.$row['descricao'].'</option>';
@@ -244,54 +248,17 @@ $pedidosCarrinho = 0;
                     </div>
 
                     <div class="content venda">
-                        <?                      
-                            $resp = $con->query('select * from tbl_produtos where status = 1');
+                        <?
+                            if($_GET['remessa'] != 0){
+                                $resp = $con->query('select * from tbl_produtos where status = 1 and id in (select produto from tbl_remessaItem where remessa = '.$_GET['remessa'].')');
+                            }
+                            else{
+                                $resp = $con->query('select * from tbl_produtos where status = 1');
+                            }
                             $itens = $resp->num_rows;
                             $itensLinha = isset($_COOKIE['iLinhas'])?$_COOKIE['iLinhas']:7;
                             $linhas = intval(($itens-1)/$itensLinha)+1;
                             
-                            /*if($_COOKIE['display'] == 'grid'){
-                                $cont = 0;
-                                for($i=0; $i<$linhas; $i++){
-                                    echo '<div class="row mb-2">';
-                                    
-                                    for($j=0; $j<$itensLinha; $j++){
-                                        if($cont == $itens){
-                                            echo '
-                                                <div class="col d-flex">
-                                                </div>
-                                            ';
-                                        }
-                                        else{
-                                            $cont++;
-                                            $row = $resp->fetch_assoc();
-                                            echo '
-                                                <div class="col d-flex" style="max-width:50%">
-                                                    <div class="card">
-                                                        <div class="card-body p-2 d-flex">
-                                                            <img class="m-auto" src="'.$row['imagem'].'" style="max-width:100%">
-                                                        </div>
-                                                        <div class="car-footer p-2" style="bottom:0">
-                                                            <h4 class="card-title">'.$row['nome'].'</h4>
-                                                            <form method="post">
-                                                                <div class="input-group">
-                                                                    <div class="input-group-prepend">
-                                                                        <input type="submit" class="btn btn-dark" value="Adicionar">
-                                                                    </div>
-                                                                    <input type="number" class="form-control" name="qtd" value="1">
-                                                                    <input type="hidden" value="'.$row['id'].'" name="id">
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ';
-                                        }
-                                    }
-                                    
-                                    echo '</div>';
-                                }
-                            }*/
                             while($row = $resp->fetch_assoc()){
                                 echo '
                                     <div class="produtos">

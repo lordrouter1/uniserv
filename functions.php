@@ -10,7 +10,14 @@ else{
 
 session_start();
 
-$_CONF = array();
+$_CONF = array(
+    'usuario' => array(
+        'id' => $_SESSION['id'],
+        'nome' => $_SESSION['nome'],
+        'cargo' => $_SESSION['cargo'],
+        'perm' => $_SESSION['perm']
+    )
+);
 
 # -- carrega conexão com o banco de dados -- #
 require_once "con.php";
