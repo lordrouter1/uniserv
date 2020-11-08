@@ -11,7 +11,15 @@ if(isset($_POST['cmd'])){
     if($cmd == "add"){
         $existe = $con->query('select id from tbl_clientes where cnpj_cpf = "'.$_POST['cnpj_cpf'].'"');
         if($_POST['cnpj_cpf'] == "" || $existe->num_rows == 0){
-            $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico, ibge, ie, estrangeiro) values(
+          
+		  if ( $_POST['estrangeiro'] == 0 ){
+		    $Id_Pais_Origem = 0;	
+			$contato_cad_form = '';
+		  }else {
+		    $Id_Pais_Origem   = $_POST['PaisOrigem'];
+			$contato_cad_form = $_POST['contato_cad']; 
+		  }	
+			$con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico, ibge, ie,id_pais_origem,contato_estrangeiro, estrangeiro) values(
                 '".$_POST['tipoPessoa']."',
                 '".$_POST['razaoSocial_nome']."',
                 '".$_POST['cnpj_cpf']."',
@@ -34,6 +42,8 @@ if(isset($_POST['cmd'])){
                 '".$_POST['tipo_tecnico']."',
                 '".$ibge."',
                 '".$_POST['ie']."',
+				'".$Id_Pais_Origem."',
+				'".$contato_cad_form."',
                 '".$_POST['estrangeiro']."'
             )");
             var_dump($con->error);
@@ -45,6 +55,15 @@ if(isset($_POST['cmd'])){
         }
     }
     elseif($cmd == "edt"){
+		
+		if ( $_POST['estrangeiro'] == 0 ){
+		    $Id_Pais_Origem = 0;	
+			$contato_cad_form = '';
+		  }else {
+		    $Id_Pais_Origem   = $_POST['PaisOrigem'];
+			$contato_cad_form = $_POST['contato_cad']; 
+		  }		
+		
         $con->query("update tbl_clientes set
             tipoPessoa = '".$_POST['tipoPessoa']."',
             razaoSocial_nome = '".$_POST['razaoSocial_nome']."',
@@ -67,6 +86,8 @@ if(isset($_POST['cmd'])){
             tipoFuncionario = '".$_POST['tipo_funcionario']."',
             tipoTecnico = '".$_POST['tipo_tecnico']."',
             ibge = '".$ibge."',
+			id_pais_origem = '".$Id_Pais_Origem."',
+			contato_estrangeiro = '".$contato_cad_form."',
             estrangeiro = '".$_POST['estrangeiro']."'
             where id  = ".$_POST['id']
         );
@@ -111,10 +132,15 @@ elseif(isset($_GET['del'])){
         if($(self).val()=='1'){
             $('.estrangeiroInput').removeAttr('required');
             $('.estrangeiroLabel').addClass('d-none');
+			$("#TabEstrageiroCad").removeClass('nav-item invisible');
+            $("#TabEstrageiroCad").addClass('nav-item visible');
+			
         }
         else{
             $('.estrangeiroInput').attr('required',true);
             $('.estrangeiroLabel').removeClass('d-none');
+			$("#TabEstrageiroCad").removeClass('nav-item visible');
+            $("#TabEstrageiroCad").addClass('nav-item invisible');
         }
     }
     $(document).ready(function(){
@@ -256,14 +282,38 @@ elseif(isset($_GET['del'])){
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post">
-
-                    <?php
+			<?php
                         if(isset($_GET['edt'])){
                             $resp = $con->query('select * from tbl_clientes where id = '.$_GET['edt']);
                             $row = $resp->fetch_assoc();
                         }
                     ?>
+			
+			   <ul class="nav nav-tabs" id="myTab" role="tablist">
+				  <li class="nav-item">
+					<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+					  aria-selected="true" Style ="font-weight: bold !important; color: #000000 !important;">Geral</a>
+				  </li>
+				  
+				  <li id="TabEstrageiroCad" name="TabEstrageiroCad"
+					<?php if ($row['estrangeiro']==0) {
+									echo 'class="nav-item invisible"';
+								} else {
+									echo 'class="nav-item visible"';
+								}
+
+								?>>
+					<a class="nav-link" id="estrangeiro-tab" data-toggle="tab" href="#estrangeiro_tab" role="tab" aria-controls="estrangeiro_tab"
+					  aria-selected="false" Style ="font-weight: bold !important; color: #000000 !important;">Estrangeiro</a>
+				  </li>
+				  
+				</ul>
+			
+                <form method="post">
+
+                    <div class="tab-content" id="myTabContent">
+				 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                  
 
                     <input type="hidden" value="<?php echo isset($_GET['edt'])?'edt':'add';?>" name="cmd">
                     <input type="hidden" value="<?php echo $_GET['edt'];?>" name="id" id="id">
@@ -296,7 +346,14 @@ elseif(isset($_GET['del'])){
                                         <option value="0" <?=$row['estrangeiro']==0?'selected':''?>>Não</option>
                                         <option value="1" <?=$row['estrangeiro']==1?'selected':''?>>Sim</option>
                                     <select>
+
                                 </div>
+								
+								
+								
+								
+								
+								
                                 <div class="col-3">
                                     <label for="ie">IE</label>
                                     <input type="text" class="form-control mb-3" name="ie" id="ie">
@@ -309,6 +366,7 @@ elseif(isset($_GET['del'])){
                                     <label for="cpfResponsavel">CPF responsável</label>
                                     <input type="text" value="<?php echo $row['cpfResponsavel'];?>" class="form-control mb-3" name="cpfResponsavel" id="cpfResponsavel">
                                 </div>
+								
                             </div>
 
                             <div class="row">
@@ -455,7 +513,48 @@ elseif(isset($_GET['del'])){
                     </div>
 
                     <input id="needs-validation" class="d-none" type="submit" value="enviar">
+				</div>
+				
+				<div class="tab-pane fade" id="estrangeiro_tab" role="tabpanel" aria-labelledby="estrangeiro-tab">
+					
+					
+					<div class="row">
+                        <div class="col">
 
+                            <div class="row">
+                                <div class="col-6">
+								  <label for="PaisOrigem">Pais de Origem</label>
+								  <select class="form-control mb-2" name="PaisOrigem" id="PaisOrigem">
+								  
+								  <?php
+                                      $query_paises = $con->query('select * from tbl_paises order by paisid ');
+                                     while($row_paises = $query_paises->fetch_assoc()){    
+                                      
+									  if ($row_paises['paisId'] == $row['id_pais_origem']  ){
+										echo '
+								      <option value='.$row_paises['paisId'].' selected >'.$row_paises['paisNome'].'</option>';  
+									  }else {
+									  
+									  echo '
+								      <option value='.$row_paises['paisId'].' >'.$row_paises['paisNome'].'</option>';
+							          }
+							      }
+							 
+							       ?>   
+                                   </select>
+								   </div>
+                                <div class="col-5">
+                                    <label for="contato_cad">Contato</label>
+                                        <input type="text" value="<?php echo $row['contato_estrangeiro'];?>" class="form-control mb-3" name="contato_cad" id="contato_cad">
+                                </div>
+                                
+                            </div>                        
+                    
+                        </div>
+                    </div>
+	                </div>
+				  
+				  </div>	
                 </form>
                 <script>
                     $(document).ready(function(){
