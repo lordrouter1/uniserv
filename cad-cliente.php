@@ -431,13 +431,14 @@ elseif(isset($_GET['del'])){
                             </div>
 
                             <div class="row">
-                                <div class="col">
-                                    <label for="bairro">Bairro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
-                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3 estrangeiroInput" name="bairro" id="bairro" <?=$row['estrangeiro']!=0?'required':''?>>
-                                </div>
+                                
                                 <div class="col">
                                     <label for="logradouro">Logradouro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
                                     <input type="text" value="<?php echo $row['logradouro'];?>" class="form-control mb-3 estrangeiroInput" name="logradouro" id="logradouro" <?=$row['estrangeiro']!=0?'required':''?>>
+                                </div>
+								<div class="col">
+                                    <label for="bairro">Bairro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3 estrangeiroInput" name="bairro" id="bairro" <?=$row['estrangeiro']!=0?'required':''?>>
                                 </div>
                                 <div class="col-2">
                                     <label for="numero">Número<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
