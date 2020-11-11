@@ -388,8 +388,8 @@ elseif(isset($_GET['del'])){
                                     <input type="text" value="<?php echo $row['email'];?>" class="form-control mb-3" name="email" id="email" required>
                                 </div>
                                 <div class="col">
-                                    <label for="telefoneEmpresa">Telefone/Celular<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['telefoneEmpresa'];?>" class="form-control mb-3" name="telefoneEmpresa" id="telefoneEmpresa" required>
+                                    <label for="telefoneEmpresa">Telefone/Celular<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['telefoneEmpresa'];?>" class="form-control mb-3" name="telefoneEmpresa" id="telefoneEmpresa" >
                                 </div>
                                 <div class="col">
                                     <label for="telefoneWhatsapp">Whatsapp</label>
@@ -438,19 +438,20 @@ elseif(isset($_GET['del'])){
                                 </div>
                                 <div class="col">
                                     <label for="cidade">Cidade<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
-                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required>
+                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" >
                                     <!--<select name="cidade" id="cidade" class="form-control"></select>-->
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="col">
-                                    <label for="bairro">Bairro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
-                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3 estrangeiroInput" name="bairro" id="bairro" <?=$row['estrangeiro']!=0?'required':''?>>
-                                </div>
+                                
                                 <div class="col">
                                     <label for="logradouro">Logradouro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
                                     <input type="text" value="<?php echo $row['logradouro'];?>" class="form-control mb-3 estrangeiroInput" name="logradouro" id="logradouro" <?=$row['estrangeiro']!=0?'required':''?>>
+                                </div>
+								<div class="col">
+                                    <label for="bairro">Bairro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3 estrangeiroInput" name="bairro" id="bairro" <?=$row['estrangeiro']!=0?'required':''?>>
                                 </div>
                                 <div class="col-2">
                                     <label for="numero">Número<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
