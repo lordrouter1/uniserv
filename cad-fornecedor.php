@@ -15,15 +15,17 @@ if(isset($_POST['cmd'])){
 		  if ( $_POST['estrangeiro'] == 0 ){
 		    $Id_Pais_Origem = 0;	
 			$contato_cad_form = '';
+			$documento_cad ='';
 		  }else {
 		    $Id_Pais_Origem   = $_POST['PaisOrigem'];
 			$contato_cad_form = $_POST['contato_cad']; 
+			$documento_cad = $_POST['documento_cad']; 
 		  }
 			$con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero,
 			complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, 
 			cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor,
 			tipoFuncionario, tipoTecnico, ibge, ie,id_pais_origem,contato_estrangeiro,cpf_cnpj_financeiro,des_conta_banco,
-			des_agencia_banco,des_banco, estrangeiro) values(
+			des_agencia_banco,des_banco, documento_estrangeiro, estrangeiro) values(
                 '".$_POST['tipoPessoa']."',
                 '".$_POST['razaoSocial_nome']."',
                 '".$_POST['cnpj_cpf']."',
@@ -50,8 +52,9 @@ if(isset($_POST['cmd'])){
 				'".$contato_cad_form."',
 				'".$_POST['cnpj_cpf_cad']."',
 				'".$_POST['conta_cad']."',
-				'".$_POST['agencia_cad']."',
+				'".$_POST['agencia_cad']."', 
 				'".$_POST['banco_cad']."',
+				'".$documento_cad."',
                 '".$_POST['estrangeiro']."'
             )");
             //var_dump($con->error);
@@ -67,9 +70,11 @@ if(isset($_POST['cmd'])){
 		if ( $_POST['estrangeiro'] == 0 ){
 		    $Id_Pais_Origem = 0;	
 			$contato_cad_form = '';
+			$documento_cad ='';
 		  }else {
 		    $Id_Pais_Origem   = $_POST['PaisOrigem'];
 			$contato_cad_form = $_POST['contato_cad']; 
+			$documento_cad = $_POST['documento_cad']; 
 		  }	
 		
         $con->query("update tbl_clientes set
@@ -100,6 +105,7 @@ if(isset($_POST['cmd'])){
 			des_conta_banco = '".$_POST['conta_cad']."',
 			des_agencia_banco = '".$_POST['agencia_cad']."',
 			des_banco = '".$_POST['banco_cad']."',
+			documento_estrangeiro =   '".$documento_cad."',
             estrangeiro = '".$_POST['estrangeiro']."'
             where id  = ".$_POST['id']
         );
@@ -592,6 +598,11 @@ elseif(isset($_GET['del'])){
                                 <div class="col-5">
                                     <label for="contato_cad">Contato</label>
                                         <input type="text" value="<?php echo $row['contato_estrangeiro'];?>" class="form-control mb-3" name="contato_cad" id="contato_cad">
+                                </div>
+								
+								<div class="col-5">
+                                    <label for="documento_cad">Documento</label>
+                                        <input type="text" value="<?php echo $row['documento_estrangeiro'];?>" class="form-control mb-3" name="documento_cad" id="documento_cad">
                                 </div>
                                 
                             </div>                        
