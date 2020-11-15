@@ -53,11 +53,104 @@ elseif (isset($_GET['del']))
         //newWin.close();
     }
 	
+	function CalcularEuroParaReal(){
+	rvlr_euro = $('#vlr_euro').val();
+	
+    rvlr_euro = rvlr_euro.replace("€", "");	
+	rvlr_euro = rvlr_euro.replace(",", ".");	
+	rcotacoa_vlr_euro = $('#cotacoa_vlr_euro').val();
+    rcotacoa_vlr_euro = rcotacoa_vlr_euro.replace("R$", "");	
+    rcotacoa_vlr_euro = rcotacoa_vlr_euro.replace(",", ".");		
+	rValorReal = parseFloat(rvlr_euro) * parseFloat(rcotacoa_vlr_euro);
+	var n = rValorReal.toFixed(2);
+	//alert(n);
+	//rValorReal = rValorReal.toFixedDown(2);
+	n = n.toString();
+	n = n.replace(".", ",");
+
+    //document.getElementById('vlr_real').value = rValorReal; 	
+	$("#vlr_real").val("R$ "+n);
+	//alert(rValorReal);
+	}	
 	
 	
-	function salvarProduto(){
-		
+	function CalcularParcelas(){
+	rvlr_real = $('#vlr_real').val();
+    rvlr_real = rvlr_real.replace("R$", "");	
+    rvlr_real = rvlr_real.replace(",", ".");		
+	
+	rvlr_entrada = $('#vlr_entrada').val();
+    rvlr_entrada = rvlr_entrada.replace("R$", "");	
+    rvlr_entrada = rvlr_entrada.replace(",", ".");
+	
+	var rValorMenosEntrada = (rvlr_real-rvlr_entrada);
+	if (rValorMenosEntrada < 1) {
+         
+		 $("#vlr_entrada").effect( "shake" );
+	
+			 const Toast = Swal.mixin({
+		  toast: true,
+		  position: 'top-end',
+		  showConfirmButton: false,
+		  timer: 3000,
+		  timerProgressBar: true,
+		  didOpen: (toast) => {
+			toast.addEventListener('mouseenter', Swal.stopTimer)
+			toast.addEventListener('mouseleave', Swal.resumeTimer)
+		  }
+		})
+
+		Toast.fire({
+		  icon: 'error',
+		  title: 'Entrada não pode ser maior que o valor!'
+		})
+
+		return false;
+      
+		 
+    }	
 	rcondicoes_parc = $('#condicoes_parc').val();
+	rValorPorParcela = (rvlr_real-rvlr_entrada) / rcondicoes_parc;
+	var n = rValorPorParcela.toFixed(2);
+	var TotalDasCondicoes = (n * rcondicoes_parc);
+	TotalDasCondicoes = TotalDasCondicoes.toFixed(2);
+	//alert(TotalDasCondicoes);
+	var DiferencaQueSobrouNasParcelas = ((rvlr_real-rvlr_entrada) - TotalDasCondicoes);
+	DiferencaQueSobrouNasParcelas = DiferencaQueSobrouNasParcelas.toFixed(2);
+	//alert(DiferencaQueSobrouNasParcelas);
+//	var PrimeiraParcela = (n  (DiferencaQueSobrouNasParcelas));
+	
+	if (DiferencaQueSobrouNasParcelas <= 0){
+		
+		DiferencaQueSobrouNasParcelas = Math.abs(DiferencaQueSobrouNasParcelas) ;
+	    DiferencaQueSobrouNasParcelas = (n  - DiferencaQueSobrouNasParcelas);
+		var Novo = DiferencaQueSobrouNasParcelas.toFixed(2);
+		//alert(Novo);
+	} else{
+		 
+		 if (DiferencaQueSobrouNasParcelas >0 ){
+			//  alert(n);
+		DiferencaQueSobrouNasParcelas = (parseFloat(n)  + parseFloat(DiferencaQueSobrouNasParcelas));
+	  //alert(DiferencaQueSobrouNasParcelas);
+		 		
+		var Novo = DiferencaQueSobrouNasParcelas.toFixed(2);
+		// alert(Novo);
+		 }
+	}
+	
+	//alert(Novo);
+	Novo = Novo.toString();
+	Novo = Novo.replace(".", ",");
+	
+	
+	
+	//alert(n);
+	//rValorReal = rValorReal.toFixedDown(2);
+	n = n.toString();
+	n = n.replace(".", ",");
+	rValorPorParcela = n;
+	
+	
     //$(this).parent().parent().remove();
 	//document.getElementById("1_data").click(); 
 	$("#parcelas_listadas_grid_1").remove(); 
@@ -74,8 +167,16 @@ elseif (isset($_GET['del']))
 	$("#parcelas_listadas_grid_12").remove(); 
 	
 	for (var i = 0; i < rcondicoes_parc; i++) {
-        $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"><input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ 100,00 " readonly></div><div class="col-4"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div><div class="col-1">  <span onclick="$(this).parent().parent().remove()"   class="btn text-danger"><i class="fas fa-trash-alt"></i></span>   </div></div></div>');
+         if (i == 0) { 
+		  //DiferencaQueSobrouNasParcelas = 0;
+		  $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"><input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+Novo+' " readonly></div><div class="col-4"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div><div class="col-1">  <span onclick="$(this).parent().parent().remove()"   class="btn text-warning"><i class="fas fa-exclamation"></i></span> </div>  <div class="col-1"> <span onclick="$(this).parent().parent().remove()"   class="btn text-warning"><i class="fas fa-file-upload"></i></span>  </div></div></div>');
 
+		  
+		 } else{
+		 
+		 
+		$('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"><input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+rValorPorParcela+' " readonly></div><div class="col-4"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div><div class="col-1">  <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-check"></i></span> </div>   <div class="col-1"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div></div></div>');
+		 }
         
 	  }
 		
@@ -312,12 +413,12 @@ while ($row = $resp->fetch_assoc())
 						
 						<div class="col-3">
                             <label for="vlr_euro">Valor Euro<span class="ml-2 text-danger">*</span></label>
-                             <input type="text" value="<?php echo $row['logradouro']; ?>" class="form-control mb-3 estrangeiroInput" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text" onchange="CalcularEuroParaReal()" value="<?php echo $row['logradouro']; ?>" class="form-control mb-3 estrangeiroInput" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
 						<div class="col-3">
                             <label for="vlr_real">Valor Real</label>
-                             <input type="text" disabled value="R$ 667,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text" disabled value="R$ 0,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
                         
@@ -336,14 +437,15 @@ while ($row = $resp->fetch_assoc())
 									
 						<div class="col-3">
                             <label for="vlr_entrada">Valor Entrada</label>
-                             <input type="text"  value="" class="form-control mb-3 estrangeiroInput" name="vlr_entrada" id="vlr_entrada" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text"  value="R$ 0,00"  onchange="CalcularParcelas()" class="form-control mb-3 estrangeiroInput" name="vlr_entrada" id="vlr_entrada" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>	
 						
 						<div class="col">
                             <label for="condicoes_parc">Condições</label>
-                            <select name="condicoes_parc" onchange="salvarProduto()" value="<?php echo $row['estado'];?>" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
-                                        <option value="01" >Entrada + 1 Parcela</option>
+                            <select name="condicoes_parc" onchange="CalcularParcelas()" value="<?php echo $row['estado'];?>" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
+                                         <option value="00" >Selecione</option>
+										<option value="01" >Entrada + 1 Parcela</option>
                                         <option value="02">Entrada + 2 Parcelas</option>
                                         <option value="03">Entrada + 3 Parcelas</option>
                                         <option value="04">Entrada + 4 Parcelas</option>
@@ -405,7 +507,10 @@ while ($row = $resp->fetch_assoc())
                         $("#telefoneWhatsapp").mask('(99) 99999-9999');
                         $("#cep").mask('99999-999');
 						$("#vlr_euro").mask('€ 9999,99');
-						$("#vlr_real").mask('R$ 9999,99');
+						//$("#vlr_real").mask('R$ 9999,99');
+						$("#vlr_entrada").mask('R$ 9999,99');
+						
+						
 						
 						
                     });
