@@ -858,7 +858,7 @@ echo '
                                             </label>
                                             <input type="text" value="<?php
                                       echo $row['cep_estrangeiro'];
-                                      ?>" class="form-control mb-3 estrangeiroInput" name="cep_estrangeiro"
+                                      ?>" class="form-control mb-3" name="cep_estrangeiro"
                                                 id="cep_estrangeiro">
                                         </div>
                                         <div class="col-4">
@@ -866,7 +866,7 @@ echo '
                                             </label>
                                             <input type="text" value="<?php
                                       echo $row['estado_estrangeiro'];
-                                      ?>" class="form-control mb-3 estrangeiroInput" name="estado_estrangeiro"
+                                      ?>" class="form-control mb-3" name="estado_estrangeiro"
                                                 id="estado_estrangeiro">
                                         </div>
                                         <div class="col">
@@ -884,7 +884,7 @@ echo '
                                             </label>
                                             <input type="text" value="<?php
                                       echo $row['logradouro_estrangeiro'];
-                                      ?>" class="form-control mb-3 estrangeiroInput" name="logradouro_estrangeiro"
+                                      ?>" class="form-control mb-3" name="logradouro_estrangeiro"
                                                 id="logradouro_estrangeiro">
                                         </div>
                                         <div class="col">
@@ -892,7 +892,7 @@ echo '
                                             </label>
                                             <input type="text" value="<?php
                                       echo $row['bairro_estrangeiro'];
-                                      ?>" class="form-control mb-3 estrangeiroInput" name="bairro_estrangeiro"
+                                      ?>" class="form-control mb-3" name="bairro_estrangeiro"
                                                 id="bairro_estrangeiro">
                                         </div>
                                         <div class="col-2">
@@ -900,7 +900,7 @@ echo '
                                             </label>
                                             <input type="text" value="<?php
                                       echo $row['numero_estrangeiro'];
-                                      ?>" class="form-control mb-3 estrangeiroInput" name="numero_estrangeiro"
+                                      ?>" class="form-control mb-3" name="numero_estrangeiro"
                                                 id="numero_estrangeiro">
                                         </div>
                                     </div>
