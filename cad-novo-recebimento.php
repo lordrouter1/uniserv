@@ -53,6 +53,38 @@ elseif (isset($_GET['del']))
         //newWin.close();
     }
 	
+	function HabilitarCamposParcelasGrid(){
+		iparcelamento = $('#parcelamento').val(); 
+		if (iparcelamento == 0) {
+			LimpaParcelasDoGrid();
+			$("#vlr_entrada").val("R$ 0,00");
+			$("#vlr_entrada").prop( "disabled", true );
+			$("#condicoes_parc").prop( "disabled", true );
+			$("#condicoes_parc").val("00").change();
+			
+		} else{
+			$( "#vlr_entrada" ).prop( "disabled", false );
+			$( "#condicoes_parc" ).prop( "disabled", false );
+			
+			
+		}
+	}
+	
+	function LimpaParcelasDoGrid(){
+		$("#parcelas_listadas_grid_1").remove(); 
+		$("#parcelas_listadas_grid_2").remove(); 
+		$("#parcelas_listadas_grid_3").remove(); 
+		$("#parcelas_listadas_grid_4").remove(); 
+		$("#parcelas_listadas_grid_5").remove(); 
+		$("#parcelas_listadas_grid_6").remove(); 
+		$("#parcelas_listadas_grid_7").remove(); 
+		$("#parcelas_listadas_grid_8").remove(); 
+		$("#parcelas_listadas_grid_9").remove(); 
+		$("#parcelas_listadas_grid_10").remove(); 
+		$("#parcelas_listadas_grid_11").remove(); 
+		$("#parcelas_listadas_grid_12").remove(); 		
+	}
+	
 	function CalcularEuroParaReal(){
 	rvlr_euro = $('#vlr_euro').val();
 	
@@ -71,6 +103,7 @@ elseif (isset($_GET['del']))
     //document.getElementById('vlr_real').value = rValorReal; 	
 	$("#vlr_real").val("R$ "+n);
 	//alert(rValorReal);
+	CalcularParcelas();
 	}	
 	
 	
@@ -151,31 +184,18 @@ elseif (isset($_GET['del']))
 	rValorPorParcela = n;
 	
 	
-    //$(this).parent().parent().remove();
-	//document.getElementById("1_data").click(); 
-	$("#parcelas_listadas_grid_1").remove(); 
-	$("#parcelas_listadas_grid_2").remove(); 
-	$("#parcelas_listadas_grid_3").remove(); 
-	$("#parcelas_listadas_grid_4").remove(); 
-	$("#parcelas_listadas_grid_5").remove(); 
-	$("#parcelas_listadas_grid_6").remove(); 
-	$("#parcelas_listadas_grid_7").remove(); 
-	$("#parcelas_listadas_grid_8").remove(); 
-	$("#parcelas_listadas_grid_9").remove(); 
-	$("#parcelas_listadas_grid_10").remove(); 
-	$("#parcelas_listadas_grid_11").remove(); 
-	$("#parcelas_listadas_grid_12").remove(); 
+    LimpaParcelasDoGrid(); 
 	
 	for (var i = 0; i < rcondicoes_parc; i++) {
          if (i == 0) { 
 		  //DiferencaQueSobrouNasParcelas = 0;
-		  $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"><input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+Novo+' " readonly></div><div class="col-4"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div><div class="col-1">  <span onclick="$(this).parent().parent().remove()"   class="btn text-warning"><i class="fas fa-exclamation"></i></span> </div>  <div class="col-1"> <span onclick="$(this).parent().parent().remove()"   class="btn text-warning"><i class="fas fa-file-upload"></i></span>  </div></div></div>');
+		  $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col-3"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"> <input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+Novo+' " readonly></div> <div class="col-0"> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> <label class="form-check-label" for="defaultCheck1">Pago</label> </div>  </div><div class="col-3"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div>  <div class="col-0"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div>  <div class="col-3"> <input  class="form-control-file"  type="file" id="myFile" name="filename2"></div></div></div>');
 
 		  
 		 } else{
+		 $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col-3"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"> <input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+rValorPorParcela+' " readonly></div> <div class="col-0"> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> <label class="form-check-label" for="defaultCheck1">Pago</label> </div>  </div><div class="col-3"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div>  <div class="col-0"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div>  <div class="col-3"> <input  class="form-control-file"  type="file" id="myFile" name="filename2"></div></div></div>');
+
 		 
-		 
-		$('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"><input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+rValorPorParcela+' " readonly></div><div class="col-4"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div><div class="col-1">  <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-check"></i></span> </div>   <div class="col-1"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div></div></div>');
 		 }
         
 	  }
@@ -364,7 +384,7 @@ while ($row = $resp->fetch_assoc())
 
 <!-- modal -->
 <div class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Adicionar novo recebimento</h5>
@@ -407,7 +427,7 @@ while ($row = $resp->fetch_assoc())
                     <div class="row">
 					    <div class="col-3">
                             <label for="cotacoa_vlr_euro">Cotação Euro €</label>
-                             <input type="text" disabled value="R$ 6,67" class="form-control mb-3 estrangeiroInput" name="cotacoa_vlr_euro" id="cotacoa_vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text"  value="R$ 6,67" onchange="CalcularEuroParaReal()" class="form-control mb-3 estrangeiroInput" name="cotacoa_vlr_euro" id="cotacoa_vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
 						
@@ -428,7 +448,7 @@ while ($row = $resp->fetch_assoc())
                     <div class="row">
                         <div class="col-3">
                             <label for="parcelamento">Parecelamento</label>
-                                    <select class="form-control mb-3" name="parcelamento" id="parcelamento" onchange="est(this)">
+                                    <select class="form-control mb-3" name="parcelamento" id="parcelamento" onchange="HabilitarCamposParcelasGrid()">
                                         <option value="0" selected >Não</option>
                                         <option value="1" >Sim</option>
                                     <select>                       
@@ -437,13 +457,13 @@ while ($row = $resp->fetch_assoc())
 									
 						<div class="col-3">
                             <label for="vlr_entrada">Valor Entrada</label>
-                             <input type="text"  value="R$ 0,00"  onchange="CalcularParcelas()" class="form-control mb-3 estrangeiroInput" name="vlr_entrada" id="vlr_entrada" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text"  value="R$ 0,00" disabled="true"  onchange="CalcularParcelas()" class="form-control mb-3 estrangeiroInput" name="vlr_entrada" id="vlr_entrada" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>	
 						
 						<div class="col">
                             <label for="condicoes_parc">Condições</label>
-                            <select name="condicoes_parc" onchange="CalcularParcelas()" value="<?php echo $row['estado'];?>" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
+                            <select name="condicoes_parc" disabled="true"  onchange="CalcularParcelas()" value="<?php echo $row['estado'];?>" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
                                          <option value="00" >Selecione</option>
 										<option value="01" >Entrada + 1 Parcela</option>
                                         <option value="02">Entrada + 2 Parcelas</option>
@@ -509,6 +529,8 @@ while ($row = $resp->fetch_assoc())
 						$("#vlr_euro").mask('€ 9999,99');
 						//$("#vlr_real").mask('R$ 9999,99');
 						$("#vlr_entrada").mask('R$ 9999,99');
+						$("#cotacoa_vlr_euro").mask('R$ 9999,99');
+						
 						
 						
 						
