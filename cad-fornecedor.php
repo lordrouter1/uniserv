@@ -692,11 +692,11 @@ elseif(isset($_GET['del'])){
                            <div class="row">
                               <div class="col-3">
                                  <label for="cep_estrangeiro">CEP</label>
-                                 <input type="text" value="<?php echo $row['cep_estrangeiro'];?>" class="form-control mb-3 estrangeiroInput" name="cep_estrangeiro" id="cep_estrangeiro" >
+                                 <input type="text" value="<?php echo $row['cep_estrangeiro'];?>" class="form-control mb-3" name="cep_estrangeiro" id="cep_estrangeiro" >
                               </div>
                               <div class="col-4">
                                  <label for="estado_estrangeiro">Estado</label>
-                                 <input type="text" value="<?php echo $row['estado_estrangeiro'];?>" class="form-control mb-3 estrangeiroInput" name="estado_estrangeiro" id="estado_estrangeiro" >
+                                 <input type="text" value="<?php echo $row['estado_estrangeiro'];?>" class="form-control mb-3" name="estado_estrangeiro" id="estado_estrangeiro" >
                               </div>
                               <div class="col">
                                  <label for="cidade_estrangeiro">Cidade</label>
@@ -707,15 +707,15 @@ elseif(isset($_GET['del'])){
                            <div class="row">
                               <div class="col">
                                  <label for="logradouro_estrangeiro">Logradouro</label>
-                                 <input type="text" value="<?php echo $row['logradouro_estrangeiro'];?>" class="form-control mb-3 estrangeiroInput" name="logradouro_estrangeiro" id="logradouro_estrangeiro">
+                                 <input type="text" value="<?php echo $row['logradouro_estrangeiro'];?>" class="form-control mb-3" name="logradouro_estrangeiro" id="logradouro_estrangeiro">
                               </div>
                               <div class="col">
                                  <label for="bairro_estrangeiro">Bairro</label>
-                                 <input type="text" value="<?php echo $row['bairro_estrangeiro'];?>" class="form-control mb-3 estrangeiroInput" name="bairro_estrangeiro" id="bairro_estrangeiro" >
+                                 <input type="text" value="<?php echo $row['bairro_estrangeiro'];?>" class="form-control mb-3" name="bairro_estrangeiro" id="bairro_estrangeiro" >
                               </div>
                               <div class="col-2">
                                  <label for="numero_estrangeiro">Número</label>
-                                 <input type="text" value="<?php echo $row['numero_estrangeiro'];?>" class="form-control mb-3 estrangeiroInput" name="numero_estrangeiro" id="numero_estrangeiro" >
+                                 <input type="text" value="<?php echo $row['numero_estrangeiro'];?>" class="form-control mb-3" name="numero_estrangeiro" id="numero_estrangeiro" >
                               </div>
                            </div>
 	
