@@ -3,33 +3,115 @@
 <?php
 if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
+    
+    $temp = explode('-',$_POST['cidade']);
+    $cidade = $_POST['cidade'];
+    $ibge = 0;//$temp[0];
 
     if($cmd == "add"){
-        $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, tipoFuncionario, tipoTecnico) values(
-            '".$_POST['tipoPessoa']."',
-            '".$_POST['razaoSocial_nome']."',
-            '".$_POST['cnpj_cpf']."',
-            '".$_POST['nomeResponsavel']."',
-            '".$_POST['logradouro']."',
-            '".$_POST['numero']."',
-            '".$_POST['complemento']."',
-            '".$_POST['bairro']."',
-            '".$_POST['cidade']."',
-            '".$_POST['cep']."',
-            '".$_POST['email']."',
-            '".$_POST['telefoneEmpresa']."',
-            '".$_POST['telefoneWhatsapp']."',
-            '".$_POST['cpfResponsavel']."',
-            '".$_POST['observacao']."',
-            '".$_POST['estado']."',
-            '".$_POST['tipo_cliente']."',
-            '".$_POST['tipo_fornecedor']."',
-            '".$_POST['tipo_funcionario']."',
-            '".$_POST['tipo_tecnico']."'
-        )");
-        redirect($con->error);
+        $existe = $con->query('select id from tbl_clientes where cnpj_cpf = "'.$_POST['cnpj_cpf'].'"');
+        if($_POST['cnpj_cpf'] == "" || $existe->num_rows == 0){
+          
+		  if ($_POST['estrangeiro'] == 0) {
+                $Id_Pais_Origem         = 0;
+                $contato_cad_form       = '';
+                $documento_cad          = '';
+                $cep_estrangeiro        = '';
+                $estado_estrangeiro     = '';
+                $cidade_estrangeiro     = '';
+                $logradouro_estrangeiro = '';
+                $bairro_estrangeiro     = '';
+                $numero_estrangeiro     = '';
+                
+                
+            } else {
+                $Id_Pais_Origem         = $_POST['PaisOrigem'];
+                $contato_cad_form       = $_POST['contato_cad'];
+                $documento_cad          = $_POST['documento_cad'];
+                $cep_estrangeiro        = $_POST['cep_estrangeiro'];
+                $estado_estrangeiro     = $_POST['estado_estrangeiro'];
+                $cidade_estrangeiro     = $_POST['cidade_estrangeiro'];
+                $logradouro_estrangeiro = $_POST['logradouro_estrangeiro'];
+                $bairro_estrangeiro     = $_POST['bairro_estrangeiro'];
+                $numero_estrangeiro     = $_POST['numero_estrangeiro'];
+            }
+			$con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero,
+			complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, 
+			cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor,
+			tipoFuncionario, tipoTecnico, ibge, ie,id_pais_origem,contato_estrangeiro,cpf_cnpj_financeiro,des_conta_banco,
+			des_agencia_banco,des_banco, documento_estrangeiro
+			,cep_estrangeiro,estado_estrangeiro,cidade_estrangeiro,logradouro_estrangeiro,bairro_estrangeiro,numero_estrangeiro,estrangeiro) values(
+                '".$_POST['tipoPessoa']."',
+                '".$_POST['razaoSocial_nome']."',
+                '".$_POST['cnpj_cpf']."',
+                '".$_POST['nomeResponsavel']."',
+                '".$_POST['logradouro']."',
+                '".$_POST['numero']."',
+                '".$_POST['complemento']."',
+                '".$_POST['bairro']."',
+                '".$cidade."',
+                '".$_POST['cep']."',
+                '".$_POST['email']."',
+                '".$_POST['telefoneEmpresa']."',
+                '".$_POST['telefoneWhatsapp']."',
+                '".$_POST['cpfResponsavel']."',
+                '".$_POST['observacao']."',
+                '".$_POST['estado']."',
+                '".$_POST['tipo_cliente']."',
+                '".$_POST['tipo_fornecedor']."',
+                '".$_POST['tipo_funcionario']."',
+                '".$_POST['tipo_tecnico']."',
+                '".$ibge."',
+                '".$_POST['ie']."',
+				'".$Id_Pais_Origem."',
+				'".$contato_cad_form."',
+				'".$_POST['cnpj_cpf_cad']."',
+				'".$_POST['conta_cad']."',
+				'".$_POST['agencia_cad']."', 
+				'".$_POST['banco_cad']."',
+				'".$documento_cad."',
+				'" . $cep_estrangeiro . "',
+		        '" . $estado_estrangeiro . "',
+		 	    '" . $cidade_estrangeiro . "',
+			    '" . $logradouro_estrangeiro . "',
+		 	    '" . $bairro_estrangeiro . "',
+			    '" . $numero_estrangeiro . "',
+                '".$_POST['estrangeiro']."'
+            )");
+            //var_dump($con->error);
+            //redirect($con->error);
+        }
+        else{
+            var_dump($_POST['cnpj_cpf']);
+            echo "<script>alert('Erro! CNPJ/CPF já cadastrado, usuário não cadastrado');</script>";
+        }
     }
     elseif($cmd == "edt"){
+		
+		if ($_POST['estrangeiro'] == 0) {
+                $Id_Pais_Origem         = 0;
+                $contato_cad_form       = '';
+                $documento_cad          = '';
+                $cep_estrangeiro        = '';
+                $estado_estrangeiro     = '';
+                $cidade_estrangeiro     = '';
+                $logradouro_estrangeiro = '';
+                $bairro_estrangeiro     = '';
+                $numero_estrangeiro     = '';
+                
+                
+            } else {
+                $Id_Pais_Origem         = $_POST['PaisOrigem'];
+                $contato_cad_form       = $_POST['contato_cad'];
+                $documento_cad          = $_POST['documento_cad'];
+                $cep_estrangeiro        = $_POST['cep_estrangeiro'];
+                $estado_estrangeiro     = $_POST['estado_estrangeiro'];
+                $cidade_estrangeiro     = $_POST['cidade_estrangeiro'];
+                $logradouro_estrangeiro = $_POST['logradouro_estrangeiro'];
+                $bairro_estrangeiro     = $_POST['bairro_estrangeiro'];
+                $numero_estrangeiro     = $_POST['numero_estrangeiro'];
+            }	
+		
         $con->query("update tbl_clientes set
             tipoPessoa = '".$_POST['tipoPessoa']."',
             razaoSocial_nome = '".$_POST['razaoSocial_nome']."',
@@ -39,7 +121,7 @@ if(isset($_POST['cmd'])){
             numero = '".$_POST['numero']."',
             complemento = '".$_POST['complemento']."',
             bairro = '".$_POST['bairro']."',
-            cidade = '".$_POST['cidade']."',
+            cidade = '".$cidade."',
             cep = '".$_POST['cep']."',
             email = '".$_POST['email']."',
             telefoneEmpresa = '".$_POST['telefoneEmpresa']."',
@@ -50,7 +132,22 @@ if(isset($_POST['cmd'])){
             tipoCliente = '".$_POST['tipo_cliente']."',
             tipoFornecedor = '".$_POST['tipo_fornecedor']."',
             tipoFuncionario = '".$_POST['tipo_funcionario']."',
-            tipoTecnico = '".$_POST['tipo_tecnico']."'
+            tipoTecnico = '".$_POST['tipo_tecnico']."',
+            ibge = '".$ibge."',
+			id_pais_origem = '".$Id_Pais_Origem."',
+			contato_estrangeiro = '".$contato_cad_form."',
+			cpf_cnpj_financeiro = '".$_POST['cnpj_cpf_cad']."',
+			des_conta_banco = '".$_POST['conta_cad']."',
+			des_agencia_banco = '".$_POST['agencia_cad']."',
+			des_banco = '".$_POST['banco_cad']."',
+			documento_estrangeiro =   '".$documento_cad."',
+			cep_estrangeiro =   '" . $cep_estrangeiro . "',
+		    estado_estrangeiro =   '" . $estado_estrangeiro . "',
+		    cidade_estrangeiro =   '" . $cidade_estrangeiro . "',
+	  	    logradouro_estrangeiro =   '" . $logradouro_estrangeiro . "',
+		    bairro_estrangeiro =   '" . $bairro_estrangeiro . "',
+	  	    numero_estrangeiro =   '" . $numero_estrangeiro . "',
+            estrangeiro = '".$_POST['estrangeiro']."'
             where id  = ".$_POST['id']
         );
         redirect($con->error);
@@ -79,8 +176,34 @@ elseif(isset($_GET['del'])){
         xmlHttp.open("GET", "https://viacep.com.br/ws/"+$(self).val().replace('-','')+"/json/", false ); // false for synchronous request
         xmlHttp.send(null);
         const resp = JSON.parse(xmlHttp.responseText);
+        console.log(resp);
         $("#estado").val(resp['uf']);
+        listarCidades();
         $("#cidade").val(resp['localidade']);
+    }
+    function listarCidades(){
+        $.post('core/ajax/cad-cliente/getCidade.php',{estado:$('#estado').val()},function(resp){
+            $('#cidade').empty();
+            $('#cidade').append(resp);
+        });
+    }
+    function est(self){
+        if($(self).val()=='1'){
+            $('.estrangeiroInput').removeAttr('required');
+            $('.estrangeiroLabel').addClass('d-none');
+			$("#TabEstrageiroCad").removeClass('nav-item invisible');
+            $("#TabEstrageiroCad").addClass('nav-item visible');
+
+			
+			
+        }
+        else{
+            $('.estrangeiroInput').attr('required',true);
+            $('.estrangeiroLabel').removeClass('d-none');
+			$("#TabEstrageiroCad").removeClass('nav-item visible');
+            $("#TabEstrageiroCad").addClass('nav-item invisible');
+
+        }
     }
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
@@ -89,9 +212,13 @@ elseif(isset($_GET['del'])){
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
+        $(':input:not(textarea)').on("keydown",function(){
+            if (event.key == "Enter") {
+                event.preventDefault();
+            }
+        });
     });
 </script>
-
 <!-- cabeçalho da página -->
 <div class="app-page-title">
 
@@ -216,19 +343,47 @@ elseif(isset($_GET['del'])){
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post">
-
-                    <?php
+			<?php
                         if(isset($_GET['edt'])){
                             $resp = $con->query('select * from tbl_clientes where id = '.$_GET['edt']);
                             $row = $resp->fetch_assoc();
+							
+							
                         }
                     ?>
+				<ul class="nav nav-tabs" id="myTab" role="tablist">
+				  <li class="nav-item">
+					<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+					  aria-selected="true" Style ="font-weight: bold !important; color: #000000 !important;">Geral</a>
+				  </li>
+				  <li class="nav-item">
+					<a class="nav-link" id="financeiro-tab" data-toggle="tab" href="#financeiro" role="tab" aria-controls="financeiro"
+					  aria-selected="false" Style ="font-weight: bold !important; color: #000000 !important;">Financeiro</a>
+				  </li>
+				  
+				  <li id="TabEstrageiroCad" name="TabEstrageiroCad"
+					<?php if ($row['estrangeiro']==0) {
+									echo 'class="nav-item invisible"';
+								} else {
+									echo 'class="nav-item visible"';
+								}
+
+								?>>
+					<a class="nav-link" id="estrangeiro-tab" data-toggle="tab" href="#estrangeiro_tab" role="tab" aria-controls="estrangeiro_tab"
+					  aria-selected="false" Style ="font-weight: bold !important; color: #000000 !important;">Estrangeiro</a>
+				  </li>
+				  
+				</ul>
+				
+                <form method="post">
+                 <div class="tab-content" id="myTabContent">
+				 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    
 
                     <input type="hidden" value="<?php echo isset($_GET['edt'])?'edt':'add';?>" name="cmd">
                     <input type="hidden" value="<?php echo $_GET['edt'];?>" name="id" id="id">
-
                     <div class="row">
+
                         <div class="col">
 
                             <div class="row">
@@ -250,6 +405,19 @@ elseif(isset($_GET['del'])){
                             </div>
 
                             <div class="row">
+							    <div class="col-2">
+                                    <label for="estrangeiro">Estrangeiro</label>
+                                    <select class="form-control mb-3" name="estrangeiro" id="estrangeiro" onchange="est(this)">
+                                        <option value="0" <?=$row['estrangeiro']==0?'selected':''?>>Não</option>
+                                        <option value="1" <?=$row['estrangeiro']==1?'selected':''?>>Sim</option>
+                                    <select>
+
+                                </div>
+								
+                                <div class="col-3">
+                                    <label for="ie">IE</label>
+                                    <input type="text" class="form-control mb-3" name="ie" id="ie">
+                                </div>
                                 <div class="col">
                                     <label for="nomeResponsavel">Nome responsável</label>
                                     <input type="text" value="<?php echo $row['nomeResponsavel'];?>" class="form-control mb-3" name="nomeResponsavel" id="nomeResponsavel">
@@ -259,6 +427,9 @@ elseif(isset($_GET['del'])){
                                     <input type="text" value="<?php echo $row['cpfResponsavel'];?>" class="form-control mb-3" name="cpfResponsavel" id="cpfResponsavel">
                                 </div>
                             </div>
+							
+							
+							
 
                             <div class="row">
                                 <div class="col">
@@ -266,8 +437,8 @@ elseif(isset($_GET['del'])){
                                     <input type="text" value="<?php echo $row['email'];?>" class="form-control mb-3" name="email" id="email" required>
                                 </div>
                                 <div class="col">
-                                    <label for="telefoneEmpresa">Telefone/Celular<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['telefoneEmpresa'];?>" class="form-control mb-3" name="telefoneEmpresa" id="telefoneEmpresa" required>
+                                    <label for="telefoneEmpresa">Telefone/Celular<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['telefoneEmpresa'];?>" class="form-control mb-3" name="telefoneEmpresa" id="telefoneEmpresa" >
                                 </div>
                                 <div class="col">
                                     <label for="telefoneWhatsapp">Whatsapp</label>
@@ -279,12 +450,30 @@ elseif(isset($_GET['del'])){
 
                             <div class="row">
                                 <div class="col-3">
-                                    <label for="cep">CEP<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['cep'];?>" class="form-control mb-3" name="cep" id="cep" required onchange="getCidade(this)">
+      <label for="cep">CEP<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text"
+<?php if ($row['estrangeiro']==0) {
+									echo ' required ';
+								} else {
+									echo ' ';
+								}
+
+								?>
+
+									value="<?php echo $row['cep'];?>" class="form-control mb-3 estrangeiroInput" name="cep" id="cep"  onchange="getCidade(this)">
                                 </div>
                                 <div class="col-4">
-                                    <label for="estado">Estado<span class="ml-2 text-danger">*</span></label>
-                                    <select name="estado" value="<?php echo $row['estado'];?>" id="estado" class="form-control mb-3" required readonly>
+                                    <label for="estado">Estado<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <select name="estado" value="<?php echo $row['estado'];?>" id="estado" class="form-control mb-3 estarngeiroInput"  <?php if ($row['estrangeiro']==0) {
+									echo ' required ';
+								} else {
+									echo ' ';
+								}
+
+								?>
+									
+									
+									><!-- onchange="listarCidades()" -->
                                         <option value="AC">Acre</option>
                                         <option value="AL">Alagoas</option>
                                         <option value="AP">Amapá</option>
@@ -315,25 +504,48 @@ elseif(isset($_GET['del'])){
                                     </select>
                                 </div>
                                 <div class="col">
-                                    <label for="cidade">Cidade<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3" name="cidade" id="cidade" required readonly>
+                                    <label for="cidade">Cidade<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['cidade'];?>" class="form-control mb-3 estrangeiroInput" name="cidade" id="cidade" >
+                                    <!--<select name="cidade" id="cidade" class="form-control"></select>-->
                                 </div>
                             </div>
 
                             <div class="row">
+                                
                                 <div class="col">
-                                    <label for="bairro">Bairro<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3" name="bairro" id="bairro" required>
+                                    <label for="logradouro">Logradouro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['logradouro'];?>" class="form-control mb-3 estrangeiroInput" name="logradouro" id="logradouro" <?php if ($row['estrangeiro']==0) {
+									echo ' required ';
+								} else {
+									echo ' ';
+								}
+
+								?> >
                                 </div>
-                                <div class="col">
-                                    <label for="logradouro">Logradouro<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['logradouro'];?>" class="form-control mb-3" name="logradouro" id="logradouro" required>
+								<div class="col">
+                                    <label for="bairro">Bairro<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3 estrangeiroInput" name="bairro" id="bairro" 
+<?php if ($row['estrangeiro']==0) {
+									echo ' required ';
+								} else {
+									echo ' ';
+								}
+
+								?>
+									>
                                 </div>
                                 <div class="col-2">
-                                    <label for="numero">Número<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['numero'];?>" class="form-control mb-3" name="numero" id="numero" required>
+                                    <label for="numero">Número<span class="ml-2 text-danger estrangeiroLabel <?=$row['estrangeiro']!=0?'d-none':''?>">*</span></label>
+                                    <input type="text" value="<?php echo $row['numero'];?>" class="form-control mb-3 estrangeiroInput" name="numero" id="numero" <?php if ($row['estrangeiro']==0) {
+									echo ' required ';
+								} else {
+									echo ' ';
+								}
+
+								?>  >
                                 </div>
                             </div>
+
 
                             <div class="row">
                                 <div class="col">
@@ -369,8 +581,8 @@ elseif(isset($_GET['del'])){
                                 <div class="row mb-2 mt-2">
                                     <div class="col d-flex">
                                         <div class="custom-control custom-switch m-auto w-75">
-                                            <input type="checkbox" class="custom-control-input" id="tipo_fornecedor" name="tipo_fornecedor" checked>
-                                            <label class="custom-control-label" for="tipo_fornecedor">Fornecedor</label>
+                                            <input type="checkbox" class="custom-control-input" id="tipo_fornecedor" name="tipo_fornecedor" <?php echo $row['tipoFornecedor'] == "on" ? 'checked' : '' ;?>>
+                                           <label class="custom-control-label" for="tipo_fornecedor">Fornecedor</label>
                                         </div>
                                     </div>
                                 </div>
@@ -380,7 +592,7 @@ elseif(isset($_GET['del'])){
                                 <div class="row mb-2 mt-2">
                                     <div class="col d-flex">
                                         <div class="custom-control custom-switch m-auto w-75">
-                                            <input type="checkbox" class="custom-control-input" id="tipo_funcionario" name="tipo_funcionario" <?php echo $row['tipoFuncionario'] == "on" ? 'checked' : '' ;?> >
+                                            <input type="checkbox" class="custom-control-input" id="tipo_funcionario" name="tipo_funcionario" <?php echo $row['tipoFuncionario'] == "on" ? 'checked' : '' ;?>>
                                             <label class="custom-control-label" for="tipo_funcionario">Funcionário</label>
                                         </div>
                                     </div>
@@ -403,19 +615,132 @@ elseif(isset($_GET['del'])){
                     </div>
 
                     <input id="needs-validation" class="d-none" type="submit" value="enviar">
+                  </div>
+				  
+				    <div class="tab-pane fade" id="financeiro" role="tabpanel" aria-labelledby="financeiro-tab">
+					
+					
+					<div class="row">
+                        <div class="col">
 
+                            <div class="row">
+                                <div class="col">
+                                    <label for="banco_cad">Banco</label>
+                                    <input type="text" value="<?php echo $row['des_banco'];?>" class="form-control mb-3" name="banco_cad" id="banco_cad">
+                                </div>
+                                <div class="col-2">
+                                    <label for="agencia_cad">Agência</label>
+                                        <input type="text" value="<?php echo $row['des_agencia_banco'];?>" class="form-control mb-3" name="agencia_cad" id="agencia_cad">
+                                </div>
+                                <div class="col-3">
+                                    <label for="conta_cad">Conta</label>
+                                    <input type="text" value="<?php echo $row['des_conta_banco'];?>" class="form-control mb-3" name="conta_cad" id="conta_cad"  >
+                                </div>
+								<div class="col-4">
+                                    <label for="cnpj_cpf_cad">CNPJ / CPF</label>
+                                    <input type="text" value="<?php echo $row['cpf_cnpj_financeiro'];?>" class="form-control mb-3" name="cnpj_cpf_cad" id="cnpj_cpf_cad"  >
+                                </div>
+                            </div>                        
+                    
+                        </div>
+                    </div>
+	                </div>
+					
+					
+					
+					<div class="tab-pane fade" id="estrangeiro_tab" role="tabpanel" aria-labelledby="estrangeiro-tab">
+					
+					
+					<div class="row">
+                        <div class="col">
+
+                            <div class="row">
+                                <div class="col-6">
+								  <label for="PaisOrigem">Pais de Origem</label>
+								  <select class="form-control mb-2" name="PaisOrigem" id="PaisOrigem">
+								  
+								  <?php
+                                      $query_paises = $con->query('select * from tbl_paises order by paisid ');
+                                     while($row_paises = $query_paises->fetch_assoc()){    
+                                      
+									  if ($row_paises['paisId'] == $row['id_pais_origem']  ){
+										echo '
+								      <option value='.$row_paises['paisId'].' selected >'.$row_paises['paisNome'].'</option>';  
+									  }else {
+									  
+									  echo '
+								      <option value='.$row_paises['paisId'].' >'.$row_paises['paisNome'].'</option>';
+							          }
+							      }
+							 
+							       ?>   
+                                   </select>
+								   </div>
+                                <div class="col-5">
+                                    <label for="contato_cad">Contato</label>
+                                        <input type="text" value="<?php echo $row['contato_estrangeiro'];?>" class="form-control mb-3" name="contato_cad" id="contato_cad">
+                                </div>
+								
+								<div class="col-5">
+                                    <label for="documento_cad">Documento</label>
+                                        <input type="text" value="<?php echo $row['documento_estrangeiro'];?>" class="form-control mb-3" name="documento_cad" id="documento_cad">
+                                </div>
+                                
+                            </div>     
+							
+							 <div class="divider"></div>
+                           <div class="row">
+                              <div class="col-3">
+                                 <label for="cep_estrangeiro">CEP</label>
+                                 <input type="text" value="<?php echo $row['cep_estrangeiro'];?>" class="form-control mb-3" name="cep_estrangeiro" id="cep_estrangeiro" >
+                              </div>
+                              <div class="col-4">
+                                 <label for="estado_estrangeiro">Estado</label>
+                                 <input type="text" value="<?php echo $row['estado_estrangeiro'];?>" class="form-control mb-3" name="estado_estrangeiro" id="estado_estrangeiro" >
+                              </div>
+                              <div class="col">
+                                 <label for="cidade_estrangeiro">Cidade</label>
+                                 <input type="text" value="<?php echo $row['cidade_estrangeiro'];?>" class="form-control mb-3 " name="cidade_estrangeiro" id="cidade_estrangeiro">
+                                 <!--<select name="cidade" id="cidade" class="form-control"></select>-->
+                              </div>
+                           </div>
+                           <div class="row">
+                              <div class="col">
+                                 <label for="logradouro_estrangeiro">Logradouro</label>
+                                 <input type="text" value="<?php echo $row['logradouro_estrangeiro'];?>" class="form-control mb-3" name="logradouro_estrangeiro" id="logradouro_estrangeiro">
+                              </div>
+                              <div class="col">
+                                 <label for="bairro_estrangeiro">Bairro</label>
+                                 <input type="text" value="<?php echo $row['bairro_estrangeiro'];?>" class="form-control mb-3" name="bairro_estrangeiro" id="bairro_estrangeiro" >
+                              </div>
+                              <div class="col-2">
+                                 <label for="numero_estrangeiro">Número</label>
+                                 <input type="text" value="<?php echo $row['numero_estrangeiro'];?>" class="form-control mb-3" name="numero_estrangeiro" id="numero_estrangeiro" >
+                              </div>
+                           </div>
+	
+								
+                    
+                        </div>
+                    </div>
+	                </div>
+				  
+				  </div>
                 </form>
+				
                 <script>
                     $(document).ready(function(){
                         $("#cpfResponsavel").mask('000.000.000-00', {reverse: true});
                         $("#telefoneEmpresa").mask('(99) 99999-9999');
                         $("#telefoneWhatsapp").mask('(99) 99999-9999');
+						$("#ie").mask('99999999-99');
                         $("#cep").mask('99999-999');
                     });
                 </script>
 
             </div>
-            <div class="modal-footer">
+            
+			<div class="modal-footer">
                 <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
                 <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
                 <button type="button" class="btn btn-primary" onclick="document.getElementById('needs-validation').click();"><?php echo isset($_GET['edt'])? 'Atualizar':'Salvar';?></button>

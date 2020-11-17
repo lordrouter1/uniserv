@@ -322,13 +322,14 @@ elseif(isset($_GET['del'])){
 
                             <div class="row">
                                 <div class="col">
-                                    <label for="bairro">Bairro<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3" name="bairro" id="bairro" required>
-                                </div>
-                                <div class="col">
                                     <label for="logradouro">Logradouro<span class="ml-2 text-danger">*</span></label>
                                     <input type="text" value="<?php echo $row['logradouro'];?>" class="form-control mb-3" name="logradouro" id="logradouro" required>
                                 </div>
+								<div class="col">
+                                    <label for="bairro">Bairro<span class="ml-2 text-danger">*</span></label>
+                                    <input type="text" value="<?php echo $row['bairro'];?>" class="form-control mb-3" name="bairro" id="bairro" required>
+                                </div>
+                                
                                 <div class="col-2">
                                     <label for="numero">Número<span class="ml-2 text-danger">*</span></label>
                                     <input type="text" value="<?php echo $row['numero'];?>" class="form-control mb-3" name="numero" id="numero" required>
