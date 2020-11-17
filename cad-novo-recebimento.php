@@ -38,6 +38,87 @@ elseif (isset($_GET['del']))
 }
 
 ?>
+
+<script>
+$(document).on("click", "#submit_btn", function (e) {
+    //Prevent Instant Click 
+
+    rvlr_euro = $('#vlr_euro').val();
+    rvlr_euro = rvlr_euro.replace("€", "");	
+	rvlr_euro = rvlr_euro.replace(",", "."); 
+	if (rvlr_euro == ''){
+		rvlr_euro =0;
+	}
+	if ($("#cliente").val() == null){
+		
+	$("#cliente").effect( "shake" );
+	
+	 const Toast = Swal.mixin({
+	  toast: true,
+	  position: 'top-end',
+	  showConfirmButton: false,
+	  timer: 3000,
+	  timerProgressBar: true,
+	  didOpen: (toast) => {
+		toast.addEventListener('mouseenter', Swal.stopTimer)
+		toast.addEventListener('mouseleave', Swal.resumeTimer)
+	  }
+	})
+
+	Toast.fire({
+	  icon: 'error',
+	  title: 'Selecione um cliente para salvar!'
+	})
+	  return false;
+	}
+	
+	if (rvlr_euro == 0){
+		
+	$("#vlr_euro").effect( "shake" );
+	
+	 const Toast = Swal.mixin({
+	  toast: true,
+	  position: 'top-end',
+	  showConfirmButton: false,
+	  timer: 3000,
+	  timerProgressBar: true,
+	  didOpen: (toast) => {
+		toast.addEventListener('mouseenter', Swal.stopTimer)
+		toast.addEventListener('mouseleave', Swal.resumeTimer)
+	  }
+	})
+
+	Toast.fire({
+	  icon: 'error',
+	  title: 'Informe o valor em euro!'
+	})
+	  return false;
+	}
+	
+	
+    e.preventDefault();
+    // Create an FormData object 
+    var formData = $("#form").submit(function (e) {
+        return;
+    });
+    //formData[0] contain form data only 
+    // You can directly make object via using form id but it require all ajax operation inside $("form").submit(<!-- Ajax Here   -->)
+    var formData = new FormData(formData[0]);
+    $.ajax({
+        url: $('#form').attr('action'),
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            console.log(response);
+        },
+        contentType: false,
+        processData: false,
+        cache: false
+    });
+    return false;
+});
+</script>
+
 <script>
 
 
@@ -52,6 +133,8 @@ elseif (isset($_GET['del']))
         //newWin.print();
         //newWin.close();
     }
+	
+	
 	
 	function HabilitarCamposParcelasGrid(){
 		iparcelamento = $('#parcelamento').val(); 
@@ -137,7 +220,7 @@ elseif (isset($_GET['del']))
 		  icon: 'error',
 		  title: 'Entrada não pode ser maior que o valor!'
 		})
-
+		LimpaParcelasDoGrid();
 		return false;
       
 		 
@@ -189,12 +272,12 @@ elseif (isset($_GET['del']))
 	for (var i = 0; i < rcondicoes_parc; i++) {
          if (i == 0) { 
 		  //DiferencaQueSobrouNasParcelas = 0;
-		  $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col-3"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"> <input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+Novo+' " readonly></div> <div class="col-0"> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> <label class="form-check-label" for="defaultCheck1">Pago</label> </div>  </div><div class="col-3"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div>  <div class="col-0"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div>  <div class="col-3"> <input  class="form-control-file"  type="file" id="myFile" name="filename2"></div></div></div>');
+		  $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col-3"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"> <input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+Novo+' " readonly></div> <div class="col-0"> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" name="'+(i+1)+'_pago" id="'+(i+1)+'_pago" > <label class="form-check-label" for="'+(i+1)+'_pago" >Pago</label> </div>  </div><div class="col-3"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div>  <div class="col-0"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div>  <div class="col-3"> <input  class="form-control-file"  type="file" name="'+(i+1)+'_file" id="'+(i+1)+'_file" ></div></div></div>');
 
 		  
 		 } else{
-		 $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col-3"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"> <input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+rValorPorParcela+' " readonly></div> <div class="col-0"> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> <label class="form-check-label" for="defaultCheck1">Pago</label> </div>  </div><div class="col-3"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div>  <div class="col-0"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div>  <div class="col-3"> <input  class="form-control-file"  type="file" id="myFile" name="filename2"></div></div></div>');
-
+		 $('#linhaProdutos').append('<div name="parcelas_listadas_grid_'+(i+1)+'" id="parcelas_listadas_grid_'+(i+1)+'" > <div class="row mb-2"><div class="col-3"> <input type="hidden" name="'+(i+1)+'" value="'+(i+1)+'"> <input type="text" class="form-control" name="'+(i+1)+'_parc" value="Parcela '+(i+1)+' - Valor R$ '+rValorPorParcela+' " readonly></div> <div class="col-0"> <div class="form-check"> <input class="form-check-input" type="checkbox" value="" name="'+(i+1)+'_pago" id="'+(i+1)+'_pago" > <label class="form-check-label" for="'+(i+1)+'_pago" >Pago</label> </div>  </div><div class="col-3"><input type="date" class="form-control" id="'+(i+1)+'_data"  name="'+(i+1)+'_data" value="5"></div>  <div class="col-0"> <span onclick="$(this).parent().parent().remove()"   class="btn text-success"><i class="fas fa-download"></i></span>  </div>  <div class="col-3"> <input  class="form-control-file"  type="file" name="'+(i+1)+'_file" id="'+(i+1)+'_file" ></div></div></div>');
+		 
 		 
 		 }
         
@@ -393,7 +476,7 @@ while ($row = $resp->fetch_assoc())
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post">
+                <form  id="form" method="post" action="cad-grava-recebimento.php" enctype="multipart/form-data" >
 
                     <?php
 if (isset($_GET['edt']))
@@ -427,7 +510,7 @@ while ($row = $resp->fetch_assoc())
                     <div class="row">
 					    <div class="col-3">
                             <label for="cotacoa_vlr_euro">Cotação Euro €</label>
-                             <input type="text"  value="R$ 6,67" onchange="CalcularEuroParaReal()" class="form-control mb-3 estrangeiroInput" name="cotacoa_vlr_euro" id="cotacoa_vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text"  value="<?php echo $EuroCotacao;?>" onchange="CalcularEuroParaReal()" class="form-control mb-3 estrangeiroInput" name="cotacoa_vlr_euro" id="cotacoa_vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
 						
@@ -464,7 +547,7 @@ while ($row = $resp->fetch_assoc())
 						<div class="col">
                             <label for="condicoes_parc">Condições</label>
                             <select name="condicoes_parc" disabled="true"  onchange="CalcularParcelas()" value="<?php echo $row['estado'];?>" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
-                                         <option value="00" >Selecione</option>
+                                         <option value="00" SELECT disabled>Selecione</option>
 										<option value="01" >Entrada + 1 Parcela</option>
                                         <option value="02">Entrada + 2 Parcelas</option>
                                         <option value="03">Entrada + 3 Parcelas</option>
@@ -517,8 +600,8 @@ while ($row = $resp->fetch_assoc())
                         </div>
                     </div> 
 
-                    <input id="needs-validation" class="d-none" type="submit" value="enviar">
-
+                    <input id="needs-validation" class="d-none"  type="submit" value="enviar">
+					
                 </form>
                 <script>
                     $(document).ready(function(){
@@ -548,7 +631,7 @@ while ($row = $resp->fetch_assoc())
             <div class="modal-footer">
                 <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
                 <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="myFunction()"><?php echo isset($_GET['edt']) ? 'Atualizar' : 'Salvar'; ?></button>
+                <button type="button" class="btn btn-primary" id='submit_btn'><?php echo isset($_GET['edt']) ? 'Atualizar' : 'Salvar'; ?></button>
             </div>
         </div>
     </div>
