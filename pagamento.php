@@ -23,6 +23,8 @@ if($resp->num_rows > 0){
     }
 }
 
+var_dump($juno->consulta('D2CE444503E914B86E0560501B436C510CF582D892B3C766E2E59C88B8C22F21'));
+
 if(isset($_POST['cmd'])){
     $pagamento = array(
         "chargeId" => $_GET['c'],
