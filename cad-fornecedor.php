@@ -300,8 +300,14 @@ elseif(isset($_GET['del'])){
                         <tbody>
                             <?php
                                 $resp = $con->query('select * from tbl_clientes where tipoFornecedor = "on" and status = 1 order by id desc');
-                            
+                                
                                 while($row = $resp->fetch_assoc()){
+								if ($row['estrangeiro']==0) {
+									$EstadoGridFornecedor = $row['cidade'].'/'.$row['estado'];
+								} else {
+									$EstadoGridFornecedor = 'EX';
+								}
+									
                                     echo '
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
@@ -309,7 +315,7 @@ elseif(isset($_GET['del'])){
                                             <td>'.$row['razaoSocial_nome'].'</td>
                                             <td>'.$row['cnpj_cpf'].'</td>
                                             <td>'.$row['telefoneEmpresa'].'</td>
-                                            <td>'.$row['cidade'].'/'.$row['estado'].'</td>
+                                            <td>'.$EstadoGridFornecedor.'</td>
                                             <td>'.$row['observacao'].'</td>
                                             <td class="noPrint"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
@@ -399,9 +405,21 @@ elseif(isset($_GET['del'])){
                                     </select>
                                 </div>
                                 <div class="col-3">
-                                    <label for="cnpj_cpf">CNPJ / CPF<span class="ml-2 text-danger">*</span></label>
-                                    <input type="text" value="<?php echo $row['cnpj_cpf'];?>" class="form-control mb-3" name="cnpj_cpf" id="cnpj_cpf"  required>
-                                </div>
+                                            <label for="cnpj_cpf">CNPJ / CPF
+                                                <span
+                                                    class="ml-2 text-danger estrangeiroLabel <?= $row['estrangeiro'] != 0 ? 'd-none' : '' ?>">*
+                                                </span>
+                                            </label>
+                                            <input type="text" value="<?php
+                                        echo $row['cnpj_cpf'];
+                                        ?>" class="form-control mb-3 estrangeiroInput" name="cnpj_cpf" id="cnpj_cpf" <?php
+              if ($row['estrangeiro'] == 0) {
+              echo ' required ';
+              } else {
+              echo ' ';
+              }
+              ?>>
+                                        </div>
                             </div>
 
                             <div class="row">
