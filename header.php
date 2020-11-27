@@ -3,8 +3,8 @@
 	//busca cotacao do euro
 	$req_url = 'https://economia.awesomeapi.com.br/json/all';
     $response_json = file_get_contents($req_url);
-	$response_object = json_decode($response_json);
-	$EuroCotacao = $response_object->EUR->high;
+    $response_object = json_decode($response_json);
+    $EuroCotacao = $response_object->EUR->high;
 	$EuroCotacao = $EuroCotacao +0.20; // taxas estimadas 0.20
 	$EuroCotacao = round($EuroCotacao, 2);
 	$EuroCotacao = str_replace(".",",",$EuroCotacao);
@@ -28,6 +28,7 @@
     <script src="assets/scripts/jscookies.js"></script>
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>-->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="assets/scripts/lib/select2/dist/js/select2.min.js"></script>
 
 
     <script type="text/javascript" src="./assets/scripts/comp.js"></script>
@@ -35,6 +36,8 @@
     <link href="./main.css" rel="stylesheet">
     <link rel="stylesheet" href="./comp.css">
     <link rel="stylesheet" href="assets/fafaicons/css/all.min.css">
+    <link href="assets/scripts/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="assets/css/select2-bootstrap.min.css" rel="stylesheet" />
 
 </head>
 <body>

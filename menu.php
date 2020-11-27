@@ -173,21 +173,21 @@
                             </a>
                         </li>
                         <li>
-                            <a <?php echo $menu['producao_ordem']?'href=""':'disabled';?>>
+                            <a <?php echo $menu['producao_ordem']?'href="prod-ordem.php"':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Ordem de Produção
+                            </a>
+                        </li>
+                        <li>
+                            <a <?php echo $menu['producao_monitor']?'href="prod-monitor.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Monitor de Produção
                             </a>
                         </li>
                         <li>
                             <a <?php echo $menu['producao_baixa']?'href=""':'disabled';?>>
                                 <i class="metismenu-icon">
                                 </i>Baixa de Produção
-                            </a>
-                        </li>
-                        <li>
-                            <a <?php echo $menu['producao_monitor']?'href=""':'disabled';?>>
-                                <i class="metismenu-icon">
-                                </i>Monitor de Produção
                             </a>
                         </li>
                         <li>
