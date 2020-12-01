@@ -36,10 +36,22 @@ if ($_POST['dependentes'] == 0) {
  $nome_dependente          = '';
  $data_nasc_dependente     = '';
  $idade_dependente         = '';
+ $nome_dependente02         = '';
+ $data_nasc_dependente02    = '';
+ $idade_dependente02        = '';
+ $nome_dependente03         = '';
+ $data_nasc_dependente03    = '';
+ $idade_dependente03        = '';
 } else {
  $nome_dependente          = $_POST['nome_dependente'];
  $data_nasc_dependente     = $_POST['data_nasc_dependente'];
  $idade_dependente     = $_POST['idade_dependente'];
+ $nome_dependente02          = $_POST['nome_dependente02'];
+ $data_nasc_dependente02     = $_POST['data_nasc_dependente02'];
+ $idade_dependente02     = $_POST['idade_dependente02'];
+ $nome_dependente03          = $_POST['nome_dependente03'];
+ $data_nasc_dependente03     = $_POST['data_nasc_dependente03'];
+ $idade_dependente03     = $_POST['idade_dependente03'];
 }
 
 
@@ -47,8 +59,11 @@ if ($_POST['dependentes'] == 0) {
 
 $con->query("insert into tbl_clientes(tipoPessoa,razaoSocial_nome, cnpj_cpf, nomeResponsavel, logradouro, numero, complemento, bairro, cidade, cep, email, telefoneEmpresa, telefoneWhatsapp, cpfResponsavel, observacao, estado, tipoCliente, tipoFornecedor, 
 tipoFuncionario, tipoTecnico, ibge, ie,id_pais_origem,contato_estrangeiro, documento_estrangeiro,
-cep_estrangeiro,estado_estrangeiro,cidade_estrangeiro,logradouro_estrangeiro,bairro_estrangeiro,numero_estrangeiro,
-dependentes,nome_dependente,data_nasc_dependente,idade_dependente, estrangeiro) values(
+cep_estrangeiro,estado_estrangeiro,cidade_estrangeiro,logradouro_estrangeiro,bairro_estrangeiro,numero_estrangeiro,dependentes,
+nome_dependente,data_nasc_dependente,idade_dependente, 
+nome_dependente02,data_nasc_dependente02,idade_dependente02, 
+nome_dependente03,data_nasc_dependente03,idade_dependente03, 
+estrangeiro) values(
 '" . $_POST['tipoPessoa'] . "',
 '" . $_POST['razaoSocial_nome'] . "',
 '" . $_POST['cnpj_cpf'] . "',
@@ -84,6 +99,12 @@ dependentes,nome_dependente,data_nasc_dependente,idade_dependente, estrangeiro) 
 '" . $nome_dependente . "',
 '" . $data_nasc_dependente . "',
 '" . $idade_dependente . "',
+'" . $nome_dependente02 . "',
+'" . $data_nasc_dependente02 . "',
+'" . $idade_dependente02 . "',
+'" . $nome_dependente03 . "',
+'" . $data_nasc_dependente03 . "',
+'" . $idade_dependente03 . "',
 '" . $_POST['estrangeiro'] . "'
 )");
 var_dump($con->error);
@@ -119,10 +140,22 @@ if ($_POST['dependentes'] == 0) {
  $nome_dependente          = '';
  $data_nasc_dependente     = '';
  $idade_dependente         = '';
+ $nome_dependente02         = '';
+ $data_nasc_dependente02    = '';
+ $idade_dependente02        = '';
+ $nome_dependente03         = '';
+ $data_nasc_dependente03    = '';
+ $idade_dependente03        = '';
 } else {
  $nome_dependente          = $_POST['nome_dependente'];
  $data_nasc_dependente     = $_POST['data_nasc_dependente'];
  $idade_dependente     = $_POST['idade_dependente'];
+ $nome_dependente02          = $_POST['nome_dependente02'];
+ $data_nasc_dependente02     = $_POST['data_nasc_dependente02'];
+ $idade_dependente02     = $_POST['idade_dependente02'];
+ $nome_dependente03          = $_POST['nome_dependente03'];
+ $data_nasc_dependente03     = $_POST['data_nasc_dependente03'];
+ $idade_dependente03     = $_POST['idade_dependente03'];
 }
 
 
@@ -162,6 +195,12 @@ dependentes =   '" . $_POST['dependentes'] . "',
 nome_dependente =   '" . $_POST['nome_dependente'] . "',
 data_nasc_dependente =   '" . $_POST['data_nasc_dependente'] . "',
 idade_dependente =   '" . $_POST['idade_dependente'] . "',
+nome_dependente02 =   '" . $_POST['nome_dependente02'] . "',
+data_nasc_dependente02 =   '" . $_POST['data_nasc_dependente02'] . "',
+idade_dependente02 =   '" . $_POST['idade_dependente02'] . "',
+nome_dependente03 =   '" . $_POST['nome_dependente03'] . "',
+data_nasc_dependente03 =   '" . $_POST['data_nasc_dependente03'] . "',
+idade_dependente03 =   '" . $_POST['idade_dependente03'] . "',
 estrangeiro = '" . $_POST['estrangeiro'] . "'
 where id  = " . $_POST['id']);
 redirect($con->error);
@@ -473,7 +512,7 @@ $row  = $resp->fetch_assoc();
                                             </label>
                                             <input type="text" value="<?php
                                         echo $row['cnpj_cpf'];
-                                        ?>" class="form-control mb-3 estarangeiroInput" name="cnpj_cpf" id="cnpj_cpf" <?php
+                                        ?>" class="form-control mb-3 estrangeiroInput" name="cnpj_cpf" id="cnpj_cpf" <?php
               if ($row['estrangeiro'] == 0) {
               echo ' required ';
               } else {
@@ -850,8 +889,7 @@ echo '
                                       ?>" class="form-control mb-3" name="documento_cad" id="documento_cad">
                                         </div>
                                     </div>
-                                    <div class="divider">
-                                    </div>
+                                    <div class="divider"></div>
                                     <div class="row">
                                         <div class="col-3">
                                             <label for="cep_estrangeiro">CEP
@@ -936,6 +974,62 @@ echo '
                                         id="idade_dependente">
                                 </div>
                             </div>
+							<div class="divider"></div>
+							<div class="row">
+                                <div class="col-5">
+                                    <label for="nome_dependente02">Nome
+                                    </label>
+                                    <input type="text" value="<?php
+                                      echo $row['nome_dependente02'];
+                                      ?>" class="form-control mb-3" name="nome_dependente02"
+                                        id="nome_dependente02">
+                                </div>
+								<div class="col-3">
+                                    <label for="data_nasc_dependente02">Data Nascimento
+                                    </label>
+                                    <input type="date" value="<?php
+                                      echo $row['data_nasc_dependente02'];
+                                      ?>" class="form-control mb-3" name="data_nasc_dependente02"
+                                        id="data_nasc_dependente02">
+                                </div>
+								<div class="col-1">
+                                    <label for="idade_dependente02">Idade
+                                    </label>
+                                    <input type="text" value="<?php
+                                      echo $row['idade_dependente02'];
+                                      ?>" class="form-control mb-3" name="idade_dependente02"
+                                        id="idade_dependente02">
+                                </div>
+                            </div>
+							<div class="divider"></div>
+							<div class="row">
+                                <div class="col-5">
+                                    <label for="nome_dependente03">Nome
+                                    </label>
+                                    <input type="text" value="<?php
+                                      echo $row['nome_dependente03'];
+                                      ?>" class="form-control mb-3" name="nome_dependente03"
+                                        id="nome_dependente03">
+                                </div>
+								<div class="col-3">
+                                    <label for="data_nasc_dependente03">Data Nascimento
+                                    </label>
+                                    <input type="date" value="<?php
+                                      echo $row['data_nasc_dependente03'];
+                                      ?>" class="form-control mb-3" name="data_nasc_dependente03"
+                                        id="data_nasc_dependente03">
+                                </div>
+								<div class="col-1">
+                                    <label for="idade_dependente03">Idade
+                                    </label>
+                                    <input type="text" value="<?php
+                                      echo $row['idade_dependente03'];
+                                      ?>" class="form-control mb-3" name="idade_dependente03"
+                                        id="idade_dependente03">
+                                </div>
+                            </div>
+							
+							
                         </div>
 
 

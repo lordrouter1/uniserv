@@ -546,8 +546,8 @@ while ($row = $resp->fetch_assoc())
 						
 						<div class="col">
                             <label for="condicoes_parc">Condições</label>
-                            <select name="condicoes_parc" disabled="true"  onchange="CalcularParcelas()" value="<?php echo $row['estado'];?>" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
-                                         <option value="00" SELECT disabled>Selecione</option>
+                            <select name="condicoes_parc" disabled="true"  onchange="CalcularParcelas()" value="00" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
+                                         <option value="00" >Selecione</option>
 										<option value="01" >Entrada + 1 Parcela</option>
                                         <option value="02">Entrada + 2 Parcelas</option>
                                         <option value="03">Entrada + 3 Parcelas</option>
