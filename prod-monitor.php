@@ -10,8 +10,8 @@
         newWin.document.write(divPrint.outerHTML);
     }
 
-    function abrirProduto(data){
-        location.href = "prod-monitorProduto.php?produto="+data;
+    function abrirProduto(item,producao){
+        location.href = "prod-monitorProduto.php?item="+item+"&producao="+producao;
     }
 
     $(document).ready(function(){
@@ -43,10 +43,6 @@
 
         </div>
         <div class="page-title-actions">
-
-            <a class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" href="prod-ordemNova.php">
-                <i class="fas fa-plus"></i>
-            </a>
 
             <div class="d-inline-block dropdown">
                 <button class="btn-shadow dropdown-toggle btn btn-info" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -129,7 +125,7 @@
                                     }
 
                                     echo '
-                                        <tr style="cursor:pointer" ondblclick="abrirProduto('.$row['id'].')">
+                                        <tr style="cursor:pointer" '.($row['status']==1?'ondblclick="abrirProduto('.$row['id'].','.$row['producao'].')"':'').'>
                                             <td>'.$row['id'].'</td>
                                             <td>'.$row['descricao'].'</td>
                                             <td>'.$row['quantia'].'</td>
@@ -137,7 +133,7 @@
                                             <td>'.$row['observacao'].'</td>
                                             <td>'.date('d / m / Y',strtotime($row['prazo'])).'</td>
                                             <td><span class="badge badge-'.$bgStatus.'">'.$status.'</span></td>
-                                            <td><i class="fas fa-angle-double-right"></i></td>
+                                            <td>'.($row['status']==1?'<i class="fas fa-angle-double-right"></i>':'').'</td>
                                         </tr>
                                     ';
                                 }

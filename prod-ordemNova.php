@@ -9,7 +9,7 @@
                 "'.$_POST['prazo'].'",
                 "'.$_POST['observacoes'].'",
                 "'.$_POST['lEstoque'].'",
-                "'.$_POST['cliente'].'",
+                "'.(isset($_POST['cliente'])?$_POST['cliente']:'0').'",
                 0,
                 1
             )';
@@ -29,43 +29,10 @@
 
                 $con->query($query);
                 $produto_id = $con->insert_id;
-
-                foreach($grade->itens as $item){
-                    $query = 'INSERT INTO `tbl_producaoItensInsumos`(`produto`, `quantia`, `item`, `status`) VALUES (
-                        "'.$produto_id.'",
-                        "'.$item->quantia.'",
-                        "'.$item->id.'",
-                        1
-                    )';
-    
-                    $con->query($query);
-                }
             }
             
             echo '<script>location.href="prod-ordem.php?s"</script>';
         break;
-        case 'edt':
-            /*$query = 'UPDATE `tbl_gradeProdutos` SET 
-                `descricao`= "'.$_POST['descricao'].'",
-                `grupo`= "'.$_POST['grupo'].'" 
-                WHERE id = '.$_POST['codigo'].'
-            ';
-            $con->query($query);
-
-            $con->query('delete from tbl_gradeProdutosItens where grade = '.$_POST['codigo']);
-
-            for($i = 0; $i < sizeof($_POST['id']); $i++){
-                $query = 'INSERT INTO `tbl_gradeProdutosItens`(`item`, `fator`, `grade`) VALUES ("'.$_POST['id'][$i].'","'.$_POST['fator'][$i].'","'.$_POST['codigo'].'")';
-                $con->query($query);
-            }
-
-            redirect($con->error);*/
-        break;
-    }
-    if($_GET['del']){
-        /*$con->query('update tbl_gradeProdutos set status = 0 where id = '.$_GET['del']);
-        $con->query('update tbl_gradeProdutosItens set status = 0 where grade = '.$_GET['del']);
-        redirect($con->error);*/
     }
 ?>
 
@@ -90,11 +57,6 @@
         });
     }
 
-    function checkAll(self){
-        const checkboxs = $('#campoGrade').find('input[type="checkbox"]');
-        $(checkboxs).prop('checked',$(self).prop('checked'));
-    }
-
     function alteraEstoque(self){
         const quantia = $(self).val();
         const linhas = $('#campoGrade tr');
@@ -106,13 +68,14 @@
 
         for(let i = 0; i < linhas.length; i++){
             const linha = $(linhas[i]).children();
-            const input = $(linhas[i]).find('.form-control');
+            const input = linha[4];
             const badge = $(linhas[i]).find('.badge');
+
             const utilizada = $(linha[4]).attr('fator') * quantia;
             const final = parseFloat($(linha[3]).text()) - utilizada;
 
             $(badge).text(final);
-            $(input).val(utilizada);
+            $(input).text(utilizada);
 
             $(badge).removeClass();
             $(badge).addClass('badge');
@@ -129,28 +92,6 @@
         }
     }
 
-    function altEstoqueLocal(self){
-        const linha = $(self).parent().parent().children();
-        const estoque = linha[3];
-        const badge = $(linha[5]).children()[0];
-
-        let final = parseFloat($(estoque).text()) - $(self).val();
-
-        $(badge).text(final);
-
-        $(badge).removeClass();
-        $(badge).addClass('badge');
-
-        if(final == 0){
-            $(badge).addClass('badge-warning');
-        }
-        else if(final < 0){
-            $(badge).addClass('badge-danger');
-        }
-        else{
-            $(badge).addClass('badge-info');
-        }
-    }
 
     function adicionar(){
         const linhas = $('#campoGrade tr');
@@ -158,8 +99,6 @@
 
         let j = 0;
         for(let i = 0; i < linhas.length; i++){
-            const checkbox = $(linhas[i]).find('input[type="checkbox"]');
-            if(!$(checkbox).prop('checked')) continue;
             const linha = $(linhas[i]).children();
             const input = $(linhas[i]).find('input[type="number"]');
             grade.itens[j++] = {id:$(linha[0]).text(),quantia:$(input).val()};
@@ -314,7 +253,6 @@
                                             <th>Estoque</th>
                                             <th style="width:15%">Utilizada</th>
                                             <th>Final</th>
-                                            <th><input type="checkbox" id="allCheck" onchange="checkAll(this)"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="campoGrade">

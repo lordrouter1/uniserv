@@ -178,13 +178,26 @@ if(isset($_POST['cmd'])){
                                 $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
                                     $produto = $con->query('select a.nome as produto,b.simbolo as un from tbl_produtos a inner join tbl_unidades b on b.id = a.unidadeEstoque where a.id = '.$row['produto'])->fetch_assoc();
+                                    
+                                    switch($row['operacao']){
+                                        case 'e':
+                                            $operacao = "Entrada";
+                                        break;
+                                        case 's':
+                                            $operacao = "Saída";
+                                        break;
+                                        case 'i':
+                                            $operacao = "Interno";
+                                        break;
+                                    }
+                                    
                                     echo '
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
                                             <td>'.$produto['produto'].'</td>
                                             <td>'.$row['quantia'].'</td>
                                             <td>'.$produto['un'].'</td>
-                                            <td>'.($row['operacao'] == 'e'?'Entrada':'Saída').'</td>
+                                            <td>'.$operacao.'</td>
                                             <td>'.$row['motivo'].'</td>
                                             <td>'.date('d / m / Y',strtotime($row['data'])).'</td>
                                         </tr>

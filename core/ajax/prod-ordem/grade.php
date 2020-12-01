@@ -33,9 +33,8 @@
                         <td>'.$row['nome'].'</td>
                         <td>'.$row['simbolo'].'</td>
                         <td>'.$row['estoque'].'</td>
-                        <td fator="'.$row['fator'].'"><input type="number" value="'.$row['fator'].'" class="form-control" step="0.00000001" onchange="altEstoqueLocal(this)"></td>
+                        <td fator="'.$row['fator'].'">'.$row['fator'].'</td>
                         <td><span class="badge badge-'.$bgEst.'">'.$estFinal.'</span></td>
-                        <td><input type="checkbox"></td>
                     </tr>
                 ';
             }
