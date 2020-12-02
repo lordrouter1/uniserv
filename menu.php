@@ -234,21 +234,21 @@
                         Recebimentos
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                       </a>
-                    <ul class="mm-collapse">
-                        <li>
-                            <a <?php echo $menu['novo_recebimentos_financeiro']?'href="cad-novo-recebimento.php"':'disabled';?>>
-                                <i class="metismenu-icon">
-                                </i>Novo Recebimento
-                            </a>
-                        </li>
-						
-						<li>
-                            <a <?php echo $menu['consulta_recebimentos_financeiro']?'href="fisc-contasReceber.php"':'disabled';?>>
-                                <i class="metismenu-icon">
-                                </i>Consultar Recebimentos</a>
-                        </li>
-						
-                    </ul>
+                        <ul class="mm-collapse">
+                            <li>
+                                <a <?php echo $menu['novo_recebimentos_financeiro']?'href="cad-novo-recebimento.php"':'disabled';?>>
+                                    <i class="metismenu-icon">
+                                    </i>Novo Recebimento
+                                </a>
+                            </li>
+                            
+                            <li>
+                                <a <?php echo $menu['consulta_recebimentos_financeiro']?'href="fisc-contasReceber.php"':'disabled';?>>
+                                    <i class="metismenu-icon">
+                                    </i>Consultar Recebimentos</a>
+                            </li>
+                            
+                        </ul>
 					
 					
                 </li>
