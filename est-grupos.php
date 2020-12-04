@@ -6,21 +6,21 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $query = 'insert into tbl_grupo(nome,status) values("'.$_POST['nome'].'",1)';
+        $query = 'insert into tbl_grupo(nome,status) values("'.sqlEscape(ucfirst(strtolower($_POST['nome']))).'",1)';
         $con->query($query);
         redirect($con->error);
     }
     elseif($cmd == "edt"){
         $query = 'update tbl_grupo set
-            nome = "'.$_POST['nome'].'"
-            where id = '.$_POST['id'].'
+            nome = "'.sqlEscape(ucfirst(strtolower($_POST['nome']))).'"
+            where id = '.sqlEscape($_POST['id']).'
         ';
         $con->query($query);
         redirect($con->error);
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('update tbl_grupo set status = 0 where id = '.$_GET['del']);
+    $con->query('update tbl_grupo set status = 0 where id = '.sqlEscape($_GET['del']));
     redirect($con->error);
 }
 

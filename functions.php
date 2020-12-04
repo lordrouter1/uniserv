@@ -225,4 +225,9 @@ function DataHora($dado,$tipo){
 
     return $new_date;
 }
+
+function sqlEscape($string){
+    return $GLOBALS['con']->real_escape_string($string);
+}
+
 ?>

@@ -7,7 +7,7 @@
     $EuroCotacao = $response_object->EUR->high;
 	$EuroCotacao = $EuroCotacao +0.20; // taxas estimadas 0.20
 	$EuroCotacao = round($EuroCotacao, 2);
-	$EuroCotacao = str_replace(".",",",$EuroCotacao);
+    $EuroCotacao = str_replace(".",",",$EuroCotacao);
 	
 ?>
 <!doctype html>
@@ -38,6 +38,20 @@
     <link rel="stylesheet" href="assets/fafaicons/css/all.min.css">
     <link href="assets/scripts/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
     <link href="assets/css/select2-bootstrap.min.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function(){
+            $('.select2').select2({
+                theme: "bootstrap",
+                enabled: true
+            });
+            $('.select2modal').select2({
+                theme: "bootstrap",
+                enabled: true,
+                dropdownParent: $(".modal")
+            });
+        });
+    </script>
 
 </head>
 <body>

@@ -56,7 +56,7 @@ if(isset($_POST['cmd'])){
 
         if($uploadOk === 1){
             if(move_uploaded_file($_FILES["imagem"]["tmp_name"],$target_file)){
-                $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`) VALUES (
+                $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `imagem`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`, `patrimonio`, `serie`) VALUES (
                     "'.($_POST['valor'] == 0? 0 : $_POST['valor']).'",
                     "'.$_POST['referencia'].'",
                     "'.$_POST['nome'].'",
@@ -77,12 +77,14 @@ if(isset($_POST['cmd'])){
                     "'.($_POST['custo'] | 0).'",
                     "'.($_POST['comissao'] | 0).'",
                     "'.($_POST['valPromocao'] | 0 ).'",
-                    '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').'           
+                    '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').',
+                    "'.$_POST['patrimonio'].'",
+                    "'.$_POST['serie'].'"           
                 )';
             }
         }
         else{
-            $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`) VALUES (
+            $query = 'INSERT INTO `tbl_produtos`(`valor`,`referencia`,`nome`,`unidadeEstoque`,`grupo`,`subgrupo`,`tipoProduto`,`fornecedor`,`usoConsumo`, `comercializavel`, `descontoMinimo`, `descontoMaximo`, `classificacaoFiscal`, `codBarras`, `descricao`, `promocao`, `custo`, `comissao`, `valPromocao`, `dataPromocao`,`patrimonio`,`serie`) VALUES (
                 "'.($_POST['valor'] == 0? 0 : $_POST['valor']).'",
                 "'.$_POST['referencia'].'",
                 "'.$_POST['nome'].'",
@@ -102,7 +104,9 @@ if(isset($_POST['cmd'])){
                 "'.($_POST['custo'] | 0).'",
                 "'.($_POST['comissao'] | 0).'",
                 "'.($_POST['valPromocao'] | 0 ).'",
-                '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').'           
+                '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').',
+                "'.$_POST['patrimonio'].'",
+                "'.$_POST['serie'].'"    
             )';
         }
 
@@ -186,7 +190,9 @@ if(isset($_POST['cmd'])){
                         `custo`= "'.$_POST['custo'].'",
                         `comissao`= "'.$_POST['comissao'].'",
                         `valPromocao`= "'.$_POST['valPromocao'].'",
-                        `dataPromocao`= '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').'
+                        `dataPromocao`= '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').',
+                        `patrimonio` = "'.$_POST['patrimonio'].'",
+                        `serie` = "'.$_POST['serie'].'"
                         WHERE `id` = "'.$_POST['id'].'"
                     ';
                 }
@@ -211,7 +217,9 @@ if(isset($_POST['cmd'])){
                 `custo`= "'.$_POST['custo'].'",
                 `comissao`= "'.$_POST['comissao'].'",
                 `valPromocao`= "'.$_POST['valPromocao'].'",
-                `dataPromocao`= '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').'
+                `dataPromocao`= '.($_POST['dataPromocao']?'"'.$_POST['dataPromocao'].'"':'NULL').',
+                `patrimonio` = "'.($_POST['patrimonio']).'",
+                `serie` = "'.$_POST['serie'].'"
                 WHERE `id` = "'.$_POST['id'].'"
             ';
         }
@@ -483,8 +491,16 @@ elseif(isset($_GET['del'])){
                         </div>
 
                         <div class="row">
-                                                
-                            <div class="col-3">
+
+                            <div class="col">
+                                <label for="patrimonio">Patrimônio</label>
+                                <input type="text" class="form-control" name="patrimonio" id="patrimonio" value="<?=$prod['patrimonio']?>">
+                            </div>
+                            <div class="col">
+                                <label for="serie">Série</label>
+                                <input type="text" class="form-control" name="serie" id="serie" value="<?=$prod['serie'];?>">
+                            </div>                                                
+                            <div class="col">
                                 <label for="grupo">Grupo<span class="ml-2 text-danger">*</span></label>
                                 <select class="form-control mb-3" name="grupo" id="grupo" onchange="mostraSubgrupo(this)" required>
                                     <option selected disabled>Selecione</option>
@@ -556,22 +572,22 @@ elseif(isset($_GET['del'])){
                             </div>
                             <div class="col-2">
                                 <label for="descontoMaximo">Desconto máximo</label>
-                                <input type="number" value="<?=$prod['descontoMaximo'];?>" step="0.01" min="0" class="form-control" name="descontoMaximo">
+                                <input type="number" value="<?=$prod['descontoMaximo'];?>" step="0.01" min="0" class="form-control" name="descontoMaximo" placeholder="R$ 0,00">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-3">
                                 <label for="valor">Preço venda</label>
-                                <input type="number" value="<?=$prod['valor'];?>" step="0.01" min="0" class="form-control" name="valor">
+                                <input type="number" value="<?=$prod['valor'];?>" step="0.01" min="0" class="form-control" name="valor" placeholder="R$ 0,00">
                             </div>
                             <div class="col">
                                 <label for="custo">Preço de custo</label>
-                                <input type="number" value="<?=$prod['custo'];?>" step="0.01" min="0" class="form-control" name="custo">
+                                <input type="number" value="<?=$prod['custo'];?>" step="0.01" min="0" class="form-control" name="custo" placeholder="R$ 0,00">
                             </div>
                             <div class="col">
                                 <label for="comissao">Comissão (%)</label>
-                                <input type="number" value="<?=$prod['comissao'];?>" step="0.01" min="0" class="form-control" name="comissao">
+                                <input type="number" value="<?=$prod['comissao'];?>" step="0.01" min="0" class="form-control" name="comissao" placeholder="0,00 %">
                             </div>
                             <div class="col-2">
                                 <div class="promocao" <?=$prod['promocao']?'':'style="display:none"'?>>
@@ -696,11 +712,11 @@ elseif(isset($_GET['del'])){
                                     </div>
                                     <div class="col">
                                         <label for="icms_interno">ICMS %</label>
-                                        <input type="number" value="<?=$fisc['icms_interno']?>" class="form-control mb-3" name="fiscal[icms_interno]" id="icms_interno">
+                                        <input type="number" value="<?=$fisc['icms_interno']?>" class="form-control mb-3" name="fiscal[icms_interno]" id="icms_interno" placeholder="0,00 %">
                                     </div>
                                     <div class="col">
                                         <label for="aliq_ipi">IPI %</label>
-                                        <input type="number" value="<?=$fisc['aliq_ipi']?>" class="form-control mb-3" name="fiscal[aliq_ipi]" id="aliq_ipi">
+                                        <input type="number" value="<?=$fisc['aliq_ipi']?>" class="form-control mb-3" name="fiscal[aliq_ipi]" id="aliq_ipi" placeholder="0,00 %">
                                     </div>
                                 </div>
 
@@ -726,7 +742,7 @@ elseif(isset($_GET['del'])){
                                     </div>
                                     <div class="col-4">
                                         <label for="reducao_bc_icms">Redução BC ICMS %</label>
-                                        <input type="number" value="<?=$fisc['reducao_bc_icms']?>" class="form-control mb-3" name="fiscal[reducao_bc_icms]" id="reducao_bc_icms">
+                                        <input type="number" value="<?=$fisc['reducao_bc_icms']?>" class="form-control mb-3" name="fiscal[reducao_bc_icms]" id="reducao_bc_icms" placeholder="0,00 %">
                                     </div>
                                     <div class="col">
                                         <label for="cst_pis">CST PIS</label>
@@ -761,15 +777,15 @@ elseif(isset($_GET['del'])){
                                 <div class="row mb-3">
                                     <div class="col">
                                         <label for="aliq_pis">PIS %</label>
-                                        <input type="number" value="<?=$fisc['aliq_pis']?>" class="form-control mb-3" name="fiscal[aliq_pis]" id="aliq_pis">
+                                        <input type="number" value="<?=$fisc['aliq_pis']?>" class="form-control mb-3" name="fiscal[aliq_pis]" id="aliq_pis" placeholder="0,00 %">
                                     </div>
                                     <div class="col">
                                         <label for="aliq_cof">COFINS %</label>
-                                        <input type="number" value="<?=$fisc['aliq_cof']?>" class="form-control mb-3" name="fiscal[aliq_cof]" id="aliq_cof">
+                                        <input type="number" value="<?=$fisc['aliq_cof']?>" class="form-control mb-3" name="fiscal[aliq_cof]" id="aliq_cof" placeholder="0,00 %">
                                     </div>
                                     <div class="col">
                                         <label for="aliq_ii">II %</label>
-                                        <input type="number" value="<?=$fisc['aliq_II']?>" class="form-control mb-3" name="fiscal[aliq_ii]" id="aliq_ii">
+                                        <input type="number" value="<?=$fisc['aliq_II']?>" class="form-control mb-3" name="fiscal[aliq_ii]" id="aliq_ii" placeholder="0,00 %">
                                     </div>
                                 </div>
                             </div>
@@ -781,19 +797,19 @@ elseif(isset($_GET['del'])){
                                 <div class="row">
                                     <div class="col">
                                         <label for="icms">ICMS %</label>
-                                        <input type="number" value="<?=$fisc['icms']?>" class="form-control mb-3" name="fiscal[icms]" id="icms">
+                                        <input type="number" value="<?=$fisc['icms']?>" class="form-control mb-3" name="fiscal[icms]" id="icms" placeholder="0,00 %">
                                     </div>
                                     <div class="col">
                                         <label for="mva">MVA %</label>
-                                        <input type="number" value="<?=$fisc['mva']?>" class="form-control mb-3" name="fiscal[mva]" id="mva">
+                                        <input type="number" value="<?=$fisc['mva']?>" class="form-control mb-3" name="fiscal[mva]" id="mva" placeholder="0,00 %">
                                     </div>
                                     <div class="col">
                                         <label for="red_bc">Red. BC %</label>
-                                        <input type="number" value="<?=$fisc['red_bc']?>" class="form-control mb-3" name="fiscal[red_bc]" id="red_bc">
+                                        <input type="number" value="<?=$fisc['red_bc']?>" class="form-control mb-3" name="fiscal[red_bc]" id="red_bc" placeholder="0,00 %">
                                     </div>
                                     <div class="col">
                                         <label for="ret_st">Ret. ST %</label>
-                                        <input type="number" value="<?=$fisc['ret_st']?>" class="form-control mb-3" name="fiscal[ret_st]" id="ret_st">
+                                        <input type="number" value="<?=$fisc['ret_st']?>" class="form-control mb-3" name="fiscal[ret_st]" id="ret_st" placeholder="0,00 %">
                                     </div>
                                 </div>
                             </div>

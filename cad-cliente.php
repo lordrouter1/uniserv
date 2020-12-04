@@ -398,6 +398,7 @@ echo '
 <?php
 include('footer.php');
 ?>
+
 <!-- modal -->
 <div class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
     <div class="modal-dialog modal-xg">
@@ -1067,6 +1068,7 @@ echo isset($_GET['edt']) ? 'Atualizar' : 'Salvar';
         </div>
     </div>
 </div>
+
 <!-- fim modal -->
 <div id="toast-container" class="toast-top-center">
     <div id="toast-success" class="toast toast-success" aria-live="polite" style="opacity: 0.899999;display:none;">

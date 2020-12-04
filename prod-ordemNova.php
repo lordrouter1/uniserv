@@ -130,10 +130,6 @@
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
-
-        $('.select2').select2({
-            theme: "bootstrap"
-        });
     });
 </script>
 

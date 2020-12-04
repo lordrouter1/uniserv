@@ -6,12 +6,14 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $query = 'insert into tbl_ordemServico(cliente,descricao,solicitacao,prevEntrega,status) values(
+        $query = 'insert into tbl_ordemServico(cliente,descricao,solicitacao,prevEntrega,status,substituicao,patrimonio) values(
             '.$_POST['cliente'].',
             "'.$_POST['descricao'].'",
             "'.$_POST['solicitacao'].'",
             "'.$_POST['previsao'].'",
-            '.$_POST['status'].'
+            '.$_POST['status'].',
+            "'.$_POST['substituicao'].'",
+            '.$_POST['patrimonio'].'
         )';
         $con->query($query);
         redirect($con->error);
@@ -47,6 +49,19 @@ elseif(isset($_GET['del'])){
         //newWin.print();
         //newWin.close();
     }
+
+    function selectPatrimonio(self){
+        if($(self).val() != 0){
+            $('#linhaSubstituicao').show();
+            $.get('core/ajax/serv-ordemServico/ordemServico.php?produto='+$(self).val(),function(resp){
+                $('#substituicao').text(resp);
+            }).catch(err => console.log('err:',err));
+        }
+        else{
+            $('#linhaSubstituicao').hide();
+        }
+    }
+
     $(document).ready(function(){
         $("#campoPesquisa").on("keyup", function() {
             var value = $(this).val().toLowerCase();
@@ -195,7 +210,7 @@ elseif(isset($_GET['del'])){
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo cliente</h5>
+                <h5 class="modal-title">Adicionar nova O.S.</h5>
                 <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -216,7 +231,7 @@ elseif(isset($_GET['del'])){
                     <div class="row">
                         <div class="col">
                             <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control mb-3" name="cliente" id="cliente" required>
+                            <select class="form-control mb-3 select2" name="cliente" id="cliente" required>
                                 <option <?php echo isset($_GET['edt'])? '':'selected';?> disabled>Selecione o cliente</option>
                                 <?php
                                     $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
@@ -240,6 +255,18 @@ elseif(isset($_GET['del'])){
 
                     <div class="row">
                         <div class="col">
+                            <label for="patrimonio">Patrimônio</label>
+                            <select class="select2modal" name="patrimonio" id="patrimonio" onchange="selectPatrimonio(this)">
+                                <option value="0">Selecione</option>
+                                <?
+                                    $resp = $con->query('select id,patrimonio from tbl_produtos where patrimonio != ""');
+                                    while($row = $resp->fetch_assoc()){
+                                        echo '<option value="'.$row['id'].'">'.$row['patrimonio'].'</option>';
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="col">
                             <label for="solicitacao">Data de Solicitação</label>
                             <input type="date" value="<?php echo $ordemServico['solicitacao'];?>" class="form-control mb-3" name="solicitacao" id="solicitacao">
                         </div>
@@ -249,10 +276,17 @@ elseif(isset($_GET['del'])){
                         </div>
                     </div>
 
+                    <div class="row" id="linhaSubstituicao" style="display:none;">
+                        <div class="col">
+                            <label for="substituicao">Substituição</label>
+                            <textarea class="form-control mb-3" name="substituicao" id="substituicao" rows="6" style="resize:none;"><?php echo $ordemServico['substituicao'];?></textarea>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col">
                             <label for="descricao">Descrição</label>
-                            <textarea class="form-control mb-3" name="descricao" id="descricao" style="resize:none;"><?php echo $ordemServico['descricao'];?></textarea>
+                            <textarea class="form-control mb-3" name="descricao" id="descricao" rows="4" style="resize:none;"><?php echo $ordemServico['descricao'];?></textarea>
                         </div>
                     </div>
 

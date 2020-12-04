@@ -160,6 +160,26 @@
                 </li>
 
                 <li>
+                    <a <?php echo @$menu['contrato']?'':'disabled';?>>
+                        <i class="metismenu-icon fas fa-file-signature"></i>
+                        Gestão de contrato
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                    </a>
+                    <ul class="mm-collapse">
+                        <li>
+                            <a <?php echo $menu['contrato_contrato']?'href=""':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Contratos
+                            </a>
+                            <a <?php echo $menu['contrato_controle']?'href="con-controle.php"':'disabled';?>>
+                                <i class="metismenu-icon">
+                                </i>Controle
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
                     <a <?php echo @$menu['producao']?'href="#"':'disabled';?>>
                         <i class="metismenu-icon fas fa-hammer"></i>
                         Produção
@@ -229,29 +249,28 @@
                             </a>
                         </li>
 						<li>
-                       <a <?php echo $menu['recebimentos_financeiro']?'':'disabled';?>>
-                        <i class="metismenu-icon fas fa-money-bill-alt"></i>
-                        Recebimentos
-                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-                      </a>
-                        <ul class="mm-collapse">
-                            <li>
-                                <a <?php echo $menu['novo_recebimentos_financeiro']?'href="cad-novo-recebimento.php"':'disabled';?>>
-                                    <i class="metismenu-icon">
-                                    </i>Novo Recebimento
-                                </a>
-                            </li>
-                            
-                            <li>
-                                <a <?php echo $menu['consulta_recebimentos_financeiro']?'href="fisc-contasReceber.php"':'disabled';?>>
-                                    <i class="metismenu-icon">
-                                    </i>Consultar Recebimentos</a>
-                            </li>
-                            
-                        </ul>
-					
-					
-                </li>
+                            <a <?php echo $menu['recebimentos_financeiro']?'':'disabled';?>>
+                            <i class="metismenu-icon fas fa-money-bill-alt"></i>
+                            Recebimentos
+                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                            </a>
+                            <ul class="mm-collapse">
+                                <li>
+                                    <a <?php echo $menu['novo_recebimentos_financeiro']?'href="cad-novo-recebimento.php"':'disabled';?>>
+                                        <i class="metismenu-icon">
+                                        </i>Novo Recebimento
+                                    </a>
+                                </li>
+                                
+                                <li>
+                                    <a <?php echo $menu['consulta_recebimentos_financeiro']?'href="fisc-contasReceber.php"':'disabled';?>>
+                                        <i class="metismenu-icon">
+                                        </i>Consultar Recebimentos
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </li>
 						
                     </ul>
 					

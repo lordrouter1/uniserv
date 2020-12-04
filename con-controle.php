@@ -6,14 +6,25 @@ if(isset($_POST['cmd'])){
     $cmd = $_POST['cmd'];
 
     if($cmd == "add"){
-        $query = 'insert into tbl_grupo(nome,grupo,status) values("'.sqlEscape(ucfirst(strtolower($_POST['nome']))).'",'.sqlEscape($_POST['grupo']).',1)';
+        $query = 'insert into tbl_unidades(nome,status,grupoNome,simbolo,base,convBase) values(
+            "'.$_POST['nome'].'",
+            "'.$_POST['status'].'",
+            "'.$_POST['grupoUnidadeNome'].'",
+            "'.$_POST['simbolo'].'",
+            "'.$_POST['unBase'].'",
+            "'.$_POST['convUnBase'].'"
+        )';
         $con->query($query);
         redirect($con->error);
     }
     elseif($cmd == "edt"){
-        $query = 'update tbl_grupo set
+        $query = 'update tbl_unidades set
             nome = "'.$_POST['nome'].'",
-            grupo = "'.$_POST['grupo'].'"
+            status = "'.$_POST['status'].'",
+            grupoNome = "'.$_POST['grupoUnidadeNome'].'",
+            simbolo = "'.$_POST['simbolo'].'",
+            base = "'.$_POST['unBase'].'",
+            convBase = "'.$_POST['convUnBase'].'"
             where id = '.$_POST['id'].'
         ';
         $con->query($query);
@@ -21,8 +32,8 @@ if(isset($_POST['cmd'])){
     }
 }
 elseif(isset($_GET['del'])){
-    $con->query('update tbl_grupo set status = 0 where id = '.$_GET['del']);
-    redirect($con->error);
+    $con->query('update tbl_unidades set status = 0 where id = '.$_GET['del']);
+    #redirect($con->error);
 }
 
 ?>
@@ -62,18 +73,18 @@ elseif(isset($_GET['del'])){
                 <i class="fas fa-balance-scale-left icon-gradient bg-happy-itmeo"></i>
             </div>
             <div>
-                <span>Cadastro de subgrupos</span>
+                <span>Controle de contratos</span>
                 <div class="page-title-subheading">
-                    Campo para adição, remoção e edição de subgrupos
+                    Campo para controle de contratos
                 </div>
             </div>
 
         </div>
         <div class="page-title-actions">
 
-            <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
-            <i class="fas fa-plus"></i>
-            </button>
+            <a href="con-controleNovo.php" class="btn-shadow mr-3 btn btn-dark" id="btn-modal">
+                <i class="fas fa-plus"></i>
+            </a>
 
             <div class="d-inline-block dropdown">
                 <button class="btn-shadow dropdown-toggle btn btn-info" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -112,29 +123,39 @@ elseif(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
 
-                    <h5 class="card-title">Grupos</h5>
+                    <h5 class="card-title">Controle de contratos</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
-                                <th>Nome</th>
-                                <th>Grupo</th>
-                                <th class="noPrint" style="width:8%"></th>
-                                <th class="noPrint" style="width:8%"></th>
+                                <th style="width:26%">Nome</th>
+                                <th style="width:14%">Símbolo</th>
+                                <th style="width:6%">Base</th>
+                                <th>Conversão</th>
+                                <th class="noPrint"></th>
+                                <th class="noPrint"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_grupo where status = 1 and grupo > 0 order by id desc');
+                                $resp = $con->query('select * from tbl_unidades where status = 1 order by grupoNome, base desc');
+                            
+                                $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
-                                    $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc();
+                                    if($grupoNome != $row['grupoNome']){
+                                        $grupoNome = $row['grupoNome'];
+                                        echo '<tr><th colspan="7" class="bg-light text-dark text-center">'.ucfirst($grupoNome).'</th></tr>';
+                                    }
+                                    $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
                                     echo '
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
                                             <td>'.$row['nome'].'</td>
-                                            <td>'.$grupo['nome'].'</td>
+                                            <td>'.$row['simbolo'].'</td>
+                                            <td>'.($row['base'] == 1?'Sim':'Não').'</td>
+                                            <td>1 '.$row['nome'].' = '.$row['convBase'].' '.$nomeBase.'</td>
                                             <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
                                             <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
                                         </tr>
@@ -155,70 +176,6 @@ elseif(isset($_GET['del'])){
 <!-- fim conteúdo -->
 
 <?php include('footer.php');?>
-
-<!-- modal -->
-<div class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo subgrupo</h5>
-                <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="post">
-
-                    <?php
-                        if(isset($_GET['edt'])){
-                            $resp = $con->query('select * from tbl_grupo where id = '.$_GET['edt']);
-                            $un = $resp->fetch_assoc();
-                        }
-                    ?>
-
-                    <input type="hidden" value="<?php echo isset($_GET['edt'])?'edt':'add';?>" name="cmd">
-                    <input type="hidden" value="<?php echo $_GET['edt'];?>" name="id" id="id">
-
-                    <div class="row">
-                        <div class="col">
-                            <label for="nome">Nome do subgrupo<span class="ml-2 text-danger">*</span></label>
-                            <input type="text" value="<?php echo $un['nome']; ?>" class="form-control mb-3" name="nome" id="nome" maxlength="120" required>
-                        </div>
-                        <div class="col-4">
-                            <label for="grupo">Grupo<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control mb-3" name="grupo" id="grupo" required>
-                                <?
-                                    $resp = $con->query('select id,nome from tbl_grupo where status = 1 and grupo = 0');
-                                    while($row = $resp->fetch_assoc()){
-                                        echo '<option value="'.$row['id'].'" '.($un['grupo'] == $row['id'] || $un['grupo'] == 0?'selected':'').'>'.$row['nome'].'</option>';
-                                    }
-                                ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <input id="needs-validation" class="d-none" type="submit" value="enviar">
-
-                </form>
-                <script>
-                    $(document).ready(function(){
-                        $("#cpfResponsavel").mask('000.000.000-00', {reverse: true});
-                        $("#telefoneEmpresa").mask('(99) 99999-9999');
-                        $("#telefoneWhatsapp").mask('(99) 99999-9999');
-                        $("#cep").mask('99999-999');
-                    });
-                </script>
-
-            </div>
-            <div class="modal-footer">
-                <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
-                <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="document.getElementById('needs-validation').click();"><?php echo isset($_GET['edt'])? 'Atualizar':'Salvar';?></button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- fim modal -->
 
 <div id="toast-container" class="toast-top-center">
     <div id="toast-success" class="toast toast-success" aria-live="polite" style="opacity: 0.899999;display:none;">
