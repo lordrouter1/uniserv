@@ -73,9 +73,9 @@ elseif(isset($_GET['del'])){
                 <i class="fas fa-balance-scale-left icon-gradient bg-happy-itmeo"></i>
             </div>
             <div>
-                <span>Controle de contratos</span>
+                <span>Controle de medições</span>
                 <div class="page-title-subheading">
-                    Campo para controle de contratos
+                    Campo para controle de medições
                 </div>
             </div>
 
@@ -123,41 +123,67 @@ elseif(isset($_GET['del'])){
             <div class="card main-card mb-3">
                 <div class="card-body">
 
-                    <h5 class="card-title">Controle de contratos</h5>
+                    <h5 class="card-title">Controle de medições</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
+                    <?
+                        $resp = $con->query('select count(*) as qtd from tbl_contratoLocacaoMedidores')->fetch_assoc();
+                        
+                        $itensPorPagina = 50;
+                        
+                        $qtdPaginas = intval($resp['qtd'] / $itensPorPagina);
+                        
+                        $pagina = isset($_GET['p'])?$_GET['p']:0;
+                        
+                        $inicioSelect = $pagina * $itensPorPagina;
+                        
+                        $existeAnterior = !($pagina-1 < 0);
+                        $existeProxima = !($pagina+1 > $qtdPaginas);
+                    ?>
+
+                    <div class="row">
+                        <div class="col">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item <?=$existeAnterior?'':'disabled'?>"><a class="page-link" href="?p=0">Primeira</a></li>
+                                <li class="page-item <?=$existeAnterior?'':'disabled'?>"><a class="page-link" href="?p=<?=$pagina-1?>">Anterior</a></li>
+                                <li class="page-item <?=$existeProxima?'':'disabled'?>"><a class="page-link" href="?p=<?=$pagina+1?>">Próxima</a></li>
+                                <li class="page-item <?=$existeProxima?'':'disabled'?>"><a class="page-link" href="?p=<?=$qtdPaginas?>">Última</a></li>
+                            </ul>
+                        </div>
+                    </div>
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
-                                <th style="width:26%">Nome</th>
-                                <th style="width:14%">Símbolo</th>
-                                <th style="width:6%">Base</th>
-                                <th>Conversão</th>
-                                <th class="noPrint"></th>
-                                <th class="noPrint"></th>
+                                <th>Contrato</th>
+                                <th>Produto</th>
+                                <th>Data</th>
+                                <th>Medição</th>
+                                <th>Medição anterior</th>
+                                <th>medição Efetiva</th>
+                                <th>Tipo</th>
+                                <th>Franquia</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_unidades where status = 1 order by grupoNome, base desc');
+                                $resp = $con->query('select a.*,b.tipoContrato,b.qtdFranquia from tbl_contratoLocacaoMedidores a
+                                    left join tbl_contratoLocacaoEquipamentos b on b.contrato = a.contrato and b.produto = a.produto
+                                    order by medicao desc limit '.$inicioSelect.','.$itensPorPagina.'
+                                ');
                             
-                                $grupoNome = '';
                                 while($row = $resp->fetch_assoc()){
-                                    if($grupoNome != $row['grupoNome']){
-                                        $grupoNome = $row['grupoNome'];
-                                        echo '<tr><th colspan="7" class="bg-light text-dark text-center">'.ucfirst($grupoNome).'</th></tr>';
-                                    }
-                                    $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
                                     echo '
                                         <tr>
                                             <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td>'.$row['nome'].'</td>
-                                            <td>'.$row['simbolo'].'</td>
-                                            <td>'.($row['base'] == 1?'Sim':'Não').'</td>
-                                            <td>1 '.$row['nome'].' = '.$row['convBase'].' '.$nomeBase.'</td>
-                                            <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
+                                            <td>'.$row['contrato'].'</td>
+                                            <td>'.$row['produto'].'</td>
+                                            <td>'.date('d/m/Y',strtotime($row['medicao'])).'</td>
+                                            <td>'.$row['qtdMedicao'].'</td>
+                                            <td>'.$row['qtdMedicaoAnterior'].'</td>
+                                            <td>'.$row['qtdEfetiva'].'</td>
+                                            <td>'.$row['tipoContrato'].'</td>
+                                            <td>'.$row['qtdFranquia'].'</td>
                                         </tr>
                                     ';
                                 }

@@ -173,7 +173,7 @@
                             </a>
                             <a <?php echo $menu['contrato_controle']?'href="con-controle.php"':'disabled';?>>
                                 <i class="metismenu-icon">
-                                </i>Controle
+                                </i>Controle de medições
                             </a>
                         </li>
                     </ul>

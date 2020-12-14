@@ -373,6 +373,21 @@ elseif(isset($_GET['del'])){
                     <h5 class="card-title">Produtos</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
+                    <?
+                        $resp = $con->query('select count(*) as qtd from tbl_produtos')->fetch_assoc();
+                        
+                        $itensPorPagina = 50;
+                        
+                        $qtdPaginas = intval($resp['qtd'] / $itensPorPagina);
+                        
+                        $pagina = isset($_GET['p'])?$_GET['p']:0;
+                        
+                        $inicioSelect = $pagina * $itensPorPagina;
+                        
+                        $existeAnterior = !($pagina-1 < 0);
+                        $existeProxima = !($pagina+1 > $qtdPaginas);
+                    ?>
+
                     <table class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
@@ -388,12 +403,19 @@ elseif(isset($_GET['del'])){
                         </thead>
                         <tbody>
                             <?php
-                                $resp = $con->query('select * from tbl_produtos where status = 1 order by id desc');
-                            
+                                $resp = $con->query('select * from tbl_produtos where status = 1 order by id desc limit '.$inicioSelect.','.$itensPorPagina.'');
+
                                 while($row = $resp->fetch_assoc()){
                                     
-                                    if($row['grupo'])
-                                        $grupo = $con->query('select nome from tbl_grupo where id = '.$row['grupo'])->fetch_assoc();
+                                    if($row['grupo']){
+                                        $gResp = $con->query('select nome from tbl_grupo where id = '.$row['grupo']);
+                                        if($gResp->num_rows > 0){
+                                            $grupo = $gResp->fetch_assoc();
+                                        }
+                                        else{
+                                            $grupo = "";
+                                        }
+                                    }
                                     else
                                         $grupo = "";
 
@@ -414,6 +436,16 @@ elseif(isset($_GET['del'])){
                             ?>
                         </tbody>
                     </table>
+                    <div class="row">
+                        <div class="col">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item <?=$existeAnterior?'':'disabled'?>"><a class="page-link" href="?p=0">Primeira</a></li>
+                                <li class="page-item <?=$existeAnterior?'':'disabled'?>"><a class="page-link" href="?p=<?=$pagina-1?>">Anterior</a></li>
+                                <li class="page-item <?=$existeProxima?'':'disabled'?>"><a class="page-link" href="?p=<?=$pagina+1?>">Próxima</a></li>
+                                <li class="page-item <?=$existeProxima?'':'disabled'?>"><a class="page-link" href="?p=<?=$qtdPaginas?>">Última</a></li>
+                            </ul>
+                        </div>
+                    </div>
 
                 </div>
             </div>

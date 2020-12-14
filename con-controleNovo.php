@@ -1,10 +1,58 @@
 <?php include('header.php'); ?>
 
 <?php
+    if($_POST['cmd'] == "add"){
+        $con->autocommit(false);
+        $empresa = $_COOKIE['empresa'];
+        
+        for($i = 0; $i < sizeof($_POST['count']); $i++){
+            $query = 'INSERT INTO `tbl_contratoLocacaoMedidores`(`empresa`, `contrato`, `produto`, `instalacao`, `medicao`, `qtdMedicao`, `qtdAcrescimo`, `qtdDesconto`, `qtdEfetiva`, `observacao`, `qtdMedicaoAnterior`) VALUES (
+                "'.$empresa.'",
+                "'.$_POST['contrato'][$i].'",
+                "'.$_POST['produto'][$i].'",
+                "'.$_POST['instalacao'][$i].'",
+                "'.$_POST['medicao'][$i].'",
+                "'.$_POST['qtdMedicao'][$i].'",
+                NULL,
+                NULL,
+                "'.($_POST['qtdMedicao'][$i]-$_POST['qtdMedicaoAnterior'][$i]).'",
+                "'.$_POST['observacao'][$i].'",
+                "'.$_POST['qtdMedicaoAnterior'][$i].'"
+            )';
+            $con->query($query);
+            if($con->error != '') echo "<script>location.href='?e'</script>";
+        }
+        if(!$con->commit()) {
+            echo "<script>location.href='?e'</script>";
+        }
+        else{
+            echo "<script>location.href='con-controle.php?s'</script>";
+        }
+    }
 
+    if(isset($_GET['cliente'])){
+        $ultimoCorte = isset($_GET['uc'])? $_GET['uc'] : $con->query('select b.medicao from tbl_contratoLocacao a
+            inner join tbl_contratoLocacaoMedidores b on b.contrato = a.contrato 
+            where cliente = '.$_GET['cliente'].'
+            order by b.id desc    
+        ')->fetch_assoc()['medicao'];
 
+        $proximoCorte = isset($_GET['pc'])?$_GET['pc'] : date('Y-m-d',strtotime($ultimoCorte.' + 1 month'));
+    }
 ?>
 <script>
+    function filtrarData(){
+        location.href = "con-controleNovo.php?cliente=<?=$_GET['cliente']?>&uc="+$('#dataInicio').val()+"&pc="+$('#dataFim').val();
+    }
+
+    $(document).ready(function(){
+        $("#campoPesquisa").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#tablePrint tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
 
 </script>
 
@@ -13,54 +61,132 @@
 
     <div class="row">
         <div class="col">
-            
-            <div class="card main-card mb-3">
-                <div class="card-body">
 
-                    <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
+            <form method="POST">
+                <input type="hidden" name="cmd" value="add">
 
-                    <table class="table mb-0 table-striped table-hover" id="tablePrint">
-                        <thead >
-                            <tr>
-                                <th style="width:2%">ID</th>
-                                <th style="width:26%">Nome</th>
-                                <th style="width:14%">Símbolo</th>
-                                <th style="width:6%">Base</th>
-                                <th>Conversão</th>
-                                <th class="noPrint"></th>
-                                <th class="noPrint"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                                $resp = $con->query('select * from tbl_unidades where status = 1 order by grupoNome, base desc');
-                            
-                                $grupoNome = '';
-                                while($row = $resp->fetch_assoc()){
-                                    if($grupoNome != $row['grupoNome']){
-                                        $grupoNome = $row['grupoNome'];
-                                        echo '<tr><th colspan="7" class="bg-light text-dark text-center">'.ucfirst($grupoNome).'</th></tr>';
-                                    }
-                                    $nomeBase = $con->query('select nome from tbl_unidades where grupoNome = "'.$grupoNome.'" and base = 1')->fetch_assoc()['nome'];
-                                    echo '
-                                        <tr>
-                                            <td>'.str_pad($row['id'],3,"0",STR_PAD_LEFT).'</td>
-                                            <td>'.$row['nome'].'</td>
-                                            <td>'.$row['simbolo'].'</td>
-                                            <td>'.($row['base'] == 1?'Sim':'Não').'</td>
-                                            <td>1 '.$row['nome'].' = '.$row['convBase'].' '.$nomeBase.'</td>
-                                            <td class="noPrint text-center"><a href="?edt='.$row['id'].'" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint text-center"><a href="?del='.$row['id'].'" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
-                                        </tr>
-                                    ';
-                                }
-                        
-                            ?>
-                        </tbody>
-                    </table>
-
+                <div class="row">
+                    <div class="col">
+                        <a href="con-controle.php" class="btn btn-info mb-3"><i class="fas fa-chevron-left"></i></a>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-success float-right"><span><i class="fas fa-check"></i></span>&ensp;<strong>Finalizar</strong></button>
+                    </div>
                 </div>
-            </div>
+
+                <div class="card main-card mb-3">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col">
+                                <select class="form-control select2" onchange="location.href='?cliente='+$(this).val()">
+                                    <option value="0">Selecione</option>
+                                    <?
+                                        $resp = $con->query('select b.id,b.razaoSocial_nome as nome from tbl_contratoLocacao a
+                                            inner join tbl_clientes b on b.id = a.cliente
+                                            group by a.cliente
+                                        ');
+
+                                        while($row = $resp->fetch_assoc()){
+                                            echo '<option value="'.$row['id'].'" '.($_GET['cliente'] == $row['id']?'selected':'').'>'.$row['id'].' - '.$row['nome'].'</option>';
+                                        }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="mb-2 form-control" placeholder="Pesquisar" id="campoPesquisa">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <div class="input-group w-25">
+                                    <input type="date" id="dataInicio" class="form-control" value="<?=$ultimoCorte;?>">
+                                    <input type="date" id="dataFim" class="form-control" value="<?=$proximoCorte?>">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text bg-info text-white" onclick="filtrarData()"><i class="fas fa-search"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="table mb-0 table-striped table-hover" id="tablePrint">
+                            <thead >
+                                <tr>
+                                    <th style="width:2%"></th>
+                                    <th>Dia vencimento</th>
+                                    <th>Patrimônio</th>
+                                    <th>Data de medição</th>
+                                    <th>Contador anterior</th>
+                                    <th>Contador atual</th>
+                                    <th>Observação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                    if(isset($_GET['cliente']) && $_GET['cliente'] != 0){
+
+                                        $resp = $con->query('select a.*,b.*,c.nome as equipamento,c.patrimonio,d.produto as idEquipamento from tbl_contratoLocacaoMovEquipamentos d
+                                            left join tbl_contratoLocacaoEquipamentos a on a.contrato = d.contrato and a.produto = d.produto
+                                            inner join tbl_contratoLocacao b on b.contrato = d.contrato
+                                            left join tbl_produtos c on c.id = d.produto
+                                            where d.cancelamento is null and b.dataFim > now() and d.cliente = '.$_GET['cliente'].'
+                                            group by d.contrato,d.produto
+                                            order by d.contrato
+                                        ');
+
+                                        
+                                        $doc = json_decode(utf8_decode(file_get_contents('http://35.226.232.212:8080/docmps/contador/listarContadores/webservice/uniserv@2019/uniserv/'.$_GET['cliente'].'/'.date('dmY',strtotime($ultimoCorte)).'/'.date('dmY',strtotime($proximoCorte)))));
+
+                                        $contador = array();
+                                        foreach($doc as $linha){
+                                            if($linha->descricao == 'life'){
+                                                $contador[$linha->patrimonio] = $linha->contador;
+                                            }
+                                        }
+
+                                        $grupoNome = '';
+                                        $cont = 1;
+                                        while($row = $resp->fetch_assoc()){
+                                            $med = $con->query('select qtdMedicao,instalacao,medicao from tbl_contratoLocacaoMedidores where contrato = "'.$row['contrato'].'" and produto = "'.$row['idEquipamento'].'" order by id desc')->fetch_assoc();                                        
+                                            
+                                            $instalacao = $med['instalacao'];
+                                            $medidor = $med['qtdMedicao'];
+                                            $dataMedicao = $med['medicao'];
+                                            
+                                            echo '
+                                                <tr>
+                                                    <td>'.str_pad($cont++,3,"0",STR_PAD_LEFT).'</td>
+                                                    <td>'.$row['diaVencimento'].'</td>
+                                                    <td><strong>'.$row['patrimonio'].'</strong></td>
+                                                    <td>'.date('d / m / Y',strtotime($dataMedicao)).'</td>
+                                                    <td>'.$medidor.'</td>
+                                                    <td>
+                                                        <input type="hidden" name="count[]" value="1">
+                                                        <input type="hidden" name="contrato[]" value="'.$row['contrato'].'">
+                                                        <input type="hidden" name="produto[]" value="'.$row['idEquipamento'].'">
+                                                        <input type="hidden" name="instalacao[]" value="'.$instalacao.'">
+                                                        <input type="text" name="qtdMedicao[]" value="'.($contador[$row['patrimonio']] | 0).'" class="form-control w-50">
+                                                        <input type="hidden" name="qtdMedicaoAnterior[]" value="'.$medidor.'">
+                                                        <input type="hidden" name="medicao[]" value="'.date('Y-m-d').'">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="observacao[]" value="" class="form-control" maxlength="100">
+                                                    </td>
+                                                </tr>
+                                            ';
+                                        }
+                                    }
+                                    else{
+                                        echo '<tr><td colspan="8" class="text-center text-muted"><strong>Selecione o cliente</strong></td></tr>';
+                                    }
+                                ?>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </form>
 
         </div>
     </div>
