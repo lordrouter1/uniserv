@@ -7,8 +7,14 @@ $cmd = $_POST['cmd'];
 $temp   = explode('-', $_POST['cidade']);
 $cidade = $_POST['cidade'];
 $ibge   = 0; //$temp[0];
+
+
 if ($cmd == "add") {
-$existe = $con->query('select id from tbl_clientes where cnpj_cpf = "' . $_POST['cnpj_cpf'] . '"');
+$existeDependente = $con->query('select id from tbl_clientes where cnpj_cpf = "' . $_POST['cnpj_cpf'] . '"');
+while ($rowExiste = $existeDependente->fetch_assoc()) {
+	$IdClienteNaBaseDeDados = $rowExiste['id']; 
+}	
+
 if ($_POST['cnpj_cpf'] == "" || $existe->num_rows == 0) {
 if ($_POST['estrangeiro'] == 0) {
 $Id_Pais_Origem         = 0;
@@ -107,6 +113,42 @@ estrangeiro) values(
 '" . $idade_dependente03 . "',
 '" . $_POST['estrangeiro'] . "'
 )");
+
+for ($iQtdDependentesGridEmTela = 1; $iQtdDependentesGridEmTela <= $_POST['QtdDependentesTela']; $iQtdDependentesGridEmTela++) {
+ $DeletaEsseDependente = $con->query('delete from tbl_clientes_dependentes where id_cliente = "' . $IdClienteNaBaseDeDados . '" and id_dependente = "'.$iQtdDependentesGridEmTela.'" ');
+  
+$existeDependente = $con->query('select id from tbl_clientes where cnpj_cpf = "' . $_POST['cnpj_cpf'] . '"');
+while ($rowExiste = $existeDependente->fetch_assoc()) {
+	$IdClienteNaBaseDeDados = $rowExiste['id']; 
+}
+
+
+$existeEsseDependente = $con->query('select id_cliente from tbl_clientes_dependentes where id_cliente = "' . $IdClienteNaBaseDeDados . '" and id_dependente = "'.$iQtdDependentesGridEmTela.'" ');
+$myDate = date('d/m/Y');
+if ($existeEsseDependente->num_rows == 0) {
+	
+	if ( Trim($_POST['nome_dependente'.$iQtdDependentesGridEmTela]) != '' ){ 
+	$con->query(" insert into tbl_clientes_dependentes (id_cliente, id_dependente, nome_dependente, data_nascimento, 
+	              data_maioridade, data_insercao_dependente)
+				  values('" . $IdClienteNaBaseDeDados . "',
+                         '" . $iQtdDependentesGridEmTela . "',
+                         '" . $_POST['nome_dependente'.$iQtdDependentesGridEmTela]. "',
+                         '" . $_POST['data_nasc_dependente'.$iQtdDependentesGridEmTela]. "',
+                         '" . $_POST['data_maioridade_dependente'.$iQtdDependentesGridEmTela]. "',
+                         '" . $myDate. "')");
+	}
+
+} else {
+	$con->query(" update  tbl_clientes_dependentes 
+	                 set  nome_dependente = '" . $_POST['nome_dependente'.$iQtdDependentesGridEmTela] . "',
+						  data_nascimento = '" . $_POST['data_nasc_dependente'.$iQtdDependentesGridEmTela] . "',
+                          data_maioridade = '" . $_POST['data_maioridade_dependente'.$iQtdDependentesGridEmTela] . "',
+                          data_insercao_dependente = '" . $myDate. "'
+				   where id_cliente = '" . $IdClienteNaBaseDeDados . "'
+                     and id_dependente = '" . $iQtdDependentesGridEmTela . "' ");
+}	
+
+}
 var_dump($con->error);
 //redirect($con->error);
 } else {
@@ -114,6 +156,10 @@ var_dump($_POST['cnpj_cpf']);
 echo "<script>alert('Erro! CNPJ/CPF já cadastrado, usuário não cadastrado');</script>";
 }
 } elseif ($cmd == "edt") {
+
+ $IdClienteNaBaseDeDados = $_POST['id'];	
+
+
 if ($_POST['estrangeiro'] == 0) {
 $Id_Pais_Origem         = 0;
 $contato_cad_form       = '';
@@ -203,6 +249,41 @@ data_nasc_dependente03 =   '" . $_POST['data_nasc_dependente03'] . "',
 idade_dependente03 =   '" . $_POST['idade_dependente03'] . "',
 estrangeiro = '" . $_POST['estrangeiro'] . "'
 where id  = " . $_POST['id']);
+
+
+for ($iQtdDependentesGridEmTela = 1; $iQtdDependentesGridEmTela <= $_POST['QtdDependentesTela']; $iQtdDependentesGridEmTela++) {
+$DeletaEsseDependente = $con->query('delete from tbl_clientes_dependentes where id_cliente = "' . $IdClienteNaBaseDeDados . '" and id_dependente = "'.$iQtdDependentesGridEmTela.'" ');
+   
+
+$existeEsseDependente = $con->query('select id_cliente from tbl_clientes_dependentes where id_cliente = "' . $IdClienteNaBaseDeDados . '" and id_dependente = "'.$iQtdDependentesGridEmTela.'" ');
+	$myDate = date('d/m/Y');
+if ($existeEsseDependente->num_rows == 0) {
+
+	if ( ($_POST['nome_dependente'.$iQtdDependentesGridEmTela]) != '' ){ 
+	
+	$con->query(" insert into tbl_clientes_dependentes (id_cliente, id_dependente, nome_dependente, data_nascimento, 
+	              data_maioridade, data_insercao_dependente)
+				  values('" . $IdClienteNaBaseDeDados . "',
+                         '" . $iQtdDependentesGridEmTela . "',
+                         '" . $_POST['nome_dependente'.$iQtdDependentesGridEmTela]. "',
+                         '" . $_POST['data_nasc_dependente'.$iQtdDependentesGridEmTela]. "',
+                         '" . $_POST['data_maioridade_dependente'.$iQtdDependentesGridEmTela]. "',
+                         '" . $myDate. "')");
+    }
+} else {
+	$con->query(" update  tbl_clientes_dependentes 
+	                 set  nome_dependente = '" . $_POST['nome_dependente'.$iQtdDependentesGridEmTela] . "',
+						  data_nascimento = '" . $_POST['data_nasc_dependente'.$iQtdDependentesGridEmTela] . "',
+                          data_maioridade = '" . $_POST['data_maioridade_dependente'.$iQtdDependentesGridEmTela] . "',
+                          data_insercao_dependente = '" . $myDate. "'
+				   where id_cliente = '" . $IdClienteNaBaseDeDados . "'
+                     and id_dependente = '" . $iQtdDependentesGridEmTela . "' ");
+}	
+
+}
+
+
+
 redirect($con->error);
 }
 } elseif (isset($_GET['del'])) {
@@ -268,6 +349,46 @@ redirect($con->error);
             $("#TabDependentesCad").addClass('nav-item invisible');
         }
     }
+	
+	function CalculaDataMaioridade(self, self2) {
+		//var DataMaioridadeDependente = 'data_maioridade_dependente'+self2;
+		//alert(DataDependente);
+		var DataDependente = $(self).val(); // $('#data_nasc_dependente1').val();     
+		var time = new Date(DataDependente);
+        var outraData = new Date();
+    	time.setFullYear(time.getFullYear() + 18);
+		var DiaNascimento = (time.getDate() + 1 );
+		if (DiaNascimento > 31){
+			DiaNascimento = DiaNascimento -1;
+		}
+		
+		if ((time.getMonth() + 1) < 10){
+		  if ((DiaNascimento) < 10){	
+		  var minhaData = time.getFullYear() + '-0' +(time.getMonth() + 1) + '-0' + (DiaNascimento);
+		  } else{
+		  var minhaData = time.getFullYear() + '-0' +(time.getMonth() + 1) + '-' + (DiaNascimento);
+		  	  
+		  }
+        }else{
+		  if ((DiaNascimento) < 10){	 
+		 var minhaData = time.getFullYear() + '-' +(time.getMonth() + 1) + '-0' + (DiaNascimento);
+		  }else{
+		var minhaData = time.getFullYear() + '-' +(time.getMonth() + 1) + '-' + (DiaNascimento);
+		 	  
+		  }
+        }
+		$("#data_maioridade_dependente"+self2).val(minhaData);
+    }
+	
+	function InserirNovoDependentes() {
+		rQtdDependentesTela = $('#QtdDependentesTela').val();
+		rQtdDependentesTela = parseFloat(rQtdDependentesTela) + 1;
+		$("#QtdDependentesTela").val(rQtdDependentesTela);
+		$('#linhaDependentes').append('<div class="row"><div class="col-5"><label for="nome_dependente'+(rQtdDependentesTela)+'">Nome</label><input type="text" value="" class="form-control mb-3" name="nome_dependente'+(rQtdDependentesTela)+'" id="nome_dependente'+(rQtdDependentesTela)+'"></div><div class="col-3"><label for="data_nasc_dependente'+(rQtdDependentesTela)+'">Data Nascimento</label><input type="date" value="" class="form-control mb-3" name="data_nasc_dependente'+(rQtdDependentesTela)+'"   onchange="CalculaDataMaioridade(this,'+(rQtdDependentesTela)+')"  id="data_nasc_dependente'+(rQtdDependentesTela)+'"> </div><div class="col-3"> <label for="idade_dependente'+(rQtdDependentesTela)+'">Data Maioridade</label> <input type="date" value="" class="form-control mb-3" name="data_maioridade_dependente'+(rQtdDependentesTela)+'" id="data_maioridade_dependente'+(rQtdDependentesTela)+'"> </div> <div class="col-1"> <br><span onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span> </div> </div> ');
+        
+    }
+	
+
 
 
     $(document).ready(function () {
@@ -949,88 +1070,84 @@ echo '
 
                         <div class="tab-pane fade" id="dependentes_tab" role="tabpanel"
                             aria-labelledby="dependentes-tab">
-                            <div class="row">
-                                <div class="col-5">
-                                    <label for="nome_dependente">Nome
-                                    </label>
-                                    <input type="text" value="<?php
-                                      echo $row['nome_dependente'];
-                                      ?>" class="form-control mb-3" name="nome_dependente"
-                                        id="nome_dependente">
-                                </div>
-								<div class="col-3">
-                                    <label for="data_nasc_dependente">Data Nascimento
-                                    </label>
-                                    <input type="date" value="<?php
-                                      echo $row['data_nasc_dependente'];
-                                      ?>" class="form-control mb-3" name="data_nasc_dependente"
-                                        id="data_nasc_dependente">
-                                </div>
-								<div class="col-1">
-                                    <label for="idade_dependente">Idade
-                                    </label>
-                                    <input type="text" value="<?php
-                                      echo $row['idade_dependente'];
-                                      ?>" class="form-control mb-3" name="idade_dependente"
-                                        id="idade_dependente">
-                                </div>
-                            </div>
-							<div class="divider"></div>
-							<div class="row">
-                                <div class="col-5">
-                                    <label for="nome_dependente02">Nome
-                                    </label>
-                                    <input type="text" value="<?php
-                                      echo $row['nome_dependente02'];
-                                      ?>" class="form-control mb-3" name="nome_dependente02"
-                                        id="nome_dependente02">
-                                </div>
-								<div class="col-3">
-                                    <label for="data_nasc_dependente02">Data Nascimento
-                                    </label>
-                                    <input type="date" value="<?php
-                                      echo $row['data_nasc_dependente02'];
-                                      ?>" class="form-control mb-3" name="data_nasc_dependente02"
-                                        id="data_nasc_dependente02">
-                                </div>
-								<div class="col-1">
-                                    <label for="idade_dependente02">Idade
-                                    </label>
-                                    <input type="text" value="<?php
-                                      echo $row['idade_dependente02'];
-                                      ?>" class="form-control mb-3" name="idade_dependente02"
-                                        id="idade_dependente02">
-                                </div>
-                            </div>
-							<div class="divider"></div>
-							<div class="row">
-                                <div class="col-5">
-                                    <label for="nome_dependente03">Nome
-                                    </label>
-                                    <input type="text" value="<?php
-                                      echo $row['nome_dependente03'];
-                                      ?>" class="form-control mb-3" name="nome_dependente03"
-                                        id="nome_dependente03">
-                                </div>
-								<div class="col-3">
-                                    <label for="data_nasc_dependente03">Data Nascimento
-                                    </label>
-                                    <input type="date" value="<?php
-                                      echo $row['data_nasc_dependente03'];
-                                      ?>" class="form-control mb-3" name="data_nasc_dependente03"
-                                        id="data_nasc_dependente03">
-                                </div>
-								<div class="col-1">
-                                    <label for="idade_dependente03">Idade
-                                    </label>
-                                    <input type="text" value="<?php
-                                      echo $row['idade_dependente03'];
-                                      ?>" class="form-control mb-3" name="idade_dependente03"
-                                        id="idade_dependente03">
-                                </div>
-                            </div>
+                               <?php
+										$idClienteAbaDependentes =  $_GET['edt'];
+										if ($idClienteAbaDependentes == null){
+											$idClienteAbaDependentes = 0;
+										}	
+										$QtdRegistrosDependentes =0;
+										
+										$respDependentes = $con->query('select * from tbl_clientes_dependentes where id_cliente = ' .$idClienteAbaDependentes.' order by id_dependente asc');
+										while ($rowDependentes = $respDependentes->fetch_assoc()) {
+										$QtdRegistrosDependentes = $rowDependentes['id_dependente'];
+										echo '
+										
+												<div class="row">
+												
+                                				<div class="col-5">
+                                    				<label for="nome_dependente'. $rowDependentes['id_dependente'] .'">Nome
+                                    				</label>
+                                                      <input type="text" value="'. $rowDependentes['nome_dependente'] .'" class="form-control mb-3" name="nome_dependente'. $rowDependentes['id_dependente'] .'"
+                                                          id="nome_dependente'. $rowDependentes['id_dependente'] .'">
+                                                </div>
+								                 <div class="col-3">
+                                                 <label for="data_nasc_dependente'. $rowDependentes['id_dependente'] .'">Data Nascimento</label>
+                                                  <input type="date" value="'. $rowDependentes['data_nascimento'] .'" class="form-control mb-3" name="data_nasc_dependente'. $rowDependentes['id_dependente'] .'"
+                                                     onchange="CalculaDataMaioridade(this,'. $rowDependentes['id_dependente'] .')"           id="data_nasc_dependente'. $rowDependentes['id_dependente'] .'"> 
+												 </div>
+								                 <div class="col-3">
+                                                 <label for="data_maioridade_dependente'. $rowDependentes['id_dependente'] .'">Data Maioridade</label>
+                                                 <input type="date" value="'. $rowDependentes['data_maioridade'] .'" class="form-control mb-3" name="data_maioridade_dependente'. $rowDependentes['id_dependente'] .'"
+                                                   id="data_maioridade_dependente'. $rowDependentes['id_dependente'] .'">
+                                                 </div>
+												 <div class="col-1">
+												   <br>
+													<span id="excluir'. $rowDependentes['id_dependente'] .'" name="excluir'. $rowDependentes['id_dependente'] .'" onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span>
+												 
+												 </div>
+												 
+												 
+                                                 </div> ';
+										
+										}
+										
+										if ($QtdRegistrosDependentes == 0 ){
+										$QtdRegistrosDependentes = $QtdRegistrosDependentes +1;
+										echo '
+										
+												<div class="row">
+                                				<div class="col-5">
+                                    				<label for="nome_dependente'. $QtdRegistrosDependentes .'">Nome
+                                    				</label>
+                                                      <input type="text" value="" class="form-control mb-3" name="nome_dependente'. $QtdRegistrosDependentes .'"
+                                                          id="nome_dependente'. $QtdRegistrosDependentes .'">
+                                                </div>
+								                 <div class="col-3">
+                                                 <label for="data_nasc_dependente'. $QtdRegistrosDependentes .'">Data Nascimento</label>
+                                                  <input type="date" value="" class="form-control mb-3" name="data_nasc_dependente'. $QtdRegistrosDependentes .'"
+                                                      onchange="CalculaDataMaioridade(this,'. $QtdRegistrosDependentes.')"          id="data_nasc_dependente'. $QtdRegistrosDependentes .'"> 
+												 </div>
+								                 <div class="col-3">
+                                                 <label for="data_maioridade_dependente'. $QtdRegistrosDependentes .'">Data Maioridade</label>
+                                                 <input type="date" value="" class="form-control mb-3" name="data_maioridade_dependente'. $QtdRegistrosDependentes .'"
+                                                   id="data_maioridade_dependente'. $QtdRegistrosDependentes .'">
+                                                 </div>
+												 <div class="col-1">
+												   <br>
+												   <span id="excluir'. $QtdRegistrosDependentes.'" name="excluir'. $QtdRegistrosDependentes.'" onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span>
+												 </div>
+                                                 </div> ';
+
+										
+										}
+										
+                                ?>
 							
-							
+							<div  id="linhaDependentes">
+                        
+							</div>
+							<input type="hidden" id="QtdDependentesTela" name="QtdDependentesTela" value="<?php echo $QtdRegistrosDependentes; ?>">
+							<button type="button" class="btn btn-primary" onclick="InserirNovoDependentes();">Novo</button>
                         </div>
 
 

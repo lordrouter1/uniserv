@@ -778,5 +778,5 @@ if (isset($_GET['s'])) echo "<script>loadToast(true);</script>";
 else if (isset($_GET['e'])) echo "<script>loadToast(false);</script>";
 ?>
 </div>
-
+ 
 <?php if (isset($_GET['edt'])) echo "<script>$('#btn-modal').click()</script>"; ?>
