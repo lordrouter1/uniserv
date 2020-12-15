@@ -1,18 +1,9 @@
---
--- Estrutura da tabela `tbl_paises`
---
-
 CREATE TABLE IF NOT EXISTS `tbl_paises` (
   `paisId` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `paisNome` varchar(50) NOT NULL,
   `paisName` varchar(50) NOT NULL,
   PRIMARY KEY (`paisId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=253 ;
-
---
--- Extraindo dados da tabela `tbl_paises`
---
-
 INSERT INTO `tbl_paises` (`paisId`, `paisNome`, `paisName`) VALUES
 (1, 'AFEGANISTÃO', 'AFGHANISTAN'),
 (2, 'ACROTÍRI E DECELIA', 'AKROTIRI E DEKÉLIA'),
@@ -266,65 +257,30 @@ INSERT INTO `tbl_paises` (`paisId`, `paisNome`, `paisName`) VALUES
 (250, 'WALLIS E FUTUNA', 'WALLIS AND FUTUNA'),
 (251, 'ZÂMBIA', 'ZAMBIA'),
 (252, 'ZIMBABUÉ', 'ZIMBABWE');
-
-
-
 alter table tbl_clientes add id_pais_origem varchar(11) NOT NULL DEFAULT 0;
-
 alter table tbl_clientes add des_banco varchar(60);
-
 alter table tbl_clientes add des_agencia_banco varchar(60);
-
 alter table tbl_clientes add des_conta_banco varchar(60);
-
 alter table tbl_clientes add cpf_cnpj_financeiro varchar(60);
-
 alter table tbl_clientes add contato_estrangeiro varchar(70);
-
 alter table tbl_clientes add documento_estrangeiro varchar(70);
-
 -- novos campos solicitados
 alter table tbl_clientes add cep_estrangeiro varchar(100);
-
 alter table tbl_clientes add estado_estrangeiro varchar(100);
-
 alter table tbl_clientes add cidade_estrangeiro varchar(100);
-
 alter table tbl_clientes add logradouro_estrangeiro varchar(100);
-
 alter table tbl_clientes add bairro_estrangeiro varchar(100);
-
 alter table tbl_clientes add numero_estrangeiro varchar(100);
-
 alter table tbl_clientes add dependentes varchar(20);
-
 alter table tbl_clientes add nome_dependente varchar(100);
-
-
 alter table tbl_clientes add data_nasc_dependente varchar(50);
-
-
 alter table tbl_clientes add idade_dependente varchar(50);
-
-
 alter table tbl_clientes add nome_dependente02 varchar(100);
-
-
 alter table tbl_clientes add data_nasc_dependente02 varchar(50);
-
-
 alter table tbl_clientes add idade_dependente02 varchar(50);
-
-
 alter table tbl_clientes add nome_dependente03 varchar(100);
-
-
 alter table tbl_clientes add data_nasc_dependente03 varchar(50);
-
-
 alter table tbl_clientes add idade_dependente03 varchar(50);
-
-
 CREATE TABLE `tbl_clientes_dependentes` (
   `id_cliente` int(11) NOT NULL,
   `id_dependente` int(11) NOT NULL,
@@ -334,9 +290,6 @@ CREATE TABLE `tbl_clientes_dependentes` (
   `data_insercao_dependente` varchar(50),
     PRIMARY KEY (id_cliente,id_dependente)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
 CREATE TABLE `tbl_recebimentos` (
   `id_recebimento` int(11) NOT NULL AUTO_INCREMENT,
   `id_cliente`     int(11) NOT NULL,
@@ -352,9 +305,6 @@ CREATE TABLE `tbl_recebimentos` (
   `condicoes`          varchar(50) ,
     PRIMARY KEY (id_recebimento,id_cliente)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
 CREATE TABLE `tbl_parcelas_recebimentos` (
   `id_recebimento` int(11) NOT NULL,
   `id_parcela`     int(11) NOT NULL,
