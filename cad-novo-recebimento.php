@@ -608,10 +608,10 @@ while ($row = $resp->fetch_assoc())
                     <input type="hidden" value="<?php echo isset($_GET['edt']) ? 'edt' : 'add'; ?>" name="cmd">
                     <input type="hidden" value="<?php echo $_GET['edt']; ?>" name="id" id="id">
 
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col">
                             <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control mb-3" name="cliente" id="cliente" required>
+                            <select class="form-control select2modal" name="cliente" id="cliente" required>
                                 <option <?php echo isset($_GET['edt']) ? '' : 'selected'; ?> disabled>Selecione o cliente</option>
                                 <?php
                                     $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
