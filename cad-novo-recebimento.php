@@ -181,6 +181,17 @@ $(document).on("click", "#submit_btn", function (e) {
         // checa se o total será em real ou euro
         rValorReal = $("#moeda").val()==1?parseFloat(rvlr_euro):parseFloat(rvlr_euro) * parseFloat(rcotacoa_vlr_euro);
 
+        if($("#moeda").val()==2){
+            console.log($('.simboloEuro'));
+            $('.simboloEuro').hide();
+            $('.simboloReal').show();
+        }
+        else{
+            console.log($('.simboloEuro'));
+            $('.simboloEuro').show();
+            $('.simboloReal').hide();
+        }
+
 
         var n = rValorReal.toFixed(2);
         //alert(n);
@@ -199,7 +210,7 @@ $(document).on("click", "#submit_btn", function (e) {
         
         
     function CalcularParcelas(){
-        rvlr_real = $('#vlr_real').val();
+        rvlr_real = $('#moeda').val()==1?$('#vlr_real').val():$('#vlr_euro').val();
         rvlr_real = rvlr_real.replace("R$", "");	
         rvlr_real = rvlr_real.replace(",", ".");		
         
@@ -316,10 +327,12 @@ $(document).on("click", "#submit_btn", function (e) {
                                 <input type="text" class="form-control" name="`+(i+1)+`_parc" value="Parcela `+(i+1)+`" readonly>
                             </div>
                             <div class="col d-flex">
-                                <span class="mb-auto mt-auto mr-2">%</span>
+                                <i class="mb-auto mt-auto mr-2 fas fa-percentage"></i>
                                 <input type="number" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 d-flex">
+                                <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
+                                <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
                                 <input class="form-control" name="valor_parc[]" value="`+Novo+`" type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)">
                             </div>
                             <div class="col-0">
@@ -351,10 +364,12 @@ $(document).on("click", "#submit_btn", function (e) {
                                 <input type="text" class="form-control" name="`+(i+1)+`_parc" value="Parcela `+(i+1)+`" readonly>
                             </div>
                             <div class="col d-flex">
-                                <span class="mb-auto mt-auto mr-2">%</span>
+                                <i class="mb-auto mt-auto mr-2 fas fa-percentage"></i>
                                 <input type="number" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 d-flex">
+                                <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
+                                <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
                                 <input class="form-control" name="valor_parc[]" value="`+rValorPorParcela+`" type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)">
                             </div>
                             <div class="col-0"> 
@@ -382,8 +397,7 @@ $(document).on("click", "#submit_btn", function (e) {
             }
             
         }
-    }
-	
+    }	
 	
     function myFunction() {
 	 
@@ -631,7 +645,7 @@ while ($row = $resp->fetch_assoc())
                              <input type="text" onchange="CalcularEuroParaReal()" value="<?php echo isset($row['logradouro'])?$row['logradouro']:0; ?>" class="form-control mb-3 estrangeiroInput" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
-						<div class="col-3">
+						<div class="col-3 simboloReal">
                             <label for="vlr_real">Valor Real</label>
                              <input type="text" disabled value="R$ 0,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
