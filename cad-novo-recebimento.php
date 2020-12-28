@@ -7,34 +7,69 @@ if (isset($_POST['cmd']))
 
     if ($cmd == "add")
     {
-        $query = 'insert into tbl_ordemServico(cliente,descricao,solicitacao,prevEntrega,status) values(
-            ' . $_POST['cliente'] . ',
-            "' . $_POST['descricao'] . '",
-            "' . $_POST['solicitacao'] . '",
-            "' . $_POST['previsao'] . '",
-            ' . $_POST['status'] . '
-        )';
-        $con->query($query);
-        redirect($con->error);
+        $con->autocommit(false);
+        
+        $qError = false;
+        $cotacao = str_replace('R$ ','',str_replace(',','.',$_POST['cotacoa_vlr_euro']));
+        $vlr_real = $_POST['vlr_euro']*$cotacao;
+        
+        $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `moeda_selecionada`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`) VALUES (
+            "'.$_POST['cliente'].'",
+            "'.$cotacao.'",
+            "'.date('Y-m-d').'",
+            "'.($_POST['moeda']=="1"?"Real":"Euro").'",
+            "'.($_POST['moeda']=="2"?str_replace(',','.',$_POST['vlr_euro']):$vlr_real).'",
+            "'.($vlr_real).'",
+            "'.$_POST['condicoes_parc'].'",
+            "'.$_POST['vlr_entrada'].'",
+            "'.($_POST['tipoValor']=='1'?$_POST['vlr_entrada']:($vlr_real/100)*$_POST['vlr_entrada']).'",
+            "'.$_POST['tipoValor'].'"
+        )');
+        if($con->error != ""){
+            $qError = true;
+            var_dump($con->error);
+        }
+
+        $last_id = $con->insert_id;
+
+        for($i = 0; $i < $_POST['condicoes_parc']; $i++){
+            $con->query('INSERT INTO `tbl_parcelas_recebimentos`(`id_recebimento`, `des_parcela`, `valor_parcela`, `valor_pago_parcela`, `ind_pago`, `caminho_arquivo_comprovante`, `nome_arquivo_comprovante`,`data_parcela`) VALUES (
+                "'.$last_id.'",
+                "0",
+                "'.$_POST['valor_parc'][$i].'",
+                "0",
+                "0",
+                "",
+                "",
+                "'.($_POST[$i.'_data']!=""?$_POST[$i.'_data']:date("Y-m-d")).'"
+            )');
+            if($con->error != ""){
+                $qError = true;
+                var_dump($con->error);
+            }
+        }
+
+        if(!$qError){
+            $con->commit();
+            echo "<script>location.href='cad-novo-recebimento.php?s'</script>";
+        }
+        else{
+            $con->rollback();
+        }
     }
     elseif ($cmd == "edt")
     {
-        $query = 'update tbl_ordemServico set
-            cliente = ' . $_POST['cliente'] . ',
-            descricao = "' . $_POST['descricao'] . '",
-            solicitacao = "' . $_POST['solicitacao'] . '",
-            prevEntrega = "' . $_POST['previsao'] . '",
-            status = ' . $_POST['status'] . '
-            where id = ' . $_POST['id'] . '
-        ';
-        $con->query($query);
+        if($_FILES['arquivo']['name'] != ""){
+            $uploaddir = 'upload/';
+            $uploadfile = $uploaddir.basename($_FILES['arquivo']['name']);
+            move_uploaded_file($_FILES['arquivo']['tmp_name'], $uploadfile);
+        }
+        else{
+            $uploadfile = "";
+        }
+        $con->query('update tbl_parcelas_recebimentos set valor_parcela = "'.$_POST['valor_parc'].'", ind_pago = "'.($_POST['ind_pago']=='on'?1:0).'", data_parcela = "'.$_POST['data'].'", caminho_arquivo_comprovante = "'.$uploadfile.'" where id_parcela = '.$_POST['id']);
         redirect($con->error);
     }
-}
-elseif (isset($_GET['del']))
-{
-    $con->query('update tbl_ordemServico set status = -1 where id = ' . $_GET['del']);
-    redirect($con->error);
 }
 
 ?>
@@ -96,7 +131,7 @@ $(document).on("click", "#submit_btn", function (e) {
 	}
 	
 	
-    e.preventDefault();
+    /*e.preventDefault();
     // Create an FormData object 
     var formData = $("#form").submit(function (e) {
         return;
@@ -115,12 +150,16 @@ $(document).on("click", "#submit_btn", function (e) {
         processData: false,
         cache: false
     });
-    return false;
+    return false;*/
 });
 </script>
 
 <script>
-
+    $('#cliente').select2({
+        theme: "bootstrap",
+        enabled: true,
+        dropdownParent: $("#mdl-cliente")
+    });
 
    async function imprimir(){
         const divPrint = document.getElementById('tablePrint');
@@ -133,8 +172,6 @@ $(document).on("click", "#submit_btn", function (e) {
         //newWin.print();
         //newWin.close();
     }
-	
-	
 	
 	function HabilitarCamposParcelasGrid(){
 		iparcelamento = $('#parcelamento').val(); 
@@ -335,23 +372,9 @@ $(document).on("click", "#submit_btn", function (e) {
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
                                 <input class="form-control" name="valor_parc[]" value="`+Novo+`" type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)">
                             </div>
-                            <div class="col-0">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" name="`+(i+1)+`_pago" id="`+(i+1)+`_pago" >
-                                    <label class="form-check-label" for="`+(i+1)+`_pago" >Pago</label> 
-                                </div>  
-                            </div>
                             <div class="col-2">
                                 <input type="date" class="form-control" id="`+(i+1)+`_data"  name="`+(i+1)+`_data" value="5">
                             </div>  
-                            <div class="col-0"> 
-                                <span onclick="$(this).parent().parent().remove()"   class="btn text-success">
-                                    <i class="fas fa-download"></i>
-                                </span>  
-                            </div>  
-                            <div class="col-3"> 
-                                <input  class="form-control-file"  type="file" name="`+(i+1)+`_file" id="`+(i+1)+`_file" >
-                            </div>
                         </div>
                     </div>
                 `);
@@ -372,23 +395,9 @@ $(document).on("click", "#submit_btn", function (e) {
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
                                 <input class="form-control" name="valor_parc[]" value="`+rValorPorParcela+`" type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)">
                             </div>
-                            <div class="col-0"> 
-                                <div class="form-check"> 
-                                    <input class="form-check-input" type="checkbox" value="" name="`+(i+1)+`_pago" id="`+(i+1)+`_pago" > 
-                                    <label class="form-check-label" for="`+(i+1)+`_pago" >Pago</label> 
-                                </div>  
-                            </div>
                             <div class="col-2">
                                 <input type="date" class="form-control" id="`+(i+1)+`_data"  name="`+(i+1)+`_data" value="5">
                             </div>  
-                            <div class="col-0"> 
-                                <span onclick="$(this).parent().parent().remove()"   class="btn text-success">
-                                    <i class="fas fa-download"></i>
-                                </span>  
-                            </div>  
-                            <div class="col-3"> 
-                                <input  class="form-control-file"  type="file" name="`+(i+1)+`_file" id="`+(i+1)+`_file" >
-                            </div>
                         </div>
                     </div>
                 `);
@@ -517,59 +526,48 @@ $(document).on("click", "#submit_btn", function (e) {
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
-                                <th style="width:26%">Nome</th>
-                                <th>Descrição</th>
-                                <th style="width:14%">Data de solicitação</th>
-                                <th style="width:14%">Previsão de entrega</th>
-                                <th style="width:6%">status</th>
+                                <th>Cliente</th>
+                                <th style="width:14%">Moeda</th>
+                                <th style="width:14%">Valor parcela</th>
+                                <th style="width:14%">Vencimento</th>
+                                <th style="width:6%">Status</th>
                                 <th class="noPrint"></th>
                                 <th class="noPrint"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-$resp = $con->query('select * from tbl_ordemServico where status > 0');
+                                $resp = $con->query('select c.*,a.moeda_selecionada,b.razaoSocial_nome as cliente from tbl_parcelas_recebimentos c
+                                    left join tbl_recebimentos a on a.id_recebimento = c.id_recebimento
+                                    left join tbl_clientes b on b.id = a.id_cliente
+                                ');
 
-while ($row = $resp->fetch_assoc())
-{
-    $nome = $con->query('select razaoSocial_nome from tbl_clientes where id = ' . $row['cliente'] . ' and status = 1')->fetch_assoc() ['razaoSocial_nome'];
-    $status = '';
-    $corStatus = '';
-    switch ($row['status'])
-    {
-        case 1:
-            $status = 'Aguardando';
-            $corStatus = 'focus';
-        break;
-        case 2:
-            $status = 'Em andamento';
-            $corStatus = 'info';
-        break;
-        case 3:
-            $status = 'Aguardando aprovação';
-            $corStatus = 'warning';
-        break;
-        case 4:
-            $status = 'Finalizado';
-            $corStatus = 'success';
-        break;
-    }
-
-    echo '
+                                while ($row = $resp->fetch_assoc())
+                                {
+                                    echo '
                                         <tr>
-                                            <td>' . str_pad($row['id'], 3, "0", STR_PAD_LEFT) . '</td>
-                                            <td>' . $nome . '</td>
-                                            <td>' . $row['descricao'] . '</td>
-                                            <td>' . date('d / m / Y', strtotime($row['solicitacao'])) . '</td>
-                                            <td>' . date('d / m / Y', strtotime($row['prevEntrega'])) . '</td>
-                                            <td><div class="badge badge-' . $corStatus . ' p-2">' . $status . '</div></td>
-                                            <td class="noPrint text-center"><a href="?edt=' . $row['id'] . '" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                            <td class="noPrint text-center"><a href="?del=' . $row['id'] . '" class="btn"><i class="fas fa-trash icon-gradient bg-happy-itmeo"></i></a></td>
+                                            <td>'.str_pad($row['id_parcela'], 3, "0", STR_PAD_LEFT).'</td>
+                                            <td>'.$row['cliente'].'</td>
+                                            <td>'.$row['moeda_selecionada'].'</td>
+                                            <td>'.$row['valor_parcela'].'</td>
+                                            <td>'.date('d / m / Y',strtotime($row['data_parcela'])).'</td>
+                                            <td>'.($row['ind_pago']=='0'?'Em aberto':'Pago').'</td>
+                                            <td class="noPrint text-center"><a href="?edt=' . $row['id_parcela'] . '" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
+                                    ';
+
+                                    if($row['caminho_arquivo_comprovante'] != ""){
+                                        echo '<td class="noPrint text-center"><a target="_blank" href="' . $row['caminho_arquivo_comprovante'] . '" class="btn"><i class="far fa-file-image icon-gradient bg-happy-itmeo"></i></a></td>';
+                                    }
+                                    else{
+                                        echo "<td></td>";
+                                    }
+
+                                    echo '
                                         </tr>
                                     ';
-}
+                                }
 
-?>
+                            ?>
                         </tbody>
                     </table>
 
@@ -595,24 +593,16 @@ while ($row = $resp->fetch_assoc())
                 </button>
             </div>
             <div class="modal-body">
-                <form  id="form" method="post" action="cad-grava-recebimento.php" enctype="multipart/form-data" >
+                <!-- action="cad-grava-recebimento.php" -->
+                <form  id="form" method="post" enctype="multipart/form-data" >
 
-                    <?php
-                        if (isset($_GET['edt']))
-                        {
-                            $resp = $con->query('select * from tbl_ordemServico where id = ' . $_GET['edt']);
-                            $ordemServico = $resp->fetch_assoc();
-                        }
-                    ?>
-
-                    <input type="hidden" value="<?php echo isset($_GET['edt']) ? 'edt' : 'add'; ?>" name="cmd">
-                    <input type="hidden" value="<?php echo $_GET['edt']; ?>" name="id" id="id">
+                    <input type="hidden" value="add" name="cmd">
 
                     <div class="row mb-3">
                         <div class="col">
                             <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control select2modal" name="cliente" id="cliente" required>
-                                <option <?php echo isset($_GET['edt']) ? '' : 'selected'; ?> disabled>Selecione o cliente</option>
+                            <select class="form-control" name="cliente" id="cliente" required>
+                                <option selected disabled>Selecione o cliente</option>
                                 <?php
                                     $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
                                     while ($row = $resp->fetch_assoc())
@@ -717,28 +707,7 @@ while ($row = $resp->fetch_assoc())
 
                     <div class="row">
                         <div class="col" id="linhaProdutos">
-                            <?
-                                $resp = $con->query('select * from tbl_remessaItem where remessa = '.$_GET['edt']);
-                                if($resp){
-                                    while($row = $resp->fetch_assoc()){
-                                        $produto = $con->query('select nome from tbl_produtos where id = '.$row['produto'])->fetch_assoc();
-                                        echo '
-                                            <div class="row mb-2">
-                                                <div class="col">
-                                                    <input type="hidden" name="id[]" value="'.$row['produto'].'">
-                                                    <input type="text" class="form-control" name="produto[]" value="'.$produto['nome'].'" readonly>
-                                                </div>
-                                                <div class="col-3">
-                                                    <input type="number" class="form-control" name="qtd[]" value="'.$row['quantia'].'">
-                                                </div>
-                                                <div class="col-1">
-                                                    <span onclick="$(this).parent().parent().remove()" class="btn text-danger"><i class="fas fa-trash-alt"></i></span>
-                                                </div>
-                                            </div>
-                                        ';
-                                    }
-                                }
-                            ?>
+                            
                         </div>
                     </div> 
 
@@ -755,16 +724,8 @@ while ($row = $resp->fetch_assoc())
 						//$("#vlr_real").mask('R$ 9999,99');
 						$("#vlr_entrada").mask('9999,99');
 						$("#cotacoa_vlr_euro").mask('R$ 9999,99');
-						
-						
-						
-						
-						
-                    });
-					
-					
-				
-                </script>
+					});
+				</script>
 				
 				<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 				<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -773,12 +734,58 @@ while ($row = $resp->fetch_assoc())
             <div class="modal-footer">
                 <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
                 <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
-                <button type="button" class="btn btn-primary" id='submit_btn'><?php echo isset($_GET['edt']) ? 'Atualizar' : 'Salvar'; ?></button>
+                <button type="button" class="btn btn-primary" id='submit_btn' onclick="$('#form').submit()">Salvar</button>
             </div>
         </div>
     </div>
 </div>
 <!-- fim modal -->
+
+<!-- modal parcela -->
+<div class="modal show" tabindex="-1" role="dialog" id="mdl-parcela">
+    <div class="modal-dialog modal-xg">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" id="form-parcela">
+                    <?
+                        if(isset($_GET['edt'])){
+                            $resp = $con->query('select * from tbl_parcelas_recebimentos where id_parcela = '.$_GET['edt']);
+                            $parcela = $resp->fetch_assoc();
+                        }
+                    ?>
+
+                    <input type="hidden" value="edt" name="cmd">
+                    <input type="hidden" value="<?=$_GET['edt']?>" name="id">
+                    <div class="row">
+                        <div class="col d-flex">
+                            <input class="form-control" name="valor_parc" value="<?=$parcela['valor_parcela']?>" type="number" step="0.01">
+                        </div>
+                        <div class="col-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ind_pago" id="ind_pago" <?=$parcela['ind_pago']==0?'':'checked';?>>
+                                <label class="form-check-label" for="" >Pago</label> 
+                            </div>  
+                        </div>
+                        <div class="col">
+                            <input type="date" class="form-control" id="data"  name="data" value="<?=$parcela['data_parcela']?>">
+                        </div>  
+                        <div class="col"> 
+                            <input  class="form-control-file"  type="file" name="arquivo" id="arquivo">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
+                <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="$('#form-parcela').submit()">Atualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal parcelas -->
 
 <div id="toast-container" class="toast-top-center">
     <div id="toast-success" class="toast toast-success" aria-live="polite" style="opacity: 0.899999;display:none;">
@@ -793,4 +800,4 @@ else if (isset($_GET['e'])) echo "<script>loadToast(false);</script>";
 ?>
 </div>
  
-<?php if (isset($_GET['edt'])) echo "<script>$('#btn-modal').click()</script>"; ?>
+<?php if (isset($_GET['edt'])) echo "<script>$('#mdl-parcela').modal()</script>"; ?>
