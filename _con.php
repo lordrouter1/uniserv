@@ -1,11 +1,13 @@
-<?
+<?php
 #$con = new mysqli("localhost",'indexerpcom_catavento','HD,[98i3(3oC',"indexerpcom_catavento");
 #$con = new mysqli('localhost','root','','indexerpcom_catavento2');
 
 $servername = 'localhost';
 $username   = 'root';
 $password   = '';
-$database   = 'indexerpcom_catavento2';
+$database   = 'indexerpcom_tci';
+ 
+ 
 
 $con = new mysqli($servername, $username, $password, $database);
 

@@ -749,7 +749,7 @@ $(document).on("click", "#submit_btn", function (e) {
             </div>
             <div class="modal-body">
                 <form method="POST" enctype="multipart/form-data" id="form-parcela">
-                    <?
+                    <?php
                         if(isset($_GET['edt'])){
                             $resp = $con->query('select * from tbl_parcelas_recebimentos where id_parcela = '.$_GET['edt']);
                             $parcela = $resp->fetch_assoc();

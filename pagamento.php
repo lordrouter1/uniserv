@@ -1,6 +1,6 @@
 <?
     #require_once('functions.php');
-    require_once('con.php');
+    require_once('_con.php');
     require_once('core/lib/juno/class.php');
     $juno = new Juno();
 ?>

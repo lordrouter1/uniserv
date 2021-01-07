@@ -1,5 +1,7 @@
 <?php
 if(false){
+
+
     ini_set('display_errors',1);
     ini_set('display_startup_erros',1);
     error_reporting(E_ALL);
@@ -20,20 +22,23 @@ $_CONF = array(
 );
 
 # -- carrega conexão com o banco de dados -- #
-require_once "con.php";
+require_once "_con.php";
 
 # -- altera empresa -- #
 if(isset($_GET['empresa'])){
+
     setcookie('empresa',$_GET['empresa']);
     $_COOKIE['empresa'] = $_GET['empresa'];
     $_CONF['empresa'] = $_COOKIE['empresa'];
 }
 else{
+
     $_CONF['empresa'] = $_COOKIE['empresa'];
 }
 
 # -- carrega informações sobre o cliente -- #
 $resp = $con->query('select * from tbl_configuracao where id = '.$_CONF['empresa']);
+
 if($resp->num_rows > 0){
     $row = $resp->fetch_assoc();
     $debug = $row['debug'];

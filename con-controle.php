@@ -126,8 +126,9 @@ elseif(isset($_GET['del'])){
                     <h5 class="card-title">Controle de medições</h5>
                     <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
 
-                    <?
+                    <?php
                         $resp = $con->query('select count(*) as qtd from tbl_contratoLocacaoMedidores')->fetch_assoc();
+
                         
                         $itensPorPagina = 50;
                         
@@ -144,7 +145,7 @@ elseif(isset($_GET['del'])){
                     <div class="row">
                         <div class="col">
                             <ul class="pagination justify-content-center">
-                                <li class="page-item <?=$existeAnterior?'':'disabled'?>"><a class="page-link" href="?p=0">Primeira</a></li>
+                                <li class="page-item <?php=$existeAnterior?'':'disabled'?>"><a class="page-link" href="?p=0">Primeira</a></li>
                                 <li class="page-item <?=$existeAnterior?'':'disabled'?>"><a class="page-link" href="?p=<?=$pagina-1?>">Anterior</a></li>
                                 <li class="page-item <?=$existeProxima?'':'disabled'?>"><a class="page-link" href="?p=<?=$pagina+1?>">Próxima</a></li>
                                 <li class="page-item <?=$existeProxima?'':'disabled'?>"><a class="page-link" href="?p=<?=$qtdPaginas?>">Última</a></li>
