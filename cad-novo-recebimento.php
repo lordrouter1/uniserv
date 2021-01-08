@@ -1,12 +1,23 @@
-<?php include ('header.php'); ?>
+<?php     include ('header.php');        
+ ?>
 
 <?php
+  
+
+
+ 
+
+
+
+
 if (isset($_POST['cmd']))
 {
     $cmd = $_POST['cmd'];
 
     if ($cmd == "add")
     {
+            
+          
         $con->autocommit(false);
         
         $qError = false;
@@ -370,7 +381,7 @@ $(document).on("click", "#submit_btn", function (e) {
                             <div class="col-2 d-flex">
                                 <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
-                                <input class="form-control" name="valor_parc[]" value="`+Novo+`" type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)">
+                                <input class="form-control" name="valor_parc[]"   type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" value="`+rValorPorParcela+`" placeholder="`+rValorPorParcela+`" disabled="disabled"  >  
                             </div>
                             <div class="col-2">
                                 <input type="date" class="form-control" id="`+(i+1)+`_data"  name="`+(i+1)+`_data" value="5">
@@ -388,12 +399,12 @@ $(document).on("click", "#submit_btn", function (e) {
                             </div>
                             <div class="col d-flex">
                                 <i class="mb-auto mt-auto mr-2 fas fa-percentage"></i>
-                                <input type="number" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
+                                <input type="text" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
                             </div>
                             <div class="col-2 d-flex">
                                 <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
-                                <input class="form-control" name="valor_parc[]" value="`+rValorPorParcela+`" type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)">
+                                <input class="form-control" name="valor_parc[]"  type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" placeholder="`+rValorPorParcela+`" disabled="disabled" value="`+rValorPorParcela+`">
                             </div>
                             <div class="col-2">
                                 <input type="date" class="form-control" id="`+(i+1)+`_data"  name="`+(i+1)+`_data" value="5">
@@ -583,7 +594,7 @@ $(document).on("click", "#submit_btn", function (e) {
 <?php include ('footer.php'); ?>
 
 <!-- modal -->
-<div class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
+<div   class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
     <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
@@ -601,10 +612,28 @@ $(document).on("click", "#submit_btn", function (e) {
                     <div class="row mb-3">
                         <div class="col">
                             <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
-                            <select class="form-control" name="cliente" id="cliente" required>
-                                <option selected disabled>Selecione o cliente</option>
+                                     
+                                     <div class="row">
+                                         <div class="col-lg-6">
+                                             
+                                           <input type="text" class="form-control cliente-id"  placeholder="Digite o nome do cliente" required>
+
+                                           <input type="hidden" class="form-control cliente-id-evia" name="1cliente" id="cliente"   required>
+
+                                                <div  class="div-cliente"> 
+                                                   
+                                                </div>
+                                         </div>
+
+
+                                         <div class="col-lg-6">
+                                             
+                                               <select class="form-control oculta_select" name="cliente" id="cliente" required>
+                                <option selected disabled>Todos clientes</option>
                                 <?php
                                     $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
+
+
                                     while ($row = $resp->fetch_assoc())
                                     {
                                         $selected = $ordemServico['cliente'] == $row['id'] ? 'selected' : '';
@@ -612,6 +641,10 @@ $(document).on("click", "#submit_btn", function (e) {
                                     }
                                 ?>
                             </select>
+                                         </div>
+                                     </div>
+
+                          
                         </div>
                         
                     </div>
@@ -739,6 +772,8 @@ $(document).on("click", "#submit_btn", function (e) {
         </div>
     </div>
 </div>
+
+<script type="text/javascript" src="./assets/scripts/car-novo-recebimento.js"></script>
 <!-- fim modal -->
 
 <!-- modal parcela -->

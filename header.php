@@ -32,8 +32,10 @@
 
 
     <script type="text/javascript" src="./assets/scripts/comp.js"></script>
+    
 
     <link href="./main.css" rel="stylesheet">
+    <link href="./assets/css/cad-recebimento.css" rel="stylesheet">
     <link rel="stylesheet" href="./comp.css">
     <link rel="stylesheet" href="assets/fafaicons/css/all.min.css">
     <link href="assets/scripts/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
