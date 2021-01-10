@@ -33,5 +33,38 @@ width: 100%;
 	overflow: auto;
 }
 
+.resultado_item{
+
+	display: none;
+}
+
+.modal_result{
+
+
+	display: none;
+	cursor: pointer;
+	background-color: rgba(0,0,0,0.6);
+}
+
+.nao_encontrado{
+
+	display: none;
+}
+
+.div-cliente-re{
+	width: 100%;
+	max-width: 300px;
+	margin: auto;
+	border:1px solid #333;
+	border-radius: 2px;
+	padding-left: 5px;
+	position: absolute;
+	z-index: 4;
+	overflow: auto;
+	display: none;
+	background-color: #fff;
+	height: 140px
+}
+
 
 

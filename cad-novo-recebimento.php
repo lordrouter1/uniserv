@@ -1,11 +1,9 @@
-<?php     include ('header.php');        
+<?php     include ('header.php');
+          require 'bancoPDO.php';        
  ?>
 
 <?php
   
-
-
- 
 
 
 
@@ -16,8 +14,25 @@ if (isset($_POST['cmd']))
 
     if ($cmd == "add")
     {
-            
+             
+          $valorTotal = '';
+
+              
+              if(strpos($_POST['vlr_total'], '€')){
+
+                 $valorTotal = str_replace('€', '',$_POST['vlr_total']);
+
+                  
+              }else{
+                $$valorTotal = str_replace('R$', '',$_POST['vlr_total']);
+
+                 
+              }
+
+                
+
           
+         
         $con->autocommit(false);
         
         $qError = false;
@@ -33,7 +48,7 @@ if (isset($_POST['cmd']))
             "'.($vlr_real).'",
             "'.$_POST['condicoes_parc'].'",
             "'.$_POST['vlr_entrada'].'",
-            "'.($_POST['tipoValor']=='1'?$_POST['vlr_entrada']:($vlr_real/100)*$_POST['vlr_entrada']).'",
+            "'.($valorTotal).'",
             "'.$_POST['tipoValor'].'"
         )');
         if($con->error != ""){
@@ -233,11 +248,17 @@ $(document).on("click", "#submit_btn", function (e) {
             console.log($('.simboloEuro'));
             $('.simboloEuro').hide();
             $('.simboloReal').show();
+                console.log('euro')
+
         }
         else{
             console.log($('.simboloEuro'));
             $('.simboloEuro').show();
             $('.simboloReal').hide();
+            
+            
+
+          
         }
 
 
@@ -255,6 +276,9 @@ $(document).on("click", "#submit_btn", function (e) {
             CalcularParcelas();
         }
     }	
+
+
+
         
         
     function CalcularParcelas(){
@@ -269,6 +293,10 @@ $(document).on("click", "#submit_btn", function (e) {
         // calcula parcelas por valor
         if($('#tipoValor').val() == 1){
             var rValorMenosEntrada = (rvlr_real-rvlr_entrada);
+
+            
+
+            
             if (rValorMenosEntrada < 1) {
                 
                 $("#vlr_entrada").effect( "shake" );
@@ -294,6 +322,8 @@ $(document).on("click", "#submit_btn", function (e) {
             
                 
             }	
+
+
             rcondicoes_parc = $('#condicoes_parc').val();
             rValorPorParcela = (rvlr_real-rvlr_entrada) / rcondicoes_parc;
             var n = rValorPorParcela.toFixed(2);
@@ -322,8 +352,27 @@ $(document).on("click", "#submit_btn", function (e) {
                 // alert(Novo);
                 }
             }
+                   
+                        
+           if($("#moeda").val()==2){
+             
+          $('#vlr_total').val(rValorMenosEntrada.toLocaleString('de-DE',{style:'currency',currency:'EUR'}));
 
-            $('#vlr_total').val(rvlr_entrada);
+        }
+        else{
+           $('#vlr_total').val(rValorMenosEntrada.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}));
+            
+            
+
+          
+        }
+
+
+
+            
+
+
+
         }
         /* -- calcula parcelas por porcentagem -- */
         else{
@@ -417,7 +466,11 @@ $(document).on("click", "#submit_btn", function (e) {
             }
             
         }
-    }	
+    }
+
+
+
+
 	
     function myFunction() {
 	 
@@ -531,28 +584,89 @@ $(document).on("click", "#submit_btn", function (e) {
                 <div class="card-body">
 
                     <h5 class="card-title">Recebimentos</h5>
-                    <input type="text" class="mb-2 form-control w-25" placeholder="Pesquisar" id="campoPesquisa">
+                        
+                     <div class="alert alert-warning nao_encontrado"><center>Não existe nenhuma ação para este cliente</center></div>      
+                         <table style="display: none;" class="table table-hover tabela_result">
+                        <thead  >
+                            
+                            <tr>
+                                <th style="width:2%">ID</th>
+                                <th>Cliente</th>
+                             
+                            </tr>
+                        </thead>
+                        <tbody id="body_busca_1" >
+                            
+                        </tbody>
+                    </table>
+                        
+                              
+                        
+                    <input type="text" class="mb-2 form-control w-25 pesquisa_cliente" placeholder="Pesquisar" id="campoPesquisa">
+                             
+                       
 
-                    <table class="table mb-0 table-striped table-hover" id="tablePrint">
+
+                    <div  class="div-cliente-re"> 
+                                                   
+                    </div>
+
+                    <table id="body_busca_2" class="table mb-0 table-striped table-hover" id="tablePrint">
                         <thead >
                             <tr>
                                 <th style="width:2%">ID</th>
                                 <th>Cliente</th>
-                                <th style="width:14%">Moeda</th>
+                               <!-- <th style="width:14%">Moeda</th>
                                 <th style="width:14%">Valor parcela</th>
                                 <th style="width:14%">Vencimento</th>
                                 <th style="width:6%">Status</th>
                                 <th class="noPrint"></th>
-                                <th class="noPrint"></th>
+                                <th class="noPrint"></th>-->
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php
-                                $resp = $con->query('select c.*,a.moeda_selecionada,b.razaoSocial_nome as cliente from tbl_parcelas_recebimentos c
+                        
+
+                        <tbody id="body_busca_2">
+                             
+                            <?php  
+                            $result = array();
+                                  $mysql = "SELECT tbl_clientes.id,tbl_clientes.razaoSocial_nome FROM tbl_clientes INNER JOIN tbl_recebimentos ON tbl_recebimentos.id_cliente = tbl_clientes.id GROUP BY tbl_clientes.id ";
+
+                                    $mysql = $pdo->query($mysql);
+                                    if($mysql->rowCount() > 0){
+                                        $result = $mysql->fetchAll();                         
+                                       } 
+                                       ?>                                  
+
+             <?php foreach($result as $resultado): ?> 
+                <tr>
+                    <td><?php echo $resultado['id']; ?></td>
+                    <td><?php echo $resultado['razaoSocial_nome']; ?></td>
+                    <td><i style="cursor: pointer;"
+                     onclick="verDados(<?php echo $resultado['id']; ?>)"  class="fas fa-user-edit icon-gradient bg-happy-itmeo clickA"></i>  ver</td>                                         
+
+                </tr>               
+
+                                        <tr><td><div class="resultado_item " >sadasd</div></td></tr>                        
+                                          
+                                     <?php endforeach;?>                                                  
+
+
+
+                                <?php
+                                  
+
+                              //codigos desativados 
+                               /* $resp = $con->query('select c.*,a.moeda_selecionada,b.razaoSocial_nome as cliente from tbl_parcelas_recebimentos c
                                     left join tbl_recebimentos a on a.id_recebimento = c.id_recebimento
                                     left join tbl_clientes b on b.id = a.id_cliente
-                                ');
 
+
+                                ');  
+
+
+                                    
+                                   // erro intencional -> verificar relacao entre as tabelas dessa query
                                 while ($row = $resp->fetch_assoc())
                                 {
                                     echo '
@@ -576,7 +690,9 @@ $(document).on("click", "#submit_btn", function (e) {
                                     echo '
                                         </tr>
                                     ';
-                                }
+                                }*/
+
+                                //codigos desativados 
 
                             ?>
                         </tbody>
@@ -591,10 +707,184 @@ $(document).on("click", "#submit_btn", function (e) {
 </div>
 <!-- fim conteúdo -->
 
+
+
 <?php include ('footer.php'); ?>
 
+
+ <!-- modal_result -->
+<div   class="modal show modal_result" tabindex="-1" role="dialog"  >
+    <div class="modal-dialog modal-xg">
+  <div class="modal-content">
+<div class="content">
+     
+        <div class="row">
+        <div class="col">
+            
+            <div class="card main-card mb-3">
+                <div class="card-body">
+<div class="alert alert-warning nao_encontrado"><center>Não existe valores parcelados para este cliente no sistema</center></div>
+
+                    <div style="float: right;">
+                    <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
+            <i class="fas fa-plus"><br></i>
+            </button>
+
+              <button class="btn-shadow mr-3 btn btn-danger modal_result_fechar" type="button" data-toggle="modal"  >
+                  Sair
+            </button>
+        </div>
+
+                   <br>
+                    <h5 class="card-title">Recebimentos</h5>
+                       <br><br>          
+              <table class="table mb-0 table-striped table-hover" id="tablePrint">
+    <thead >
+        <tr>
+            <th style="width:2%">ID</th>
+            <th>Cliente</th>
+            <th style="width:14%">Moeda</th>
+            <th style="width:14%">Valor Real</th>
+            <th style="width:14%">Data Cotação</th>
+            <th style="width:14%">Ações</th>
+             
+            <th class="noPrint"></th>
+            <th class="noPrint"></th> 
+        </tr>
+    </thead>
+    <tbody  id="result_modal">
+
+
+         </tbody>
+     </table>
+
+</div>
+</div>
+</div>
+</div>
+</div>      
+             
+            </div>
+             
+        </div>
+    </div>
+</div>
+
+ 
+<!-- fim modal_result -->
+
+
+
+
+
+
+
+
+
+<!-- modal_result_receb -->
+<div  class="modal show modal_result_receb" tabindex="-1" role="dialog"  >
+    <div class="modal-dialog modal-xg">
+  <div class="modal-content">
+ 
+
+
+<div class="content">
+
+    <div class="row">
+        <div class="col">
+            
+            <div class="card main-card mb-3">
+                <div class="card-body">
+                   <div style="float: right;">
+                    <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
+            <i class="fas fa-plus"><br></i>
+            </button>
+
+              <button class="btn-shadow mr-3 btn btn-danger modal_result_receb_fechar" type="button" data-toggle="modal"  >
+                  Sair
+            </button>
+
+
+
+
+        </div>
+                   <div style="clear:both;"></div>
+                    <h5 class="card-title">Recebimentos Parcelados</h5>
+                    <br><br>
+
+
+
+
+
+              
+              <table class="table mb-0 table-striped table-hover" id="tablePrint">
+    <thead >
+        <tr>
+            <th style="width:2%">QTD Parcela</th>
+            <th style="width:2%">ID</th>             
+            <th style="width:14%">Valor da parcela</th>
+            <th style="width:14%">Valor pago</th>
+            <th style="width:14%">Data parcela</th>
+            <th style="width:14%">Status</th>
+            <th style="width:14%">Açoes</th>
+
+             
+            <th class="noPrint"></th>
+            <th class="noPrint"></th> 
+        </tr>
+    </thead>
+    <tbody  id="result_modal_parc">
+
+
+         </tbody>
+     </table>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+      
+             
+            </div>
+             
+        </div>
+    </div>
+</div>
+
+ 
+<!-- fim modal_result_receb -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- modal -->
-<div   class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
+<div    class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
     <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
@@ -665,7 +955,7 @@ $(document).on("click", "#submit_btn", function (e) {
 						
 						<div class="col-3">
                             <label for="vlr_euro">Valor<span class="ml-2 text-danger">*</span></label>
-                             <input type="text" onchange="CalcularEuroParaReal()" value="<?php echo isset($row['logradouro'])?$row['logradouro']:0; ?>" class="form-control mb-3 estrangeiroInput" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text" onchange="CalcularEuroParaReal()" placeholder="Digite um valor"   class="form-control mb-3 estrangeiroInput" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
 						<div class="col-3 simboloReal">
@@ -679,7 +969,7 @@ $(document).on("click", "#submit_btn", function (e) {
 
                     <div class="row">
                         <div class="col-3">
-                            <label for="parcelamento">Parecelamento</label>
+                            <label for="parcelamento">Parcelamento</label>
                             <select class="form-control mb-3" name="parcelamento" id="parcelamento" onchange="HabilitarCamposParcelasGrid()">
                                 <option value="0" selected >Não</option>
                                 <option value="1" >Sim</option>
@@ -696,7 +986,7 @@ $(document).on("click", "#submit_btn", function (e) {
 									
 						<div class="col-3">
                             <label for="vlr_entrada">Entrada</label>
-                             <input type="text"  value="0,00" disabled="true"  onchange="CalcularParcelas()" class="form-control mb-3 estrangeiroInput" name="vlr_entrada" id="vlr_entrada" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input type="text"  placeholder="Digite o valor da entrada"  disabled="true"  onchange="CalcularParcelas()" class="form-control mb-3 estrangeiroInput" name="vlr_entrada" id="vlr_entrada" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
 
@@ -773,6 +1063,13 @@ $(document).on("click", "#submit_btn", function (e) {
     </div>
 </div>
 
+
+  
+
+  
+
+
+
 <script type="text/javascript" src="./assets/scripts/car-novo-recebimento.js"></script>
 <!-- fim modal -->
 
@@ -836,3 +1133,18 @@ else if (isset($_GET['e'])) echo "<script>loadToast(false);</script>";
 </div>
  
 <?php if (isset($_GET['edt'])) echo "<script>$('#mdl-parcela').modal()</script>"; ?>
+
+
+
+
+
+
+
+
+
+
+
+                    
+
+
+ 
