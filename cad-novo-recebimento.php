@@ -45,11 +45,11 @@ if (isset($_POST['cmd']))
         $cotacao = str_replace('R$ ','',str_replace(',','.',$_POST['cotacoa_vlr_euro']));
         $vlr_real = $_POST['vlr_euro']*$cotacao;
         
-        $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `moeda_selecionada`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`,`id_servico`) VALUES (
+        $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `id_moeda`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`,`id_servico`) VALUES (
             "'.$_POST['cliente'].'",
             "'.$cotacao.'",
             "'.date('Y-m-d').'",
-            "'.($_POST['moeda']=="1"?"Real":"Euro").'",
+            "'.($_POST['moeda']).'",
             "'.($_POST['moeda']=="2"?str_replace(',','.',$_POST['vlr_euro']):$vlr_real).'",
             "'.($vlr_real).'",
             "'.$_POST['condicoes_parc'].'",
@@ -66,7 +66,7 @@ if (isset($_POST['cmd']))
         $last_id = $con->insert_id;
 
         for($i = 0; $i < $_POST['condicoes_parc']; $i++){
-            $con->query('INSERT INTO `tbl_parcelas_recebimentos`(`id_recebimento`, `des_parcela`, `valor_parcela`, `valor_pago_parcela`, `ind_pago`, `caminho_arquivo_comprovante`, `nome_arquivo_comprovante`,`data_parcela`) VALUES (
+            $con->query('INSERT INTO `tbl_parcelas_recebimentos`(`id_recebimento`, `des_parcela`, `valor_parcela`, `valor_pago_parcela`, `ind_pago`, `caminho_arquivo_comprovante`, `nome_arquivo_comprovante`,`data_parcela`,`id_moeda`) VALUES (
                 "'.$last_id.'",
                 "0",
                 "'.$_POST['valor_parc'][$i].'",
@@ -74,7 +74,8 @@ if (isset($_POST['cmd']))
                 "0",
                 "",
                 "",
-                "'.($_POST[$i.'_data']!=""?$_POST[$i.'_data']:date("Y-m-d")).'"
+                "'.($_POST[$i.'_data']!=""?$_POST[$i.'_data']:date("Y-m-d")).'",
+                "'.($_POST['moeda']).'"
             )');
             if($con->error != ""){
                 $qError = true;
@@ -669,43 +670,7 @@ $(document).on("click", "#submit_btn", function (e) {
                                 <?php
                                   
 
-                              //codigos desativados 
-                               /* $resp = $con->query('select c.*,a.moeda_selecionada,b.razaoSocial_nome as cliente from tbl_parcelas_recebimentos c
-                                    left join tbl_recebimentos a on a.id_recebimento = c.id_recebimento
-                                    left join tbl_clientes b on b.id = a.id_cliente
-
-
-                                ');  
-
-
-                                    
-                                   // erro intencional -> verificar relacao entre as tabelas dessa query
-                                while ($row = $resp->fetch_assoc())
-                                {
-                                    echo '
-                                        <tr>
-                                            <td>'.str_pad($row['id_parcela'], 3, "0", STR_PAD_LEFT).'</td>
-                                            <td>'.$row['cliente'].'</td>
-                                            <td>'.$row['moeda_selecionada'].'</td>
-                                            <td>'.$row['valor_parcela'].'</td>
-                                            <td>'.date('d / m / Y',strtotime($row['data_parcela'])).'</td>
-                                            <td>'.($row['ind_pago']=='0'?'Em aberto':'Pago').'</td>
-                                            <td class="noPrint text-center"><a href="?edt=' . $row['id_parcela'] . '" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                    ';
-
-                                    if($row['caminho_arquivo_comprovante'] != ""){
-                                        echo '<td class="noPrint text-center"><a target="_blank" href="' . $row['caminho_arquivo_comprovante'] . '" class="btn"><i class="far fa-file-image icon-gradient bg-happy-itmeo"></i></a></td>';
-                                    }
-                                    else{
-                                        echo "<td></td>";
-                                    }
-
-                                    echo '
-                                        </tr>
-                                    ';
-                                }*/
-
-                                //codigos desativados 
+                            
 
                             ?>
                         </tbody>
@@ -799,8 +764,7 @@ $(document).on("click", "#submit_btn", function (e) {
     <tbody  id="result_modal">
 
 
-cvbcv
-
+  
          </tbody>
      </table>
 
@@ -850,18 +814,26 @@ cvbcv
                   Sair
             </button>
 
+            <button class="btn-shadow mr-3 btn btn-success modal_result_receb_fechar" type="button" data-toggle="modal"  onclick="imprimir_relatorio()" >
+                  imprimir
+            </button>
 
 
 
-        </div>
+
+        </div>     
+                  <div id="relatorio_receb">
+                      
+
+                 
                    <div style="clear:both;"></div>
-                    <h5 class="card-title">Recebimentos Parcelados</h5>
+                    <h5 class="card-title">Recebimentos Parcelados </h5>
                     <br><br>
 
 
 
 
-
+                
               
               <table class="table mb-0 table-striped table-hover" id="tablePrint">
     <thead >
@@ -871,6 +843,7 @@ cvbcv
             <th style="width:14%">Valor da parcela</th>
             <th style="width:14%">Valor pago</th>
             <th style="width:14%">Data parcela</th>
+            <th style="width:14%">Moeda</th>
             <th style="width:14%">Status</th>
             <th style="width:14%">Açoes</th>
 
@@ -884,6 +857,51 @@ cvbcv
 
          </tbody>
      </table>
+        
+       <br><br>
+
+<div class="app-page-title">
+                  
+            <div  class="valor_tot_real">
+                <span>Total em reais </span> <span class="tot_real"> 0 </span>
+                
+            </div>
+            <div style="clear: both;"></div>
+
+             <div class="valor_tot_euro estilo_campo_valor">
+                <span>Total em euros </span > <span class="tot_euro"> 0</span>
+                
+            </div>
+             
+         
+         
+        
+    
+  
+
+   
+ 
+
+
+</div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
 
 </div>
 </div>
@@ -1028,9 +1046,34 @@ cvbcv
 
                         <div class="col-3">
                             <label for="moeda">Moeda</label>
+                                  
+                                <?php
+                                $array_servicos = array();            
+                                    $mysql = "SELECT * FROM tbl_moedas";
+                                    $mysql = $pdo->query($mysql);
+                                    
+                                    if($mysql->rowCount() > 0){
+
+                                        $array_servicos = $mysql->fetchAll();                                    
+
+                                    }
+
+
+                               ?>  
+
+                           
                             <select name="moeda" id="moeda" class="form-control" onclick="CalcularEuroParaReal()">
-                                <option value="1">Real</option>
-                                <option value="2" selected>Euro</option>
+                                  <option  >- Selecione a moeda -</option>
+                               <?php foreach($array_servicos as $moed): ?>
+
+                              <option value="<?php echo $moed['id'];  ?>"><?php echo $moed['nome_moeda'];  ?></option>
+                                
+
+                               <?php endforeach;  ?>
+
+
+
+                                
                             </select>
                         </div>
 						

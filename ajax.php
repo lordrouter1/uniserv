@@ -54,7 +54,7 @@
  $id_cliente = $_GET['id_cliente']; 
 
 
-    $mysql = "SELECT tbl_clientes.razaoSocial_nome,tbl_clientes.id,tbl_recebimentos.id_cliente,tbl_recebimentos.valor_real,tbl_recebimentos.moeda_selecionada,tbl_recebimentos.id_recebimento,tbl_recebimentos.data_cotacao_euro FROM tbl_clientes INNER JOIN tbl_recebimentos ON tbl_clientes.id =  tbl_recebimentos.id_cliente WHERE tbl_recebimentos.id_cliente = '$id_cliente' ORDER BY tbl_recebimentos.id_recebimento DESC ";
+    $mysql = "SELECT tbl_clientes.razaoSocial_nome,tbl_clientes.id,tbl_recebimentos.id_cliente,tbl_recebimentos.valor_real,tbl_recebimentos.id_moeda,tbl_recebimentos.id_recebimento,tbl_recebimentos.data_cotacao_euro FROM tbl_clientes INNER JOIN tbl_recebimentos ON tbl_clientes.id =  tbl_recebimentos.id_cliente WHERE tbl_recebimentos.id_cliente = '$id_cliente' ORDER BY tbl_recebimentos.id_recebimento DESC ";
 
      
      
@@ -93,7 +93,7 @@
                           foreach($array_receb as $res){
                              $id_re = $res['id_recebimento'];
 
-      $mysql_r = "SELECT * FROM tbl_parcelas_recebimentos WHERE data_parcela BETWEEN '$data_01' AND '$data_02' AND id_recebimento = '$id_re' ";
+      $mysql_r = "SELECT * FROM tbl_parcelas_recebimentos WHERE data_parcela BETWEEN '$data_01' AND '$data_02' AND id_recebimento = '$id_re' AND ind_pago = '0'  ";
                                 $mysql_r = $pdo->query($mysql_r);
                                   
                                   if($mysql_r->rowCount() > 0){
@@ -107,8 +107,8 @@
                                  
                           }   
 
-
-
+                   
+                     
                           echo json_encode($array_resultado) ;
 
      
@@ -126,7 +126,7 @@
  $id_receb = $_GET['id_receb']; 
 
  $array = array();
-    $mysql = "SELECT * FROM tbl_parcelas_recebimentos  WHERE id_recebimento = '$id_receb'";
+    $mysql = "SELECT * FROM tbl_parcelas_recebimentos  WHERE id_recebimento = '$id_receb' AND ind_pago = 0";
 
      
      
@@ -135,7 +135,8 @@
      if($mysql->rowCount() > 0){
 
         $array = $mysql->fetchAll();      
-                
+             
+
               
              echo json_encode($array);       
      

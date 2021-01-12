@@ -15,6 +15,14 @@ var tabela_result= document.querySelector('.tabela_result');
 var receb_calendar = document.querySelector('.receb_calendar')
 var consulta_data = document.getElementById('consulta_data')
 var nao_encontrado = document.querySelector('.nao_encontrado')
+var soma_real = 0;
+var soma_euro = 0;
+var tot_real =  document.querySelector('.tot_real')
+var tot_euro =  document.querySelector('.tot_euro')
+
+var nome_c = '';
+
+
 
  clienteId.addEventListener('keyup',function(){
     
@@ -91,94 +99,16 @@ console.log(document.querySelector('.cliente-id-evia').value = id )
  
 
 
-  function verDados(id){
-    console.log(modal_result)
-    modal_result.style.display = 'block'
-   let result_modal = document.querySelector('#result_modal');
-   result_modal.innerHTML = '';
-   
-
-   $.ajax({
-
-    type:'GET',
-url:"ajax.php",
-
-data:{id_cliente:id},
-dataType:"json",
-success:function(json){
-
-    
-      
-  json.forEach(function(result_jason){
-     
-    
-  let date_cotacao = result_jason.data_cotacao_euro.split('-')
- 
-   
-  //console.log(length.result_jason)
- $//{date[2]+'/'+date[1]+'/'+date[0]}
-    
-
- 
- receb_calendar.innerHTML = `                     
-                    
- <div class="row">
-       
-          
-     <div class="col-lg-3">
-      
-         <input type="date" class="form-control data_1" id="data"  name="data_1"  ">
-     </div>  
-     <div class="col-lg-3">
-          
-         <input type="date" class="form-control data_2" id="data"  name="data_2" ">
-     </div> 
-
-      <input onclick="c_data(${result_jason.id})" type='submit' value='consultar' >
-     
- </div>
- `
-
-
-
- 
-
-
-
-
-
-     
-    result_modal.innerHTML += `
-           
-   
-    
-    
-    <tr>
-    <td>${result_jason.id}</td>
-    <td>${result_jason.razaoSocial_nome}</td>
-    <td>${result_jason.moeda_selecionada}</td>
-    
-    <td>${result_jason.valor_real}</td>
-    <td>${date_cotacao[2]+'/'+date_cotacao[1]+'/'+date_cotacao[0]}</td>
-     
-     
-     
-    <td  class="noPrint text-center">
-      <i class="fas fa-user-edit icon-gradient bg-happy-itmeo btn" onclick="result_consult(${result_jason.id_recebimento})"></i>ver</td>
-    `
-  })   
-        
-    }
-});
-     
-  }
+  
 
   
 function c_data(id_recebimento){
+
   
+   
  let data_1 = document.querySelector('.data_1').value
  let data_2 = document.querySelector('.data_2').value
-
+  
  if(data_1 == "" || data_2 == ""){
 
   confirm('os campos devem estar preenchidos')
@@ -194,7 +124,12 @@ url:"ajax.php",
 
 data:{id_receb_cliente:id_recebimento,data_01:data_1,data_02:data_2},
 dataType:"json",
-success:function(json){
+success:function(json){ 
+
+  soma_real = 0;
+  soma_euro = 0;
+  tot_real.innerHTML = ''
+  tot_euro.innerHTML =''
     modal_result_receb_fechar.addEventListener('click',function(){
 modal_result_receb.style.display = 'none'
         modal_result.style.display = 'none'
@@ -212,13 +147,18 @@ modal_result_receb.style.display = 'none'
      result_modal.innerHTML = '';         
 
     divCliente.innerHTML ='';
-     let l =1;
-    
-        json.forEach(function(jason,item){
-             jason.forEach(function(result_jason){
+     let qt_jason = 0;
+          
+     
 
-              console.log(result_jason)
-                
+        json.forEach(function(jason,item){
+         
+             jason.forEach(function(result_jason){
+               
+              
+              
+
+              
                let date_parcela = result_jason.data_parcela.split('-')  
              
             result_modal_parc.innerHTML += `   
@@ -229,22 +169,46 @@ modal_result_receb.style.display = 'none'
 <td>${result_jason.valor_parcela}</td>
 <td>${result_jason.valor_pago_parcela}</td>
 <td>${date_parcela[2]+'/'+date_parcela[1]+'/'+date_parcela[0]}</td>
+<td>${(result_jason.id_moeda == "1")? 'REAL': 'EURO '}</td>
 <td>${(result_jason.ind_pago) == '0' ?'Em aberto' : 'Pago'}</td>    
-<td class="noPrint text-center">
-<a href="?edt=${result_jason.id_parcela}" class="btn">
+ 
+
+<td> <a href="?edt=${result_jason.id_parcela}" class="btn">
 <i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i>pagar</a></td>
 `
+   
+ 
+if(result_jason.id_moeda == "1"){
+    
+ 
+  soma_real += parseInt(result_jason.valor_parcela)
 
+      
+  
+}else{
+  
+  soma_euro += parseInt(result_jason.valor_parcela)
 
-
+  
+}
 
 
              })       
            
              
-        
+            
+             tot_real.innerHTML = ` ${soma_real.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}`
+             tot_euro.innerHTML = ` ${soma_euro.toLocaleString('de-DE',{style:'currency',currency:'EUR'})}`
+              
+             
+             
 
+             
+         
+       
            
+             
+
 
       
           });
@@ -266,23 +230,6 @@ modal_result_receb.style.display = 'none'
 
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -311,8 +258,8 @@ modal_result_receb.style.display = 'none'
 
 
  function result_consult(id_recebimento){
-
-console.log(id_recebimento)
+  
+ 
 
     $.ajax({
 
@@ -322,6 +269,10 @@ console.log(id_recebimento)
     data:{id_receb:id_recebimento},
     dataType:"json",
     success:function(json){
+      soma_real = 0;
+      soma_euro = 0;
+      tot_real.innerHTML = ''
+             tot_euro.innerHTML =''
         modal_result_receb_fechar.addEventListener('click',function(){
             modal_result_receb.style.display = 'none'
             modal_result.style.display = 'none'
@@ -342,7 +293,16 @@ console.log(id_recebimento)
          let l =1;
         
             json.forEach(function(result_jason,item){
-                 
+                   
+                   if(result_jason.moeda_selecionada == '1'){
+
+                    console.log('moeda real')
+
+
+                   }else{
+                    console.log('moeda euro')
+                   }
+
             
 
                 let date_parcela = result_jason.data_parcela.split('-')  
@@ -357,20 +317,55 @@ console.log(id_recebimento)
     <td>${result_jason.valor_parcela}</td>
     <td>${result_jason.valor_pago_parcela}</td>
     <td>${date_parcela[2]+'/'+date_parcela[1]+'/'+date_parcela[0]}</td>
+    <td>${(result_jason.moeda_selecionada == '1')? 'REAL ': 'EURO ' }</td>
     <td>${(result_jason.ind_pago) == '0' ?'Em aberto' : 'Pago'}</td>    
-    <td class="noPrint text-center">
-    <a href="?edt=${result_jason.id_parcela}" class="btn">
+     
+    
+   
+    <td> <a href="?edt=${result_jason.id_parcela}" class="btn">
     <i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i>pagar</a></td>
     `
-console.log(result_jason)
+ 
+
+    if(result_jason.id_moeda == "1"){
+      
+       
+
+      soma_real += parseInt(result_jason.valor_parcela)
+    
           
+      
+    }else{
+       
+       
+       
+      soma_euro += parseInt(result_jason.valor_parcela)
+       
+      
+    }
+           
               });
+
+               
+               
+              tot_real.innerHTML = ` ${soma_real.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}`
+             tot_euro.innerHTML = ` ${soma_euro.toLocaleString('de-DE',{style:'currency',currency:'EUR'})}`
+
+
+
+
+
+
+
+
+
+
     
         },error:function(falha){
             $('.nao_encontrado').hide(300)  
 
             $('.nao_encontrado').show(300)
-           // nao_encontrado.style.display = 'block'
+            
 
 
            
@@ -430,7 +425,7 @@ success:function(json){
         
     
         json.forEach(function(index,item){
-           // div_cliente_re.style.display = 'block'
+            
             $('.div-cliente-re').show(100)
 
             div_cliente_re.innerHTML += ` <div onclick="buscaCliente('${index.id}')" class='div-cliente-banco'>${index.razaoSocial_nome}</div>`; 
@@ -476,16 +471,25 @@ success:function(json){
     
       
   json.forEach(function(result_jason){
+    
+     
+
      $('#body_busca_2 ').hide(500)
      $('#body_busca_1 ').show(500)
       
      
-     tabela_result.style.display = 'block';
+     tabela_result.style.display = 'block'; 
+
+         
+      
+     nome_c = result_jason.razaoSocial_nome;
+
+
+
+
+
        body_busca_1.innerHTML = `
            
-   
-    
-    
     <tr  >
     <td >${result_jason.id}</td>
     <td>${result_jason.razaoSocial_nome}</td>
@@ -497,7 +501,9 @@ success:function(json){
      
      
     
-    `
+    ` 
+      
+     
   })   
         
     },error:function(){
@@ -511,6 +517,92 @@ success:function(json){
   }
 
 
+
+
+
+  function verDados(id){
+   
+     
+
+     
+    modal_result.style.display = 'block'
+   let result_modal = document.querySelector('#result_modal');
+   result_modal.innerHTML = '';
+   
+
+   $.ajax({
+
+    type:'GET',
+url:"ajax.php",
+
+data:{id_cliente:id},
+dataType:"json",
+success:function(json){
+
+    
+      
+  json.forEach(function(result_jason){
+     
+    
+  let date_cotacao = result_jason.data_cotacao_euro.split('-')
+ 
+   
+ 
+    
+
+ 
+ receb_calendar.innerHTML = `                     
+                    
+ <div class="row">
+       
+          
+     <div class="col-lg-3">
+      
+         <input type="date" class="form-control data_1" id="data"  name="data_1"  ">
+     </div>  
+     <div class="col-lg-3">
+          
+         <input type="date" class="form-control data_2" id="data"  name="data_2" ">
+     </div> 
+     
+      <input onclick="c_data(${result_jason.id})" type='submit' value='consultar' >
+     
+ </div>
+ `
+
+
+
+ 
+
+
+
+
+
+     
+    result_modal.innerHTML += `
+           
+   
+    
+    
+    <tr>
+    <td>${result_jason.id}</td>
+    <td>${result_jason.razaoSocial_nome}</td>
+    <td>${(result_jason.moeda_selecionada == '1')? 'REAL': 'EURO' }</td>
+    
+    <td>${result_jason.valor_real}</td>
+    <td>${date_cotacao[2]+'/'+date_cotacao[1]+'/'+date_cotacao[0]}</td>
+     
+     
+     
+    <td  class="noPrint text-center">
+      <i class="fas fa-user-edit icon-gradient bg-happy-itmeo btn" onclick="result_consult(${result_jason.id_recebimento})"></i>ver</td>
+    `
+  })   
+        
+    }
+});
+     
+  }
 
   
   modal_result_fechar.addEventListener('click',function(){
@@ -529,6 +621,19 @@ success:function(json){
  
 
 
+
+   function imprimir_relatorio(){
+
+    const divPrint = document.getElementById('relatorio_receb');
+    newWin = window.open('');
+    newWin.document.write('<link href="./main.css" rel="stylesheet">');
+    newWin.document.write('<link href="./assets/css/print.css" rel="stylesheet">');
+    newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Clientes de Recebimentos</h5>');
+    newWin.document.write(divPrint.outerHTML);
+    //await new Promise(r => setTimeout(r, 150));
+    //newWin.print();
+    //newWin.close();
+}
 
 
 
