@@ -16,8 +16,14 @@ if (isset($_POST['cmd']))
     {
              
           $valorTotal = '';
+               
+             
 
+             
               
+
+
+
               if(strpos($_POST['vlr_total'], '€')){
 
                  $valorTotal = str_replace('€', '',$_POST['vlr_total']);
@@ -39,7 +45,7 @@ if (isset($_POST['cmd']))
         $cotacao = str_replace('R$ ','',str_replace(',','.',$_POST['cotacoa_vlr_euro']));
         $vlr_real = $_POST['vlr_euro']*$cotacao;
         
-        $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `moeda_selecionada`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`) VALUES (
+        $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `moeda_selecionada`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`,`id_servico`) VALUES (
             "'.$_POST['cliente'].'",
             "'.$cotacao.'",
             "'.date('Y-m-d').'",
@@ -49,7 +55,8 @@ if (isset($_POST['cmd']))
             "'.$_POST['condicoes_parc'].'",
             "'.$_POST['vlr_entrada'].'",
             "'.($valorTotal).'",
-            "'.$_POST['tipoValor'].'"
+            "'.$_POST['tipoValor'].'",
+            "'.$_POST['servicos'].'"
         )');
         if($con->error != ""){
             $qError = true;
@@ -93,7 +100,13 @@ if (isset($_POST['cmd']))
         else{
             $uploadfile = "";
         }
+
+      
+
         $con->query('update tbl_parcelas_recebimentos set valor_parcela = "'.$_POST['valor_parc'].'", ind_pago = "'.($_POST['ind_pago']=='on'?1:0).'", data_parcela = "'.$_POST['data'].'", caminho_arquivo_comprovante = "'.$uploadfile.'" where id_parcela = '.$_POST['id']);
+  
+
+
         redirect($con->error);
     }
 }
@@ -583,9 +596,9 @@ $(document).on("click", "#submit_btn", function (e) {
             <div class="card main-card mb-3">
                 <div class="card-body">
 
-                    <h5 class="card-title">Recebimentos</h5>
+                    <h5 class="card-title">Recebimentos </h5>
                         
-                     <div class="alert alert-warning nao_encontrado"><center>Não existe nenhuma ação para este cliente</center></div>      
+                     <div class="alert alert-warning nao_encontrado"><center>Nenhum resultado encontrado</center></div>      
                          <table style="display: none;" class="table table-hover tabela_result">
                         <thead  >
                             
@@ -713,7 +726,7 @@ $(document).on("click", "#submit_btn", function (e) {
 
 
  <!-- modal_result -->
-<div   class="modal show modal_result" tabindex="-1" role="dialog"  >
+<div    class="modal show modal_result" tabindex="-1" role="dialog"  >
     <div class="modal-dialog modal-xg">
   <div class="modal-content">
 <div class="content">
@@ -723,7 +736,7 @@ $(document).on("click", "#submit_btn", function (e) {
             
             <div class="card main-card mb-3">
                 <div class="card-body">
-<div class="alert alert-warning nao_encontrado"><center>Não existe valores parcelados para este cliente no sistema</center></div>
+<div class="alert alert-warning nao_encontrado"><center>Nenhum resultado encontrado</center></div>
 
                     <div style="float: right;">
                     <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
@@ -736,8 +749,39 @@ $(document).on("click", "#submit_btn", function (e) {
         </div>
 
                    <br>
-                    <h5 class="card-title">Recebimentos</h5>
-                       <br><br>          
+                    <h5 class="card-title">Recebimentos aqui</h5>
+                          
+                          <div class="modal-header">
+            </div>
+            <div class="modal-body receb_calendar">
+               
+            </div>
+               
+
+
+
+
+                 <!-- campo adicionado por roney -->
+                 <!-- modal parcela -->
+ 
+     
+        
+            
+         
+    
+ 
+<!-- modal parcelas -->
+
+
+             <!-- campo adicionado por roney -->
+
+
+
+
+
+
+
+
               <table class="table mb-0 table-striped table-hover" id="tablePrint">
     <thead >
         <tr>
@@ -754,6 +798,8 @@ $(document).on("click", "#submit_btn", function (e) {
     </thead>
     <tbody  id="result_modal">
 
+
+cvbcv
 
          </tbody>
      </table>
@@ -820,8 +866,8 @@ $(document).on("click", "#submit_btn", function (e) {
               <table class="table mb-0 table-striped table-hover" id="tablePrint">
     <thead >
         <tr>
-            <th style="width:2%">QTD Parcela</th>
-            <th style="width:2%">ID</th>             
+            
+            <th style="width:2%">ID_Parcela</th>             
             <th style="width:14%">Valor da parcela</th>
             <th style="width:14%">Valor pago</th>
             <th style="width:14%">Data parcela</th>
@@ -888,7 +934,7 @@ $(document).on("click", "#submit_btn", function (e) {
     <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo recebimento</h5>
+                <h5 class="modal-title">Adicionar novo recebimentos</h5>
                 <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -944,6 +990,41 @@ $(document).on("click", "#submit_btn", function (e) {
                             <label for="cotacoa_vlr_euro">Cotação Euro €</label>
                              <input type="text"  value="<?php echo $EuroCotacao;?>" onchange="CalcularEuroParaReal()" class="form-control mb-3 estrangeiroInput" name="cotacoa_vlr_euro" id="cotacoa_vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                         </div>
+
+                         
+                         <!-- adicionado campo de servicos por roney -->
+
+                        <div class="col-3"> 
+
+                           <?php 
+                                 $array_servicos = array();            
+                                    $mysql = "SELECT * FROM tbl_servicos WHERE status = '1'";
+                                      $mysql = $pdo->query($mysql);
+                                    if($mysql->rowCount() > 0){
+
+                                        $array_servicos = $mysql->fetchAll();                                    
+
+                                    }
+                           
+                            ?>
+
+                            <label for="servicos">Serviços</label>
+                            <select  name="servicos" class="form-control">
+                            <option  >-Selecione-</option>
+                             <?php foreach($array_servicos as $serv):  ?>
+                                 
+                                <option value="<?php echo $serv['id']; ?>"><?php echo $serv['nome'];?></option>
+                                  
+                                 
+                             <?php endforeach;  ?>
+
+
+                               
+                            </select>
+                        </div>
+
+
+                        <!-- adicionado campo de servicos por roney -->
 
                         <div class="col-3">
                             <label for="moeda">Moeda</label>
@@ -1110,6 +1191,7 @@ $(document).on("click", "#submit_btn", function (e) {
                 </form>
             </div>
             <div class="modal-footer">
+
                 <p class="text-start"><span class="ml-2 text-danger">*</span> Campos obrigatórios</p>
                 <button type="button" class="btn btn-secondary" onclick="location.href='?'">Cancelar</button>
                 <button type="button" class="btn btn-primary" onclick="$('#form-parcela').submit()">Atualizar</button>

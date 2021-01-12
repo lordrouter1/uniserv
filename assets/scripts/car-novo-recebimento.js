@@ -11,7 +11,10 @@
 var div_cliente_re = document.querySelector('.div-cliente-re')
 var body_busca_2 = document.querySelector('#body_busca_2');
 var body_busca_1 = document.querySelector('#body_busca_1');
-var tabela_result= document.querySelector('.tabela_result') 
+var tabela_result= document.querySelector('.tabela_result');
+var receb_calendar = document.querySelector('.receb_calendar')
+var consulta_data = document.getElementById('consulta_data')
+var nao_encontrado = document.querySelector('.nao_encontrado')
 
  clienteId.addEventListener('keyup',function(){
     
@@ -85,6 +88,7 @@ success:function(json){
 console.log(document.querySelector('.cliente-id-evia').value = id )
   }
 
+ 
 
 
   function verDados(id){
@@ -93,7 +97,7 @@ console.log(document.querySelector('.cliente-id-evia').value = id )
    let result_modal = document.querySelector('#result_modal');
    result_modal.innerHTML = '';
    
- 
+
    $.ajax({
 
     type:'GET',
@@ -114,6 +118,35 @@ success:function(json){
   //console.log(length.result_jason)
  $//{date[2]+'/'+date[1]+'/'+date[0]}
     
+
+ 
+ receb_calendar.innerHTML = `                     
+                    
+ <div class="row">
+       
+          
+     <div class="col-lg-3">
+      
+         <input type="date" class="form-control data_1" id="data"  name="data_1"  ">
+     </div>  
+     <div class="col-lg-3">
+          
+         <input type="date" class="form-control data_2" id="data"  name="data_2" ">
+     </div> 
+
+      <input onclick="c_data(${result_jason.id})" type='submit' value='consultar' >
+     
+ </div>
+ `
+
+
+
+ 
+
+
+
+
+
      
     result_modal.innerHTML += `
            
@@ -140,6 +173,125 @@ success:function(json){
      
   }
 
+  
+function c_data(id_recebimento){
+  
+ let data_1 = document.querySelector('.data_1').value
+ let data_2 = document.querySelector('.data_2').value
+
+ if(data_1 == "" || data_2 == ""){
+
+  confirm('os campos devem estar preenchidos')
+
+ }else{
+
+   
+
+   $.ajax({
+
+    type:'GET',
+url:"ajax.php",
+
+data:{id_receb_cliente:id_recebimento,data_01:data_1,data_02:data_2},
+dataType:"json",
+success:function(json){
+    modal_result_receb_fechar.addEventListener('click',function(){
+modal_result_receb.style.display = 'none'
+        modal_result.style.display = 'none'
+       nao_encontrado.style.display = 'none'
+       result_modal_parc.innerHTML ='';
+
+        
+   })
+
+    
+    modal_result_receb.style.display = 'block'
+
+    let result_modal_parc = document.querySelector('#result_modal_parc');
+    
+     result_modal.innerHTML = '';         
+
+    divCliente.innerHTML ='';
+     let l =1;
+    
+        json.forEach(function(jason,item){
+             jason.forEach(function(result_jason){
+
+              console.log(result_jason)
+                
+               let date_parcela = result_jason.data_parcela.split('-')  
+             
+            result_modal_parc.innerHTML += `   
+            
+  <tr>
+ 
+<td>${result_jason.id_parcela}</td>
+<td>${result_jason.valor_parcela}</td>
+<td>${result_jason.valor_pago_parcela}</td>
+<td>${date_parcela[2]+'/'+date_parcela[1]+'/'+date_parcela[0]}</td>
+<td>${(result_jason.ind_pago) == '0' ?'Em aberto' : 'Pago'}</td>    
+<td class="noPrint text-center">
+<a href="?edt=${result_jason.id_parcela}" class="btn">
+<i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i>pagar</a></td>
+`
+
+
+
+
+
+             })       
+           
+             
+        
+
+           
+
+      
+          });
+
+    },error:function(falha){
+          
+      
+
+        $('.nao_encontrado').hide(300)  
+
+        $('.nao_encontrado').show(300)
+      
+        console.log('nao encontrado')
+
+
+       
+    }        
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ }
+
+  
+  
+}
 
 
   
@@ -147,12 +299,14 @@ success:function(json){
 
     modal_result.style.display = 'none'
     nao_encontrado.style.display = 'none'
-            
-     
+         
+    
     
 
   })
 
+
+  
 
 
 
@@ -188,21 +342,24 @@ console.log(id_recebimento)
          let l =1;
         
             json.forEach(function(result_jason,item){
+                 
+            
 
                 let date_parcela = result_jason.data_parcela.split('-')  
                  
                 result_modal_parc.innerHTML += `       
-                    
+                 
+                
     
     <tr>
-    <td>30</td>
+     
     <td>${result_jason.id_parcela}</td>
     <td>${result_jason.valor_parcela}</td>
     <td>${result_jason.valor_pago_parcela}</td>
     <td>${date_parcela[2]+'/'+date_parcela[1]+'/'+date_parcela[0]}</td>
     <td>${(result_jason.ind_pago) == '0' ?'Em aberto' : 'Pago'}</td>    
     <td class="noPrint text-center">
-    <a href="?edt=${l}" class="btn">
+    <a href="?edt=${result_jason.id_parcela}" class="btn">
     <i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i>pagar</a></td>
     `
 console.log(result_jason)
@@ -335,7 +492,7 @@ success:function(json){
     <td><i style="cursor: pointer;"
   onclick="verDados(${result_jason.id})" 
    class="fas fa-user-edit icon-gradient bg-happy-itmeo clickA"></i>  ver</td>
-   <td>sdfsafda}</td>
+    
     </tr> 
      
      

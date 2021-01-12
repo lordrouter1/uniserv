@@ -44,26 +44,11 @@
         $array = $mysql->fetchAll();      
                 
               
-             echo json_encode($array);       
+             echo json_encode($array);     
           
-       
-
-
      }
 
     }  
-
-
-
-
-
-
-
-
-
-
-
-
 
      if(isset($_GET['id_cliente']) && !empty($_GET['id_cliente'])){
  $id_cliente = $_GET['id_cliente']; 
@@ -87,6 +72,51 @@
      }
 
     }  
+
+ 
+
+ if(isset($_GET['id_receb_cliente']) && !empty($_GET['id_receb_cliente'])){
+     $id_cliente = $_GET['id_receb_cliente'];
+     $data_01 = $_GET['data_01'];
+     $data_02 = $_GET['data_02'];
+       
+       $array_receb = array();
+      // $array_resultado = array();
+
+        $mysql = "SELECT id_recebimento FROM tbl_recebimentos WHERE id_cliente ='$id_cliente' ";
+         $mysql = $pdo->query($mysql);
+                  
+                  if($mysql->rowCount() > 0){
+                          
+                        $array_receb = $mysql->fetchAll();
+                         
+                          foreach($array_receb as $res){
+                             $id_re = $res['id_recebimento'];
+
+      $mysql_r = "SELECT * FROM tbl_parcelas_recebimentos WHERE data_parcela BETWEEN '$data_01' AND '$data_02' AND id_recebimento = '$id_re' ";
+                                $mysql_r = $pdo->query($mysql_r);
+                                  
+                                  if($mysql_r->rowCount() > 0){
+                                     
+                                        $array_resultado[] = $mysql_r->fetchAll();
+
+                                           
+                                  }
+
+                                  
+                                 
+                          }   
+
+
+
+                          echo json_encode($array_resultado) ;
+
+     
+                  }
+
+    
+ }
+
 
     
 
@@ -113,15 +143,9 @@
      }  
 
     } 
-     
 
-   
+
     
-  
-
-
-
-
 
 
 
@@ -129,4 +153,4 @@
 
  
 
- ?>
+ ?>  
