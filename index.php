@@ -1,6 +1,6 @@
-<?php include('header.php'); ?>
+<?php require('header.php');  
 
-<?
+ 
     $resp = $con->query('select pagamentoStatus from tbl_configuracao where id = '.$_COOKIE['empresa']);
     $flag = $resp->num_rows > 0;
 
@@ -15,8 +15,10 @@
 
     $balanco = $juno->balanco();
 
-    if($flag && $resp->fetch_assoc()['pagamentoStatus'] == '1' && !is_numeric($_CONF['juno']['status'])):
+if($flag && $resp->fetch_assoc()['pagamentoStatus'] == '1' && !is_numeric($_CONF['juno']['status'])):
 ?>
+
+
 <div class="mb-3 widget-content w-25 btn btn-success text-left shadow rounded" onclick="$('#mdl-retirar').modal()">
     <div class="text-white">
         <div class="widget-content-left">
@@ -35,7 +37,7 @@
         </div>
     </div>
 </div>
-<?endif;?>
+<?php endif;?>
 
 
 <?php include('footer.php');?>

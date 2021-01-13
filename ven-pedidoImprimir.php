@@ -9,7 +9,7 @@ use Dompdf\Dompdf;
 
 $dompdf = new Dompdf();
 
-require_once('con.php');
+require_once('_con.php');
 $pedido = $con->query('select * from tbl_pedido where id = '.$_GET['print'])->fetch_assoc();
 $empresa = $con->query('select * from tbl_configuracao')->fetch_assoc();
 $cliente = $con->query('select * from tbl_clientes where id = '.$pedido['cliente'])->fetch_assoc();

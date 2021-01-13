@@ -1,12 +1,24 @@
 <?php
     session_start();
 
-    require_once('con.php');
+    require_once('_con.php');  
+     
     
     if(isset($_POST['cmd'])){ 
+
         if($_POST['cmd'] == "acessar"){
+              
+                     
+               
+
+
             $resp = $con->query('select * from tbl_usuario where usuario = "'.$_POST['usuario'].'" and senha = "'.md5($_POST['senha']).'"');
+                
+
+
             if($resp->num_rows == 1){
+
+
                 $usr = $resp->fetch_assoc();
                 $_SESSION['usuario'] = $_POST['usuario'];
                 $_SESSION['nome'] = $usr['nome'];
@@ -23,12 +35,16 @@
             }
         }
         elseif($_POST['cmd'] == "alterar"){
+
+                 
             $con->query('update tbl_usuario set altSenha = 1, senha = "'.md5($_POST['nSenha']).'" where id = '.$_SESSION['id']);
             $_SESSION['senha'] = md5($_POST['nSenha']);
             echo "<script>location.href='index.php'</script>";
         }
     }
-    elseif($_GET['exit']){
+    else{
+
+
         $_SESSION['usuario'] = null;
         $_SESSION['nome'] = null;
         $_SESSION['senha'] = null;
@@ -60,6 +76,8 @@
     <link rel="stylesheet" href="./comp.css">
     <link rel="stylesheet" href="assets/fafaicons/css/all.min.css">
 </head>
+
+
 <body>
     <div class="app-container bg-dark body-tabs-shadow fixed-sidebar fixed-header">
         <?if(isset($_GET['e'])):?>
@@ -69,19 +87,21 @@
         <?endif;?>
         <div class="content d-flex h-100">
             <div class="login-area p-2 m-auto">
+
+                <!--formulario login-->
                 <form method="post">
-                    <?if(!isset($_GET['n'])):?>
+                    
                     <div class="row">
                         <div class="col text-center mb-3">
                             <h2><strong class="text-white">Login</strong></h2>
                         </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col">
+                        <div class="col">                       
                             <div class="group-inputs">
                                 <i class="fas fa-user"></i>
                                 <input type="hidden" name="cmd" value="acessar">
-                                <input type="text" name="usuario" placeholder="Usuário">
+                                <input type="text" name="usuario" placeholder="Usuário ...">
                             </div>
                         </div>
                     </div>
@@ -97,9 +117,13 @@
                         <div class="col">
                             <button class="btn btn-outline-secondary w-100 p-3 mt-3 float-right text-white d-flex"><strong class="ml-auto mr-auto">Entrar</strong><i class="fas fa-sign-in-alt ml-auto mt-auto mb-auto"></i></button>
                         </div>
+
                     </div>
-                    <?else:?>
+                </form>
+                      
+                      
                     <div class="row">
+                        <form method="POST">
                         <div class="col text-center mb-3">
                             <h2><strong class="text-white">Digite uma nova senha</strong></h2>
                         </div>
@@ -120,6 +144,11 @@
                     </div>
                     <?endif;?>
                 </form>
+
+
+
+
+
             </div>
         </div>
     </div>

@@ -445,10 +445,10 @@ $usuario = $resp->fetch_assoc();
             <a class="nav-link <?=!isset($_GET['p'])||$_GET['p']=='geral'?'active':''?>" data-target="#geral">Geral</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link <?=$_GET['p']=='pagamento'?'active':''?>"  data-target="#pagamento">Pagamento</a>
+            <a class="nav-link <?php=$_GET['p']=='pagamento'?'active':''?>"  data-target="#pagamento">Pagamento</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link <?=$_GET['p']=='impressao'?'active':''?>"  data-target="#impressao">Impressão</a>
+            <a class="nav-link <?php=$_GET['p']=='impressao'?'active':''?>"  data-target="#impressao">Impressão</a>
         </li>
     </div>
     

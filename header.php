@@ -32,8 +32,10 @@
 
 
     <script type="text/javascript" src="./assets/scripts/comp.js"></script>
+    
 
     <link href="./main.css" rel="stylesheet">
+    <link href="./assets/css/cad-recebimento.css" rel="stylesheet">
     <link rel="stylesheet" href="./comp.css">
     <link rel="stylesheet" href="assets/fafaicons/css/all.min.css">
     <link href="assets/scripts/lib/select2/dist/css/select2.min.css" rel="stylesheet" />
@@ -55,6 +57,7 @@
 
 </head>
 <body>
+    <br>
     <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">    
         
     <!-- CABECALHO -->
@@ -123,7 +126,7 @@
                                     <div class="btn-group mr-3 pr-3 border-secondary border-right">
                                         <a data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="p-0 btn">
                                             <div class="widget-heading">
-                                                <?
+                                                <?php
                                                     if(isset($_COOKIE['empresa'])){
                                                         echo $con->query('select razao_social from tbl_configuracao where id = '.$_COOKIE['empresa'])->fetch_assoc()['razao_social'];
                                                     }
@@ -136,7 +139,7 @@
                                         </a>
                                         <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
                                             
-                                            <?
+                                            <?php
                                                 $resp = $con->query('select id, razao_social from tbl_configuracao where id in (select valor from tbl_usuarioMeta where meta = "habilitar_empresa" and status = 1 and usuario = "'.$_SESSION['id'].'" )');
                                                 while($row = $resp->fetch_assoc()){
                                                     echo '<a class="dropdown-item" tabindex="0" href="?empresa='.$row['id'].'">'.$row['razao_social'].'</a>';
