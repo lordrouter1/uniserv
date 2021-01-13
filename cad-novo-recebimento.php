@@ -13,10 +13,24 @@ if (isset($_POST['cmd']))
     $cmd = $_POST['cmd'];
 
     if ($cmd == "add")
-    {
+    {     
+          
+           
+          $valorTotal = '';  
+          $id_c = ''; 
+          if(isset($_POST['1cliente']) && !empty($_POST['1cliente'])){
+            $id_c = $_POST['1cliente'];
+         
+
+          }else{
              
-          $valorTotal = '';
+             $id_c = $_POST['cliente'];
+
+              
+
+          }
                
+             
              
 
              
@@ -46,7 +60,7 @@ if (isset($_POST['cmd']))
         $vlr_real = $_POST['vlr_euro']*$cotacao;
         
         $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `id_moeda`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`,`id_servico`) VALUES (
-            "'.$_POST['cliente'].'",
+            "'.$id_c.'",
             "'.$cotacao.'",
             "'.date('Y-m-d').'",
             "'.($_POST['moeda']).'",
@@ -952,7 +966,7 @@ $(document).on("click", "#submit_btn", function (e) {
     <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo recebimentos</h5>
+                <h5 class="modal-title">Adicionar novo recebimentos mmm</h5>
                 <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -970,7 +984,7 @@ $(document).on("click", "#submit_btn", function (e) {
                                      <div class="row">
                                          <div class="col-lg-6">
                                              
-                                           <input type="text" class="form-control cliente-id"  placeholder="Digite o nome do cliente" required>
+                                           <input type="text"   class="form-control cliente-id"  placeholder="Digite o nome do cliente" required>
 
                                            <input type="hidden" class="form-control cliente-id-evia" name="1cliente" id="cliente"   required>
 
