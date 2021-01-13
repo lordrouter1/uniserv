@@ -966,7 +966,7 @@ $(document).on("click", "#submit_btn", function (e) {
     <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Adicionar novo recebimentos mmm</h5>
+                <h5 class="modal-title">Adicionar novo recebimentos</h5>
                 <button type="button" class="close" onclick="location.href='?'" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -1058,6 +1058,18 @@ $(document).on("click", "#submit_btn", function (e) {
 
                         <!-- adicionado campo de servicos por roney -->
 
+
+
+                        <div class="col-3">
+                            <label for="vlr_euro">Valor<span class="ml-2 text-danger">*</span></label>
+                             <input  type="text" onchange="CalcularEuroParaReal()" placeholder="Digite um valor"   class="form-control mb-3 estrangeiroInput valor_e" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             
+                        </div>
+
+
+
+
+
                         <div class="col-3">
                             <label for="moeda">Moeda</label>
                                   
@@ -1091,14 +1103,10 @@ $(document).on("click", "#submit_btn", function (e) {
                             </select>
                         </div>
 						
-						<div class="col-3">
-                            <label for="vlr_euro">Valor<span class="ml-2 text-danger">*</span></label>
-                             <input type="text" onchange="CalcularEuroParaReal()" placeholder="Digite um valor"   class="form-control mb-3 estrangeiroInput" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
-                             
-                        </div>
+						
 						<div class="col-3 simboloReal">
                             <label for="vlr_real">Valor Real</label>
-                             <input type="text" disabled value="R$ 0,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input   type="text" disabled value="R$ 0,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
                         

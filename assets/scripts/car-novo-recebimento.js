@@ -19,10 +19,10 @@ var soma_real = 0;
 var soma_euro = 0;
 var tot_real =  document.querySelector('.tot_real')
 var tot_euro =  document.querySelector('.tot_euro')
-
+var valor_e = document.querySelector('.valor_e')
 var nome_c = '';
 
-
+ 
 
  clienteId.addEventListener('keyup',function(){
     
@@ -615,8 +615,11 @@ success:function(json){
 
   })
 
+   
+    
 
-
+  
+   
 
  
 
