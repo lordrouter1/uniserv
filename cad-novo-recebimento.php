@@ -13,10 +13,24 @@ if (isset($_POST['cmd']))
     $cmd = $_POST['cmd'];
 
     if ($cmd == "add")
-    {
+    {     
+          
+           
+          $valorTotal = '';  
+          $id_c = ''; 
+          if(isset($_POST['1cliente']) && !empty($_POST['1cliente'])){
+            $id_c = $_POST['1cliente'];
+         
+
+          }else{
              
-          $valorTotal = '';
+             $id_c = $_POST['cliente'];
+
+              
+
+          }
                
+             
              
 
              
@@ -46,7 +60,7 @@ if (isset($_POST['cmd']))
         $vlr_real = $_POST['vlr_euro']*$cotacao;
         
         $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `id_moeda`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`,`id_servico`) VALUES (
-            "'.$_POST['cliente'].'",
+            "'.$id_c.'",
             "'.$cotacao.'",
             "'.date('Y-m-d').'",
             "'.($_POST['moeda']).'",
@@ -970,7 +984,7 @@ $(document).on("click", "#submit_btn", function (e) {
                                      <div class="row">
                                          <div class="col-lg-6">
                                              
-                                           <input type="text" class="form-control cliente-id"  placeholder="Digite o nome do cliente" required>
+                                           <input type="text"   class="form-control cliente-id"  placeholder="Digite o nome do cliente" required>
 
                                            <input type="hidden" class="form-control cliente-id-evia" name="1cliente" id="cliente"   required>
 
@@ -1044,6 +1058,18 @@ $(document).on("click", "#submit_btn", function (e) {
 
                         <!-- adicionado campo de servicos por roney -->
 
+
+
+                        <div class="col-3">
+                            <label for="vlr_euro">Valor<span class="ml-2 text-danger">*</span></label>
+                             <input  type="text" onchange="CalcularEuroParaReal()" placeholder="Digite um valor"   class="form-control mb-3 estrangeiroInput valor_e" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             
+                        </div>
+
+
+
+
+
                         <div class="col-3">
                             <label for="moeda">Moeda</label>
                                   
@@ -1077,14 +1103,10 @@ $(document).on("click", "#submit_btn", function (e) {
                             </select>
                         </div>
 						
-						<div class="col-3">
-                            <label for="vlr_euro">Valor<span class="ml-2 text-danger">*</span></label>
-                             <input type="text" onchange="CalcularEuroParaReal()" placeholder="Digite um valor"   class="form-control mb-3 estrangeiroInput" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
-                             
-                        </div>
+						
 						<div class="col-3 simboloReal">
                             <label for="vlr_real">Valor Real</label>
-                             <input type="text" disabled value="R$ 0,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                             <input   type="text" disabled value="R$ 0,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
                         
