@@ -5,8 +5,14 @@
 try{
 
   	$dsn = "mysql:dbname=indexerpcom_tci;host=localhost";
-  	$dbUser = "root";
-  	$dbPass = '';
+  	$dbUser = "indexerpcom_tci";
+  	$dbPass = ';QT*JRknXgqG';
+
+
+       /* $dsn = "mysql:dbname=indexerpcom_tci;host=localhost";
+	  	$dbUser = "root";
+	  	$dbPass = '';*/
+
    
    $pdo = new PDO($dsn,$dbUser,$dbPass);
     

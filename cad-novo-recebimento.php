@@ -15,29 +15,28 @@ if (isset($_POST['cmd']))
     if ($cmd == "add")
     {     
           
-           
+            
+            if($_POST['parcelamento'] == 0){
+
+               echo '<div class = "alert alert-warning">Escolha pelo menos um opção de parcelamento</div>';exit();
+
+            }
+
+
+
+
           $valorTotal = '';  
           $id_c = ''; 
           if(isset($_POST['1cliente']) && !empty($_POST['1cliente'])){
             $id_c = $_POST['1cliente'];
-         
-
-          }else{
-             
-             $id_c = $_POST['cliente'];
-
+                    
               
-
-          }
-               
+          }else{ 
              
-             
-
-             
-              
-
-
-
+                  $id_c = $_POST['cliente'];
+                  
+             }          
+                          
               if(strpos($_POST['vlr_total'], '€')){
 
                  $valorTotal = str_replace('€', '',$_POST['vlr_total']);
@@ -49,15 +48,33 @@ if (isset($_POST['cmd']))
                  
               }
 
+                  
+                  
+               
                 
-
           
          
         $con->autocommit(false);
         
-        $qError = false;
-        $cotacao = str_replace('R$ ','',str_replace(',','.',$_POST['cotacoa_vlr_euro']));
-        $vlr_real = $_POST['vlr_euro']*$cotacao;
+        $qError = false;   
+         
+         if($_POST['moeda'] == "1"){
+                 //$cotacao = str_replace('R$ ','',str_replace(',','.',$_POST['cotacoa_vlr_euro']));
+             $vlr_real = $_POST['vlr_euro'];
+
+             //print_r($vlr_real);exit();
+         }else{
+               
+
+
+             $cotacao = str_replace('R$ ','',str_replace(',','.',$_POST['cotacoa_vlr_euro']));
+             $vlr_real = $_POST['vlr_euro']*$cotacao;
+             //print_r($vlr_real);exit();
+         }
+
+        
+         if(!empty($id_c)){        
+   
         
         $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `id_moeda`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`,`id_servico`) VALUES (
             "'.$id_c.'",
@@ -78,24 +95,36 @@ if (isset($_POST['cmd']))
         }
 
         $last_id = $con->insert_id;
+              
+            
 
         for($i = 0; $i < $_POST['condicoes_parc']; $i++){
             $con->query('INSERT INTO `tbl_parcelas_recebimentos`(`id_recebimento`, `des_parcela`, `valor_parcela`, `valor_pago_parcela`, `ind_pago`, `caminho_arquivo_comprovante`, `nome_arquivo_comprovante`,`data_parcela`,`id_moeda`) VALUES (
                 "'.$last_id.'",
                 "0",
-                "'.$_POST['valor_parc'][$i].'",
+                "'.$_POST['procentagem'][$i].'",
                 "0",
                 "0",
                 "",
                 "",
-                "'.($_POST[$i.'_data']!=""?$_POST[$i.'_data']:date("Y-m-d")).'",
+                "'.$_POST['data'][$i].'",
                 "'.($_POST['moeda']).'"
             )');
+
+
+             
+
             if($con->error != ""){
                 $qError = true;
                 var_dump($con->error);
             }
-        }
+        }   
+
+    }else{
+             
+         echo "<script>alert('o campo cliente não pode estar vazio,você será redirecionado a tela principal')</script>";
+       echo "<script>location.href='index.php'</script>";  
+    }
 
         if(!$qError){
             $con->commit();
@@ -115,10 +144,10 @@ if (isset($_POST['cmd']))
         else{
             $uploadfile = "";
         }
+             
+           
 
-      
-
-        $con->query('update tbl_parcelas_recebimentos set valor_parcela = "'.$_POST['valor_parc'].'", ind_pago = "'.($_POST['ind_pago']=='on'?1:0).'", data_parcela = "'.$_POST['data'].'", caminho_arquivo_comprovante = "'.$uploadfile.'" where id_parcela = '.$_POST['id']);
+        $con->query('update tbl_parcelas_recebimentos set valor_parcela = "'.$_POST['valor_parc'].'", ind_pago = "'.($_POST['ind_pago']=='on'?1:0).'", data_parcela = "'.$_POST['data'].'", caminho_arquivo_comprovante = "'.$uploadfile.'", valor_pago_parcela="'.$_POST['valor_parc'].'" where id_parcela = '.$_POST['id']);
   
 
 
@@ -271,6 +300,8 @@ $(document).on("click", "#submit_btn", function (e) {
 
         // checa se o total será em real ou euro
         rValorReal = $("#moeda").val()==1?parseFloat(rvlr_euro):parseFloat(rvlr_euro) * parseFloat(rcotacoa_vlr_euro);
+     
+
 
         if($("#moeda").val()==2){
             console.log($('.simboloEuro'));
@@ -285,7 +316,7 @@ $(document).on("click", "#submit_btn", function (e) {
             $('.simboloReal').hide();
             
             
-
+           
           
         }
 
@@ -310,7 +341,12 @@ $(document).on("click", "#submit_btn", function (e) {
         
         
     function CalcularParcelas(){
+     var valor_tot = 0;
+
+
         rvlr_real = $('#moeda').val()==1?$('#vlr_real').val():$('#vlr_euro').val();
+           
+  
         rvlr_real = rvlr_real.replace("R$", "");	
         rvlr_real = rvlr_real.replace(",", ".");		
         
@@ -321,7 +357,8 @@ $(document).on("click", "#submit_btn", function (e) {
         // calcula parcelas por valor
         if($('#tipoValor').val() == 1){
             var rValorMenosEntrada = (rvlr_real-rvlr_entrada);
-
+               
+               
             
 
             
@@ -353,6 +390,7 @@ $(document).on("click", "#submit_btn", function (e) {
 
 
             rcondicoes_parc = $('#condicoes_parc').val();
+
             rValorPorParcela = (rvlr_real-rvlr_entrada) / rcondicoes_parc;
             var n = rValorPorParcela.toFixed(2);
             var TotalDasCondicoes = (n * rcondicoes_parc);
@@ -383,17 +421,46 @@ $(document).on("click", "#submit_btn", function (e) {
                    
                         
            if($("#moeda").val()==2){
-             
+              
           $('#vlr_total').val(rValorMenosEntrada.toLocaleString('de-DE',{style:'currency',currency:'EUR'}));
-
+             
         }
         else{
            $('#vlr_total').val(rValorMenosEntrada.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}));
-            
-            
-
+                       
           
         }
+
+
+
+          
+         // restaValor =  valor_tot - rvlr_entrada ;           
+            
+         // valorPorcentagemParcela = rValorMenosEntrada / rcondicoes_parc;
+
+
+
+
+
+
+
+
+       // console.log('linha 406 ->' + valorPorcentagemParcela)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -404,46 +471,106 @@ $(document).on("click", "#submit_btn", function (e) {
         }
         /* -- calcula parcelas por porcentagem -- */
         else{
+               
+               
             rcondicoes_parc = $('#condicoes_parc').val();
+             valor_r = $("#vlr_euro").val();
+             valor_tot = parseFloat(valor_r);
+                sobraP  =  (valor_tot/100) * rvlr_entrada;
+                sobraPorcentagem =  valor_tot - sobraP;
+                
+             
+             if(isNaN(sobraPorcentagem)){
+                    
+             $('#vlr_total').val((rvlr_real/100)*rvlr_entrada);
 
-            sobraPorcentagem = 100 - rvlr_entrada;
+             }  else{  
+                
+                if($("#moeda").val()==2){
+              
+          $('#vlr_total').val(sobraPorcentagem.toLocaleString('de-DE',{style:'currency',currency:'EUR'}));
+             
 
-            $('#vlr_total').val((rvlr_real/100)*rvlr_entrada);
-            
-            rValorPorParcela = ((rvlr_real/100)*sobraPorcentagem) / rcondicoes_parc;
 
-            
-            n = rValorPorParcela.toFixed(2);
-            Novo = n;
+
+
+
+
+
+
+
+
+        }
+        else{
+           $('#vlr_total').val(sobraPorcentagem.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}));         
+                  
+        }
+
+                 
+             }
+
+                        
+            rValorPorParcela = sobraPorcentagem / rcondicoes_parc;
+
+             
+                   
+            Novo = rValorPorParcela.toFixed(2);
+
+             
+             
         }
         
-        //alert(Novo);
-        Novo = Novo.toString();
-        Novo = Novo.replace(".", ",");
         
-        
-        
-        //alert(n);
-        //rValorReal = rValorReal.toFixedDown(2);
+        n = Novo.toString();    
+               
+          
         n = n.toString();
         n = n.replace(".", ",");
         rValorPorParcela = n;
-
+   
+              
+               
         if($('#tipoValor').val() == 1){
-            restaPorcentagem =  100-(rvlr_entrada/(rvlr_real/100));
+
+            restaValor =  rvlr_real - rvlr_entrada ;           
+            
+            valorVParcela = restaValor / rcondicoes_parc;   
+            novo = valorVParcela.toFixed(2)
+             n = novo.toString();
+             valorPorcentagemParcela = n.replace(".",",");   
+         
+                  
+
+        }else{
+
+              
+
+            restaPorcentagem = (valor_tot/100) * rvlr_entrada;
+            result_p = valor_tot - restaPorcentagem;          
+            valorVParcela = result_p / rcondicoes_parc;
+             novo = valorVParcela.toFixed(2)
+             n = novo.toString();
+             valorPorcentagemParcela = n.replace(".",",");  
+
+             console.log('pequei valor das parcelas 484 ->'+valorPorcentagemParcela)
+
         }
-        else{
-            restaPorcentagem = 100-rvlr_entrada;
-        }
+             
+
         porcentagem = rvlr_real/100;
-        valorPorcentagemParcela = restaPorcentagem / rcondicoes_parc;
         
+
+        
+          
         
         LimpaParcelasDoGrid(); 
+
+
         
         for (var i = 0; i < rcondicoes_parc; i++) {
             if (i == 0) { 
                 //DiferencaQueSobrouNasParcelas = 0;
+                 
                 $('#linhaProdutos').append(`
                     <div name="parcelas_listadas_grid_`+(i+1)+`" id="parcelas_listadas_grid_`+(i+1)+`" >
                         <div class="row mb-2">
@@ -451,22 +578,24 @@ $(document).on("click", "#submit_btn", function (e) {
                                 <input type="hidden" name="`+(i+1)+`" value="`+(i+1)+`">
                                 <input type="text" class="form-control" name="`+(i+1)+`_parc" value="Parcela `+(i+1)+`" readonly>
                             </div>
-                            <div class="col d-flex">
-                                <i class="mb-auto mt-auto mr-2 fas fa-percentage"></i>
-                                <input type="number" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
-                            </div>
+
+                            
+                                <input type="hidden" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
+                             
+                            
                             <div class="col-2 d-flex">
                                 <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
-                                <input class="form-control" name="valor_parc[]"   type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" value="`+rValorPorParcela+`" placeholder="`+rValorPorParcela+`" disabled="disabled"  >  
+                                <input class="form-control" name="valor_parc[]"   type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" value="`+valorPorcentagemParcela+`" placeholder="`+valorPorcentagemParcela+`" disabled="disabled"  >  
                             </div>
                             <div class="col-2">
-                                <input type="date" class="form-control" id="`+(i+1)+`_data"  name="`+(i+1)+`_data" value="5">
+                                <input type="date" class="form-control" id="`+(i+1)+`_data"  name="data[] " value="5">
                             </div>  
                         </div>
                     </div>
                 `);
             } else{
+
                 $('#linhaProdutos').append(`
                     <div name="parcelas_listadas_grid_`+(i+1)+`" id="parcelas_listadas_grid_`+(i+1)+`" > 
                         <div class="row mb-2">
@@ -474,17 +603,19 @@ $(document).on("click", "#submit_btn", function (e) {
                                 <input type="hidden" name="`+(i+1)+`" value="`+(i+1)+`"> 
                                 <input type="text" class="form-control" name="`+(i+1)+`_parc" value="Parcela `+(i+1)+`" readonly>
                             </div>
-                            <div class="col d-flex">
-                                <i class="mb-auto mt-auto mr-2 fas fa-percentage"></i>
-                                <input type="text" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
-                            </div>
+
+
+                             
+                                <input type="hidden" name="procentagem[]" value="`+valorPorcentagemParcela+`" placeholder="%" class="form-control" onchange="calculaValor(this,1,`+porcentagem+`)">
+                             
+                             
                             <div class="col-2 d-flex">
                                 <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
-                                <input class="form-control" name="valor_parc[]"  type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" placeholder="`+rValorPorParcela+`" disabled="disabled" value="`+rValorPorParcela+`">
+                                <input class="form-control" name="valor_parc[]"  type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" placeholder="`+valorPorcentagemParcela+`" disabled="disabled" value="`+valorPorcentagemParcela+`">
                             </div>
                             <div class="col-2">
-                                <input type="date" class="form-control" id="`+(i+1)+`_data"  name="`+(i+1)+`_data" value="5">
+                                <input type="date" class="form-control" id="data[]"  name="data[] "  >
                             </div>  
                         </div>
                     </div>
@@ -660,10 +791,14 @@ $(document).on("click", "#submit_btn", function (e) {
                             $result = array();
                                   $mysql = "SELECT tbl_clientes.id,tbl_clientes.razaoSocial_nome FROM tbl_clientes INNER JOIN tbl_recebimentos ON tbl_recebimentos.id_cliente = tbl_clientes.id GROUP BY tbl_clientes.id ";
 
+
+
                                     $mysql = $pdo->query($mysql);
                                     if($mysql->rowCount() > 0){
                                         $result = $mysql->fetchAll();                         
                                        } 
+
+
                                        ?>                                  
 
              <?php foreach($result as $resultado): ?> 
@@ -728,7 +863,7 @@ $(document).on("click", "#submit_btn", function (e) {
         </div>
 
                    <br>
-                    <h5 class="card-title">Recebimentos aqui</h5>
+                    <h5 class="card-title">Recebimentos</h5>
                           
                           <div class="modal-header">
             </div>
@@ -766,10 +901,12 @@ $(document).on("click", "#submit_btn", function (e) {
         <tr>
             <th style="width:2%">ID</th>
             <th>Cliente</th>
+            <th style="width:14%">Serviço</th>
             <th style="width:14%">Moeda</th>
             <th style="width:14%">Valor Real</th>
             <th style="width:14%">Data Cotação</th>
             <th style="width:14%">Ações</th>
+            <th style="width:14%">Status</th>
              
             <th class="noPrint"></th>
             <th class="noPrint"></th> 
@@ -939,6 +1076,140 @@ $(document).on("click", "#submit_btn", function (e) {
 
 
 
+<!-- modal status -->
+<div  class="modal show modal_status_result" tabindex="-1" role="dialog"  >
+    <div class="modal-dialog modal-xg">
+  <div class="modal-content">
+ 
+
+
+<div class="content">
+
+    <div class="row">
+        <div class="col">
+            
+            <div class="card main-card mb-3">
+                <div class="card-body">
+                   <div style="float: right;">
+                    <button class="btn-shadow mr-3 btn btn-dark" id="btn-modal" type="button" data-toggle="modal" data-target="#mdl-cliente">
+            <i class="fas fa-plus"><br></i>
+            </button>
+
+              <button class="btn-shadow mr-3 btn btn-danger modal_status_fechar" type="button" data-toggle="modal"  >
+                  Sair
+            </button>
+
+            <button class="btn-shadow mr-3 btn btn-success modal_result_receb_fechar" type="button" data-toggle="modal"  onclick="imprimir_relatorio_p()" >
+                  imprimir
+            </button>
+
+
+
+
+        </div>     
+                  <div id="relatorio_receb " class="r">
+                      
+
+                 
+                   <div style="clear:both;"></div>
+                    <h5 class="card-title">Transações Pago </h5>
+                    <br><br>
+
+
+
+
+                
+              
+              <table class="table mb-0 table-striped table-hover" id="tablePrint">
+    <thead >
+        <tr>
+            
+            <th style="width:2%">ID_Parcela</th>             
+            <th style="width:14%">Valor da parcela</th>
+            <th style="width:14%">Valor pago</th>
+            <th style="width:14%">Data parcela</th>
+            <th style="width:14%">Moeda</th>
+            <th style="width:14%">Status</th>
+             
+
+             
+            <th class="noPrint"></th>
+            <th class="noPrint"></th> 
+        </tr>
+    </thead>
+    <tbody  id="result_modal_status">
+
+
+         </tbody>
+     </table>
+        
+       <br><br>
+
+<div class="app-page-title">
+                  
+            <div  class="valor_tot_real">
+                <span>Total em reais </span> <span class="tot_status_real"> 0 </span>
+                
+            </div>
+            <div style="clear: both;"></div>
+
+             <div class="valor_tot_euro estilo_campo_valor">
+                <span>Total em euros </span > <span class="tot_status_euro"> 0</span>
+                
+            </div>
+             
+         
+         
+        
+    
+  
+
+   
+ 
+
+
+</div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+      
+             
+            </div>
+             
+        </div>
+    </div>
+</div>
+
+ 
+<!-- fim modal status -->
+
+
+
+
+
 
 
 
@@ -962,7 +1233,7 @@ $(document).on("click", "#submit_btn", function (e) {
 
 
 <!-- modal -->
-<div    class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
+<div  class="modal show" tabindex="-1" role="dialog" id="mdl-cliente">
     <div class="modal-dialog modal-xg">
         <div class="modal-content">
             <div class="modal-header">
@@ -1042,7 +1313,7 @@ $(document).on("click", "#submit_btn", function (e) {
 
                             <label for="servicos">Serviços</label>
                             <select  name="servicos" class="form-control">
-                            <option  >-Selecione-</option>
+                             
                              <?php foreach($array_servicos as $serv):  ?>
                                  
                                 <option value="<?php echo $serv['id']; ?>"><?php echo $serv['nome'];?></option>
@@ -1125,8 +1396,8 @@ $(document).on("click", "#submit_btn", function (e) {
                         <div class="col-2">
                             <label for="tipoValor">Tipo</label>
                             <select name="tipoValor" id="tipoValor" class="form-control" onchange="CalcularParcelas()" disabled>
-                                <option value="1">Valor</option>
                                 <option value="2">%</option>
+                                <option value="1">Valor</option>
                             </select>
                         </div>
 									
@@ -1149,7 +1420,7 @@ $(document).on("click", "#submit_btn", function (e) {
                             <label for="condicoes_parc">Condições</label>
                             <select name="condicoes_parc" disabled="true"  onchange="CalcularParcelas()" value="00" id="condicoes_parc" class="form-control mb-2 estarngeiroInput" > <!-- onchange="listarCidades()" -->
                                          <option value="00" >Selecione</option>
-										<option value="01" >Entrada + 1 Parcela</option>
+										<option value="01" >Entrada e/ou 1 Parcela</option>
                                         <option value="02">Entrada + 2 Parcelas</option>
                                         <option value="03">Entrada + 3 Parcelas</option>
                                         <option value="04">Entrada + 4 Parcelas</option>

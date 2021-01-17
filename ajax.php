@@ -53,8 +53,9 @@
      if(isset($_GET['id_cliente']) && !empty($_GET['id_cliente'])){
  $id_cliente = $_GET['id_cliente']; 
 
+ 
 
-    $mysql = "SELECT tbl_clientes.razaoSocial_nome,tbl_clientes.id,tbl_recebimentos.id_cliente,tbl_recebimentos.valor_real,tbl_recebimentos.id_moeda,tbl_recebimentos.id_recebimento,tbl_recebimentos.data_cotacao_euro FROM tbl_clientes INNER JOIN tbl_recebimentos ON tbl_clientes.id =  tbl_recebimentos.id_cliente WHERE tbl_recebimentos.id_cliente = '$id_cliente' ORDER BY tbl_recebimentos.id_recebimento DESC ";
+    $mysql = "SELECT tbl_clientes.razaoSocial_nome,tbl_servicos.nome ,tbl_clientes.id,tbl_recebimentos.id_cliente,tbl_recebimentos.valor_real,tbl_recebimentos.id_moeda,tbl_recebimentos.id_recebimento,tbl_recebimentos.data_cotacao_euro FROM tbl_clientes INNER JOIN tbl_recebimentos ON tbl_clientes.id =  tbl_recebimentos.id_cliente INNER JOIN tbl_servicos ON tbl_servicos.id = tbl_recebimentos.id_servico WHERE tbl_recebimentos.id_cliente = '$id_cliente' ORDER BY tbl_recebimentos.id_recebimento DESC ";
 
      
      
@@ -65,6 +66,8 @@
         $array = $mysql->fetchAll();      
                 
               
+           
+
              echo json_encode($array);       
         
 
@@ -144,6 +147,44 @@
      }  
 
     } 
+
+
+
+if(isset($_GET['id_recebido']) && !empty($_GET['id_recebido'])){
+
+
+
+
+
+$id_recebi = $_GET['id_recebido']; 
+
+ $array = array();
+    $mysql = "SELECT * FROM tbl_parcelas_recebimentos  WHERE id_recebimento = '$id_recebi' AND ind_pago = 1";
+
+     
+     
+     $mysql = $pdo->query($mysql);
+
+     if($mysql->rowCount() > 0){
+
+        $array = $mysql->fetchAll();      
+             
+
+              
+             echo json_encode($array);       
+     
+
+     }  
+
+
+
+
+
+
+
+
+
+}
 
 
     

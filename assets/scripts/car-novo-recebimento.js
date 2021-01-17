@@ -5,7 +5,9 @@
  var modal_result = document.querySelector('.modal_result')
  var modal_result_receb = document.querySelector('.modal_result_receb')
  var modal_result_receb_fechar = document.querySelector('.modal_result_receb_fechar')
+ var modal_status_result = document.querySelector('.modal_status_result')
  var modal_result_fechar = document.querySelector('.modal_result_fechar')
+ var modal_status_fechar = document.querySelector('.modal_status_fechar')
  var nao_encontrado = document.querySelector('.nao_encontrado')
  var pesquisa_cliente = document.querySelector('.pesquisa_cliente')
 var div_cliente_re = document.querySelector('.div-cliente-re')
@@ -15,6 +17,8 @@ var tabela_result= document.querySelector('.tabela_result');
 var receb_calendar = document.querySelector('.receb_calendar')
 var consulta_data = document.getElementById('consulta_data')
 var nao_encontrado = document.querySelector('.nao_encontrado')
+var tot_status_euro = document.querySelector('.tot_status_euro')
+ var tot_status_real = document.querySelector('.tot_status_real')
 var soma_real = 0;
 var soma_euro = 0;
 var tot_real =  document.querySelector('.tot_real')
@@ -259,7 +263,7 @@ if(result_jason.id_moeda == "1"){
 
  function result_consult(id_recebimento){
   
- 
+ let tot_euroReal = 0;
 
     $.ajax({
 
@@ -293,14 +297,19 @@ if(result_jason.id_moeda == "1"){
          let l =1;
         
             json.forEach(function(result_jason,item){
-                   
-                   if(result_jason.moeda_selecionada == '1'){
 
-                    console.log('moeda real')
+
+                  
+                   
+                   if(result_jason.id_moeda == '1'){
+
+                    soma_r =  parseFloat(result_jason.valor_parcela)
+                    tot_euroReal = soma_r.toLocaleString('pt-br',{style:'currency',currency:'BRL'})
 
 
                    }else{
-                    console.log('moeda euro')
+                    soma_r =  parseFloat(result_jason.valor_parcela)
+                    tot_euroReal = soma_r.toLocaleString('de-DE',{style:'currency',currency:'EUR'})
                    }
 
             
@@ -314,10 +323,10 @@ if(result_jason.id_moeda == "1"){
     <tr>
      
     <td>${result_jason.id_parcela}</td>
-    <td>${result_jason.valor_parcela}</td>
+    <td>${tot_euroReal}</td>
     <td>${result_jason.valor_pago_parcela}</td>
     <td>${date_parcela[2]+'/'+date_parcela[1]+'/'+date_parcela[0]}</td>
-    <td>${(result_jason.moeda_selecionada == '1')? 'REAL ': 'EURO ' }</td>
+    <td>${(result_jason.id_moeda == '1')? 'REAL ': 'EURO ' }</td>
     <td>${(result_jason.ind_pago) == '0' ?'Em aberto' : 'Pago'}</td>    
      
     
@@ -523,7 +532,7 @@ success:function(json){
   function verDados(id){
    
      
-
+ let tot_euroReal = 0;
      
     modal_result.style.display = 'block'
    let result_modal = document.querySelector('#result_modal');
@@ -546,7 +555,19 @@ success:function(json){
     
   let date_cotacao = result_jason.data_cotacao_euro.split('-')
  
-   
+      
+
+  if(result_jason.id_moeda == '1'){
+    soma_r =  parseFloat(result_jason.valor_real)
+     tot_euroReal = soma_r.toLocaleString('pt-br',{style:'currency',currency:'BRL'})
+
+  }else{
+     
+    soma_r =  parseFloat(result_jason.valor_real)
+     tot_euroReal = soma_r.toLocaleString('de-DE',{style:'currency',currency:'EUR'})
+     
+
+  }
  
     
 
@@ -587,15 +608,20 @@ success:function(json){
     <tr>
     <td>${result_jason.id}</td>
     <td>${result_jason.razaoSocial_nome}</td>
-    <td>${(result_jason.moeda_selecionada == '1')? 'REAL': 'EURO' }</td>
-    
-    <td>${result_jason.valor_real}</td>
+    <td>${result_jason.nome}</td>
+    <td>${(result_jason.id_moeda == '1')? 'REAL': 'EURO' }</td>      
+    <td>${tot_euroReal}</td>
     <td>${date_cotacao[2]+'/'+date_cotacao[1]+'/'+date_cotacao[0]}</td>
      
      
      
-    <td  class="noPrint text-center">
-      <i class="fas fa-user-edit icon-gradient bg-happy-itmeo btn" onclick="result_consult(${result_jason.id_recebimento})"></i>ver</td>
+    <td  class="noPrint ">
+        <i   class="fas fa-user-edit icon-gradient bg-happy-itmeo btn" onclick="result_consult(${result_jason.id_recebimento})"></i><br>ver Parcelado  
+        </td>
+
+       <td  class="noPrint ">
+        
+       <i   class="fas fa-user-edit icon-gradient bg-happy-itmeo btn"  onclick="result_status(${result_jason.id_recebimento})"></i><br> PG desta ação </td>
     `
   })   
         
@@ -619,7 +645,166 @@ success:function(json){
     
 
   
+   function result_status(id_recebido){
+
+     
+     
    
+      
+   
+      $.ajax({
+   
+       type:'GET',
+   url:"ajax.php",
+   
+   data:{id_recebido:id_recebido},
+   dataType:"json",
+   success:function(json){ 
+   
+     soma_real = 0;
+     soma_euro = 0;
+     tot_real.innerHTML = ''
+     tot_euro.innerHTML =''
+     modal_status_fechar.addEventListener('click',function(){
+        
+      modal_status_result.style.display = 'none'
+           modal_result.style.display = 'none'
+          nao_encontrado.style.display = 'none'
+          result_modal_parc.innerHTML ='';
+   
+           
+      })
+   
+       
+      modal_status_result.style.display = 'block'
+      let tot_euroReal = 0;
+      let tot_euroReal_pg = 0;
+       let result_modal_status = document.querySelector('#result_modal_status');
+       
+       result_modal_status.innerHTML = '';         
+   
+       divCliente.innerHTML ='';
+        let qt_jason = 0;
+             
+        
+   
+           json.forEach(function(jason,item){
+            
+            if(jason.id_moeda == '1'){
+              soma_r =  parseFloat(jason.valor_parcela)
+               tot_euroReal = soma_r.toLocaleString('pt-br',{style:'currency',currency:'BRL'})
+               
+               soma_pg =  parseFloat(jason.valor_pago_parcela)
+               tot_euroReal_pg = soma_pg.toLocaleString('pt-br',{style:'currency',currency:'BRL'})
+ 
+
+
+            }else{  
+
+              soma_r =  parseFloat(jason.valor_parcela)
+               tot_euroReal = soma_r.toLocaleString('de-DE',{style:'currency',currency:'EUR'})
+
+              
+               
+              soma_pg =  parseFloat(jason.valor_pago_parcela)
+               tot_euroReal_pg = soma_pg.toLocaleString('de-DE',{style:'currency',currency:'EUR'})
+               
+          
+            }
+                  
+                 
+                 
+   
+                 
+                  let date_parcela = jason.data_parcela.split('-')  
+                
+                  result_modal_status.innerHTML += `   
+               
+     <tr>
+    
+   <td>${jason.id_parcela}</td>
+   <td>${tot_euroReal}</td>
+   <td>${tot_euroReal_pg}</td>
+   <td>${date_parcela[2]+'/'+date_parcela[1]+'/'+date_parcela[0]}</td>
+   <td>${(jason.id_moeda == "1")? 'REAL': 'EURO '}</td>
+   <td>${(jason.ind_pago) == '0' ?'Em aberto' : 'Pago'}</td>    
+    
+   
+   <td> <a href="?edt=${jason.id_parcela}" class="btn">
+   
+   `
+      
+    
+   if(jason.id_moeda == "1"){
+       
+    
+     soma_real += parseInt(jason.valor_parcela)
+   
+         
+     
+   }else{
+     
+     soma_euro += parseInt(jason.valor_parcela)
+   
+     
+   }
+   
+   console.log(soma_euro)
+                 
+              
+                
+               
+   tot_status_real.innerHTML = ` ${soma_real.toLocaleString('pt-br',{style:'currency',currency:'BRL'})}`
+  tot_status_euro.innerHTML = ` ${soma_euro.toLocaleString('de-DE',{style:'currency',currency:'EUR'})}`
+                 
+                
+                
+   
+                
+            
+          
+              
+                
+   
+   
+         
+             });
+   
+       },error:function(falha){
+             
+         
+   
+           $('.nao_encontrado').hide(300)  
+   
+           $('.nao_encontrado').show(300)
+         
+           console.log('nao encontrado')
+   
+   
+          
+       }        
+   
+   
+   
+   });
+   
+   
+   
+   
+     
+
+
+
+
+
+
+
+
+
+
+
+
+   }
 
  
 
@@ -636,6 +821,24 @@ success:function(json){
     //await new Promise(r => setTimeout(r, 150));
     //newWin.print();
     //newWin.close();
+}
+
+
+function imprimir_relatorio_p(){
+   
+  
+
+  const divPrint = document.querySelector('.r');
+  newWin = window.open('');
+  newWin.document.write('<link href="./main.css" rel="stylesheet">');
+  newWin.document.write('<link href="./assets/css/print.css" rel="stylesheet">');
+  newWin.document.write('<button class="btn m-2 bg-primary noPrint" onclick="window.print();window.close()"><i class="fa fa-print text-white"></i></button><br><br><h5 class="mb-3">Clientes de Recebimentos</h5>');
+  newWin.document.write(divPrint.outerHTML);
+  //await new Promise(r => setTimeout(r, 150));
+  //newWin.print();
+  //newWin.close();
+
+
 }
 
 
