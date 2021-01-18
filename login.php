@@ -1,8 +1,10 @@
 <?php
     session_start();
+    
+    require_once('con.php');
 
-    require_once('_con.php');  
-     
+   
+   // require_once('_con.php');
     
     if(isset($_POST['cmd'])){ 
 
@@ -120,35 +122,7 @@
 
                     </div>
                 </form>
-                      
-                      
-                    <div class="row">
-                        <form method="POST">
-                        <div class="col text-center mb-3">
-                            <h2><strong class="text-white">Digite uma nova senha</strong></h2>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col">
-                            <div class="group-inputs">
-                                <i class="fas fa-key"></i>
-                                <input type="hidden" name="cmd" value="alterar">
-                                <input type="password" name="nSenha" placeholder="Digite uma nova senha">
-                            </div>
-                        </div>
-                    </div>                    
-                    <div class="row mt-4">
-                        <div class="col">
-                            <button class="btn btn-outline-secondary w-100 p-3 mt-3 float-right text-white d-flex"><strong class="ml-auto mr-auto">Alterar</strong><i class="fas fa-sign-in-alt ml-auto mt-auto mb-auto"></i></button>
-                        </div>
-                    </div>
-                    <?endif;?>
-                </form>
-
-
-
-
-
+                
             </div>
         </div>
     </div>

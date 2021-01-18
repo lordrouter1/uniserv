@@ -3,10 +3,14 @@
 #$con = new mysqli('localhost','root','','indexerpcom_catavento2');
 
 $servername = 'localhost';
-$username   = 'root';
-$password   = '';
+$username   = 'indexerpcom_tci';
+$password   = ';QT*JRknXgqG';
 $database   = 'indexerpcom_tci';
  
+/* $servername = 'localhost';
+$username   = 'root';
+$password   = '';
+$database   = 'indexerpcom_tci';*/
  
 
 $con = new mysqli($servername, $username, $password, $database);
