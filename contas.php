@@ -198,7 +198,7 @@ if(isset($_GET['del'])){
                                             <div class="collapse campPerm" id="c-permissoes">
                                                 <div class="card-body">
                                                 
-                                                    <?
+                                                    <?php
                                                         $resp = $con->query('select id,descricao from tbl_usuarioMeta where meta = "habilitar_menu" and usuario = 0 order by descricao');
                                                         while($row = $resp->fetch_assoc()){
                                                             if($row['descricao'] == 'inicio')
@@ -229,7 +229,7 @@ if(isset($_GET['del'])){
                                             <div class="collapse campPerm" id="c-empresas">
                                                 <div class="card-body">
                                                 
-                                                    <?
+                                                    <?php
                                                         $resp = $con->query('select id,valor from tbl_usuarioMeta where meta = "habilitar_empresa" and usuario = 0');
                                                         while($row = $resp->fetch_assoc()){
                                                             if(isset($_GET['edt']))
@@ -286,7 +286,7 @@ if(isset($_GET['del'])){
                             </tr>
                         </thead>
                         <tbody>
-                            <?
+                            <?php
                                 $resp = $con->query('select * from tbl_usuario');
                                 while($row = $resp->fetch_assoc()){
                                     echo '

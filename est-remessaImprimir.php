@@ -1,5 +1,5 @@
 <?
-    require_once('con.php');
+    require_once('_con.php');
 
     $pedido = $con->query('select * from tbl_remessa where id = '.$_GET['prt'])->fetch_assoc();
 ?>
