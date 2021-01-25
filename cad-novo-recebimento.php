@@ -183,29 +183,31 @@ if (isset($_POST['cmd']))
                                     left join tbl_clientes b on b.id = a.id_cliente
                                 ');
 
-                                while ($row = $resp->fetch_assoc())
-                                {
-                                    echo '
-                                        <tr>
-                                            <td>'.str_pad($row['id_parcela'], 3, "0", STR_PAD_LEFT).'</td>
-                                            <td>'.$row['cliente'].'</td>
-                                            <td>'.$row['moeda_selecionada'].'</td>
-                                            <td>'.$row['valor_parcela'].'</td>
-                                            <td>'.date('d / m / Y',strtotime($row['data_parcela'])).'</td>
-                                            <td>'.($row['ind_pago']=='0'?'Em aberto':'Pago').'</td>
-                                            <td class="noPrint text-center"><a href="?edt=' . $row['id_parcela'] . '" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
-                                    ';
+                                if($resp->num_rows > 0){
+                                    while ($row = $resp->fetch_assoc())
+                                    {
+                                        echo '
+                                            <tr>
+                                                <td>'.str_pad($row['id_parcela'], 3, "0", STR_PAD_LEFT).'</td>
+                                                <td>'.$row['cliente'].'</td>
+                                                <td>'.$row['moeda_selecionada'].'</td>
+                                                <td>'.$row['valor_parcela'].'</td>
+                                                <td>'.date('d / m / Y',strtotime($row['data_parcela'])).'</td>
+                                                <td>'.($row['ind_pago']=='0'?'Em aberto':'Pago').'</td>
+                                                <td class="noPrint text-center"><a href="?edt=' . $row['id_parcela'] . '" class="btn"><i class="fas fa-user-edit icon-gradient bg-happy-itmeo"></i></a></td>
+                                        ';
 
-                                    if($row['caminho_arquivo_comprovante'] != ""){
-                                        echo '<td class="noPrint text-center"><a target="_blank" href="' . $row['caminho_arquivo_comprovante'] . '" class="btn"><i class="far fa-file-image icon-gradient bg-happy-itmeo"></i></a></td>';
-                                    }
-                                    else{
-                                        echo "<td></td>";
-                                    }
+                                        if($row['caminho_arquivo_comprovante'] != ""){
+                                            echo '<td class="noPrint text-center"><a target="_blank" href="' . $row['caminho_arquivo_comprovante'] . '" class="btn"><i class="far fa-file-image icon-gradient bg-happy-itmeo"></i></a></td>';
+                                        }
+                                        else{
+                                            echo "<td></td>";
+                                        }
 
-                                    echo '
-                                        </tr>
-                                    ';
+                                        echo '
+                                            </tr>
+                                        ';
+                                    }
                                 }
 
                             ?>

@@ -8,7 +8,7 @@
     require_once('con.php');
 
    
-   // require_once('_con.php');
+    // require_once('_con.php');
     
     if(isset($_POST['cmd'])){ 
 
