@@ -1,14 +1,5 @@
 <?php
     require_once('functions.php');
-	//busca cotacao do euro
-	$req_url = 'https://economia.awesomeapi.com.br/json/all';
-    $response_json = file_get_contents($req_url);
-    $response_object = json_decode($response_json);
-    $EuroCotacao = $response_object->EUR->high;
-	$EuroCotacao = $EuroCotacao +0.20; // taxas estimadas 0.20
-	$EuroCotacao = round($EuroCotacao, 2);
-    $EuroCotacao = str_replace(".",",",$EuroCotacao);
-	
 ?>
 <!doctype html>
 <html lang="en">

@@ -1,9 +1,5 @@
 <?php include('header.php'); ?>
-<?php
-
-ini_set('display_errors',1);
-ini_set('display_startup_erros',1);
-error_reporting(E_ALL);
+<?phpw
 
 if(isset($_POST['cmd'])){
     switch($_POST['cmd']){

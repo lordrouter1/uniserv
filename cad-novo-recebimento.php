@@ -1,10 +1,6 @@
 <?php 
     include ('header.php');
-    #require 'bancoPDO.php';        
-  
-    ini_set('display_errors',1);
-    ini_set('display_startup_erros',1);
-    error_reporting(E_ALL);
+    #require 'bancoPDO.php';
 
 if (isset($_POST['cmd']))
 {
@@ -75,7 +71,7 @@ if (isset($_POST['cmd']))
    
         
         $con->query('INSERT INTO `tbl_recebimentos`(`id_cliente`, `cotacao_euro`, `data_cotacao_euro`, `id_moeda`, `valor_recebimento`, `valor_real`, `parcelamento`, `valor_entrada`, `valor_total`, `tipoEntrada`,`id_servico`) VALUES (
-            "'.$id_c.'",
+            "'.$_POST['cliente'].'",
             "'.$cotacao.'",
             "'.date('Y-m-d').'",
             "'.($_POST['moeda']).'",
@@ -143,12 +139,7 @@ if (isset($_POST['cmd']))
             $uploadfile = "";
         }
              
-           
-
         $con->query('update tbl_parcelas_recebimentos set valor_parcela = "'.$_POST['valor_parc'].'", ind_pago = "'.($_POST['ind_pago']=='on'?1:0).'", data_parcela = "'.$_POST['data'].'", caminho_arquivo_comprovante = "'.$uploadfile.'", valor_pago_parcela="'.$_POST['valor_parc'].'" where id_parcela = '.$_POST['id']);
-  
-
-
         redirect($con->error);
     }
 }
@@ -543,7 +534,7 @@ $(document).on("click", "#submit_btn", function (e) {
                             <div class="col-2 d-flex">
                                 <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
-                                <input class="form-control" name="valor_parc[]"   type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" value="`+valorPorcentagemParcela+`" placeholder="`+valorPorcentagemParcela+`" disabled="disabled"  >  
+                                <input class="form-control" name="valor_parc[]"   type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" value="`+valorPorcentagemParcela+`" placeholder="`+valorPorcentagemParcela+`">  
                             </div>
                             <div class="col-2">
                                 <input type="date" class="form-control" id="`+(i+1)+`_data"  name="data[] " value="5">
@@ -569,7 +560,7 @@ $(document).on("click", "#submit_btn", function (e) {
                             <div class="col-2 d-flex">
                                 <i class="mb-auto mt-auto mr-2 fas fa-euro-sign simboloEuro" style="display:none"></i>
                                 <i class="mb-auto mt-auto mr-2 fas fa-dollar-sign simboloReal"></i>
-                                <input class="form-control" name="valor_parc[]"  type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" placeholder="`+valorPorcentagemParcela+`" disabled="disabled" value="`+valorPorcentagemParcela+`">
+                                <input class="form-control" name="valor_parc[]"  type="number" step="0.01" onchange="calculaValor(this,2,`+porcentagem+`)" placeholder="`+valorPorcentagemParcela+`" value="`+valorPorcentagemParcela+`">
                             </div>
                             <div class="col-2">
                                 <input type="date" class="form-control" id="data[]"  name="data[] "  >
@@ -1103,38 +1094,59 @@ $(document).on("click", "#submit_btn", function (e) {
 
                     <div class="row mb-3">
                         <div class="col">
-                            <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
                                      
-                                     <div class="row">
-                                         <div class="col-lg-6">
-                                             
-                                           <input type="text"   class="form-control cliente-id"  placeholder="Digite o nome do cliente" required>
+                            <div class="row">
 
-                                           <input type="hidden" class="form-control cliente-id-evia" name="1cliente" id="cliente"   required>
-
-                                                <div  class="div-cliente"> 
-                                                   
-                                                </div>
-                                         </div>
+                                <div class="col">
+                                    <label for="cliente">Cliente<span class="ml-2 text-danger">*</span></label>
+                                    
+                                    <select class="form-control" name="cliente" id="cliente" required>
+                                        <option selected disabled>Todos clientes</option>
+                                        <?php
+                                            $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
 
 
-                                         <div class="col-lg-6">
-                                             
-                                               <select class="form-control oculta_select" name="cliente" id="cliente" required>
-                                <option selected disabled>Todos clientes</option>
-                                <?php
-                                    $resp = $con->query('select id, razaoSocial_nome from tbl_clientes where tipoCliente="on"');
+                                            while ($row = $resp->fetch_assoc())
+                                            {
+                                                $selected = $ordemServico['cliente'] == $row['id'] ? 'selected' : '';
+                                                echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['razaoSocial_nome'] . '</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                    <script>
+                                        $(document).ready(function(){
+                                            $('#cliente').select2({
+                                                theme: "bootstrap",
+                                                enabled: true,
+                                                dropdownParent: $("#mdl-cliente")
+                                            });
+                                        });
+                                    </script>
+                                </div>
+
+                                <div class="col-3"> 
+
+                                    <?php 
+                                        $array_servicos = array();            
+                                        $mysql = "SELECT * FROM tbl_servicos WHERE status = '1'";
+                                        $mysql = $con->query($mysql);
+                                    ?>
+
+                                    <label for="servicos">Serviços</label>
+                                    
+                                    <select  name="servicos" class="form-control">
+                                    
+                                        <?php while($serv = $mysql->fetch_assoc()):  ?>
+                                            
+                                            <option value="<?php echo $serv['id']; ?>"><?php echo $serv['nome'];?></option> 
+                                            
+                                        <?php endwhile;  ?>
+                                    
+                                    </select>
+                                </div>
 
 
-                                    while ($row = $resp->fetch_assoc())
-                                    {
-                                        $selected = $ordemServico['cliente'] == $row['id'] ? 'selected' : '';
-                                        echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['razaoSocial_nome'] . '</option>';
-                                    }
-                                ?>
-                            </select>
-                                         </div>
-                                     </div>
+                            </div>
 
                           
                         </div>
@@ -1143,36 +1155,27 @@ $(document).on("click", "#submit_btn", function (e) {
 
                     <div class="row">
                         <div class="col-3">
+                            <label for="moeda">Moeda</label>
+                            <select name="moeda" id="moeda" class="form-control" onclick="CalcularEuroParaReal()">
+                                <option value="1">Real</option>
+                                <option value="2" selected>Euro</option>
+                            </select>
+                        </div>
+
+                        <div class="col-3">
                             <label for="cotacoa_vlr_euro">Cotação Euro €</label>
-                             <input type="text"  value="<?php echo $EuroCotacao;?>" onchange="CalcularEuroParaReal()" class="form-control mb-3 estrangeiroInput" name="cotacoa_vlr_euro" id="cotacoa_vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                            <input type="text"  value="" onchange="CalcularEuroParaReal()" class="form-control mb-3 estrangeiroInput" name="cotacoa_vlr_euro" id="cotacoa_vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
+                            <script>
+                                $(document).ready(function(){
+                                    $.get('http://economia.awesomeapi.com.br/json/EUR',resp => {
+                                        $('#cotacoa_vlr_euro').val(parseFloat(resp[0]['high'])+0.21);
+                                    });
+                                });
+                            </script>
                         </div>
 
                          
                          <!-- adicionado campo de servicos por roney -->
-
-                        <div class="col-3"> 
-
-                           <?php 
-                                 $array_servicos = array();            
-                                    $mysql = "SELECT * FROM tbl_servicos WHERE status = '1'";
-                                    $mysql = $con->query($mysql);
-                           
-                            ?>
-
-                            <label for="servicos">Serviços</label>
-                            <select  name="servicos" class="form-control">
-                             
-                             <?php while($serv = $mysql->fetch_assoc()):  ?>
-                                 
-                                <option value="<?php echo $serv['id']; ?>"><?php echo $serv['nome'];?></option>
-                                  
-                                 
-                             <?php endwhile;  ?>
-
-
-                               
-                            </select>
-                        </div>
 
 
                         <!-- adicionado campo de servicos por roney -->
@@ -1184,44 +1187,9 @@ $(document).on("click", "#submit_btn", function (e) {
                              <input  type="text" onchange="CalcularEuroParaReal()" placeholder="Digite um valor"   class="form-control mb-3 estrangeiroInput valor_e" name="vlr_euro" id="vlr_euro" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
                         </div>
-
-
-
-
-
-                        <div class="col-3">
-                            <label for="moeda">Moeda</label>
-                                  
-                                <?php
-                                    $array_servicos = array();            
-                                    $mysql = "SELECT * FROM tbl_moedas";
-                                    $mysql = $con->query($mysql);
-                                ?>  
-
-                           
-                            <select name="moeda" id="moeda" class="form-control" onclick="CalcularEuroParaReal()">
-                                  <option  >- Selecione a moeda -</option>
-                            <?php 
-                                if($mysql->num_rows > 0):
-                                    while($moed = $mysql->fetch_assoc()): 
-                            ?>
-
-                              <option value="<?php echo $moed['id'];  ?>"><?php echo $moed['nome_moeda'];  ?></option>
-                                
-
-                            <?php 
-                                    endwhile;
-                                endif;  
-                            ?>
-
-
-
-                                
-                            </select>
-                        </div>
 						
 						
-						<div class="col-3 simboloReal">
+						<div class="col-3">
                             <label for="vlr_real">Valor Real</label>
                              <input   type="text" disabled value="R$ 0,00" class="form-control mb-3 estrangeiroInput" name="vlr_real" id="vlr_real" <?=$row['estrangeiro'] != 0 ? 'required' : '' ?>>
                              
